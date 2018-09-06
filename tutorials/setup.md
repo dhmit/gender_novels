@@ -170,7 +170,7 @@ $ gender_novels\Scripts\activate
 Whichever operating system you use, your shell window should now be
 prefixed with "gender_novels."
 ```console
-$ (gender_novels)
+(gender_novels) $
 ```
 
 #### Change into the Directory of the gender_novels Repository
@@ -180,23 +180,24 @@ Recall the local path for the gender_novels repository from above. We
 now need to change into the directory of our repository by using the cd
 (change directory) command
 ```console
-$ cd <local path to gender_novels repository>
+(gender_novels) $ cd <local path to gender_novels repository>
 ```
 In my case the path was /Users/stephan/code_repos/gender_novels, so the
 command becomes
 ```console
-$ cd /Users/stephan/code_repos/gender_novels
+(gender_novels) $ cd /Users/stephan/code_repos/gender_novels
 ```
 
 #### Install Dependencies
 In our project, we use other existing libraries to speed up our work.
 Right now, the project already includes gender-guesser, a library that
-helps us to automatically detect the gender of a character.
+helps us to automatically detect the gender of a character as well as
+IPython, an interactive Python shell.
 
-To install the gender-guesser library as well as any other future
-dependencies, you can run
+To install these packages as well as any other future dependencies,
+you can run
 ```console
-$ pip3 install -r requirements.txt
+(gender_novels) $ pip3 install -r requirements.txt
 ```
 If you get a "no such file or directory" error, you are most likely
 in the wrong directory.
@@ -207,7 +208,7 @@ To test if you have the correct Python version as well as all of the
 required libraries you should run unboxing.py in the
 tutorials directory by running
 ```console
-$ python3 tutorials/unboxing_test.py
+(gender_novels) $ python3 tutorials/setup_test.py
 ```
 Running this script will tell you if your installation succeeded.
 
