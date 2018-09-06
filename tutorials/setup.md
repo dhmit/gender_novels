@@ -1,4 +1,4 @@
-# Unboxing
+# Setup for the "Gender in the 19th Century Novel" Project
 This document will walk you through the process of installing all of
 the necessary tools to start working on the "Gender in the 19th Century
 Novel" project.
@@ -51,15 +51,13 @@ Once the main repository is forked, you should be on a page that looks
 almost like the original repository except that it doesn't belong to the
 dhmit account but rather to your own account (in this case: dhmit-test).
 
-![](images/unboxing_fork_2.jpg?raw=true)
+![](images/setup_fork_2.png)
 
 #### Install Github Desktop
 [Github Desktop](https://desktop.github.com/) gives you a GUI to work
 with git and Github. The main advantage of the GUI over the command line
-interface is that
-it gives you an additional visual review of your changes before you
-push code, so if you use a Mac or Windows computer, we ask that you
-use Github Desktop.
+interface is thatit gives you an additional visual review of your
+changes before you push code, so we ask that you use Github Desktop.
 
 You can download [Github Desktop here.](https://desktop.github.com/)
 
@@ -68,17 +66,16 @@ Once you have installed and opened Github Desktop, you will be greeted
 by a loading screen. To download a local copy of the repository that
 you just forked, click on "Clone a Repository."
 
-![](images/unboxing_gitdesktop_1.png)
+![](images/setup_gitdesktop_1.png)
 
 If you aren't already logged in to your Github account, you should sign
 in now.
 
-![](images/unboxing_gitdesktop_2.png)
+![](images/setup_gitdesktop_2.png)
 
 Signing in will connect Github Desktop to your Github account.
 Logging in will drop you back on the loading screen--click on "Clone
 a Repository again."
-
 
 You should now see the forked repository pop up under "Your
 Repositories." Once you click on it, you can select the local path where
@@ -90,14 +87,12 @@ was
 ```
 Once the path is set, hit "Clone."
 
-
-
-![](images/unboxing_gitdesktop_3.png)
+![](images/setup_gitdesktop_3.png)
 
 If you go the specified path, you should now see all of the project
 files there.
 
-![](images/unboxing_gitdesktop_4.png)
+![](images/setup_gitdesktop_4.png)
 
 
 ## Setting Up a Python Virtual Environment
@@ -109,16 +104,18 @@ A virtual environment isolates the libraries and tools that we use for
 our project from those we might use in other projects.
 
 #### Install Python
-First things first, you need to have a current version of python.
-To check if you have Python , open a Terminal (Mac, look under
-"Applications") or Powershell (Windows) and type
+First things first, you need to have a current version of Python.
+To check if you have Python installed, open a Terminal (Mac, look under
+"Applications") or Powershell (Windows) and type the following command.
+(Note: Don't enter the initial "$". It's just a way of showing that we
+are currently working in a terminal.
 
 ```
-python3 --version
+$ python3 --version
 ```
 
 
-![](images/unboxing_python_1.png)
+![](images/setup_python_1.png)
 
 There are three possible options.
 - If the prompt returns Python 3.6 or 3.7, you're all set.
@@ -214,7 +211,7 @@ $ python3 tutorials/unboxing_test.py
 ```
 Running this script will tell you if your installation succeeded.
 
-![](images/unboxing_test_1.png)
+![](images/setup_test_1.png)
 
 If all of the tests pass, you are ready to go. If not the script will
 tell you what still needs to be fixed.
@@ -229,4 +226,4 @@ master codebase later on.
 You can fetch the latest update with Github Desktop by clicking on
 "Fetch Origin."
 
-![](images/unboxing_fetchupdates_1.png)
+![](images/setup_fetchupdates_1.png)

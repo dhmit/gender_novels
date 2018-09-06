@@ -4,7 +4,9 @@ import importlib
 def unboxing_test():
     """ This function should be run at the end of the unboxing tutorial to test if the install worked properly.
 
-    It checks for a) is Python 3.6+ installed and b) is the gender-guesser library installed
+    It checks for a) is Python 3.6+ installed and b) if the python packages in requirements.txt can be imported.
+    (For the moment, the names are hard-coded. I'm sure there are ways around the differences between
+    pip name ("ipython") and import name ("IPython")--but I'm tired right now and wanted to push a draft.
 
     :return:
     """
@@ -20,17 +22,17 @@ def unboxing_test():
             python_version.major, python_version.minor)
         )
 
-    libraries = [
+    packages = [
         {'pip_name': 'gender-guesser',  'python_name': 'gender_guesser'},
         {'pip_name': 'ipython',         'python_name': 'IPython'}
     ]
-    for library in libraries:
+    for package in packages:
         try:
-            importlib.import_module(library['python_name'])
-            print("Check: Package {} available -- Passed.".format(library['python_name']))
+            importlib.import_module(package['python_name'])
+            print("Check: Package {} available -- Passed.".format(package['python_name']))
         except ModuleNotFoundError:
             raise ModuleNotFoundError("Check: Package {} available -- Failed. Try running \"pip3 install {}\"".format(
-                library['python_name'], library['pip_name']
+                package['python_name'], package['pip_name']
             ))
 
     print("\nYou are ready to go. Have fun!")
