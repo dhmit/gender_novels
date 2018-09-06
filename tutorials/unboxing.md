@@ -1,9 +1,14 @@
 # Unboxing
 This document will walk you through the process of installing all of
-the necessary tools to start working on the Gender in the 19th Century
-Novel project.
+the necessary tools to start working on the "Gender in the 19th Century
+Novel" project.
 
-First off, please note that we only support Mac and Windows computers.
+It covers how to install and configure both your Python environment
+as well as git and Github.
+
+Please note: We only support Mac and Windows computers.
+(@ Myke: Are students discouraged but allowed to use Linux as long as
+they figure things out by themselves or are is Linux not allowed?
 
 
 ## Setting Up the Git Repository
@@ -11,7 +16,7 @@ First off, please note that we only support Mac and Windows computers.
 #### Install git
 We will use git to work together on our shared codebase. Git is a
 version-control software that allows us work on code individually until
-a new function or feature is ready and battle-tested. At this point the
+a new function or feature is ready and tested. At this point the
 new code gets "pushed" to our
 [main repository](https://github.com/dhmit/gender_novels) and becomes
 part of the code base of everyone working on the project.
@@ -21,8 +26,8 @@ Lisa has already written a
 on how to install git.
 
 #### Create a Github Account
-Create a [Github account](https://github.com/join) if you don't already
-have one.
+Next, you should create a [Github account](https://github.com/join) if
+you don't already have one.
 
 (Note: You can get unlimited private repos by signing up for the
 [Student Developer Pack.)](https://education.github.com/pack)
@@ -40,7 +45,7 @@ To do this, you have to log in to your Github account and go to the
 should look for the "Fork" button on the right side near the top.
 
 
-![](images/unboxing_fork_1.jpg?raw=true)
+![](images/setup_fork_1.png)
 
 Once the main repository is forked, you should be on a page that looks
 almost like the original repository except that it doesn't belong to the
