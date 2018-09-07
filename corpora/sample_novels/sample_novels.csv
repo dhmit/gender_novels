@@ -1,4 +1,4 @@
-﻿author,date,title,country_publication,author_gender,filename,notes
+author,date,title,country_publication,author_gender,filename,notes
 "Austen, Jane",1818,Persuasion,England,female,austen_persuasion.txt,
 "Dickens, Charles",1859,A Tale of Two Cities,England,male,dickens_twocities.txt,
 "Eliot, George",1871,"Middlemarch, A Study of Provincial Life",England,female,eliot_middlemarch.txt,
