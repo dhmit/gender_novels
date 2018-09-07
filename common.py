@@ -6,6 +6,9 @@ from IPython import embed
 
 
 class FileLoaderMixin():
+    """ The FileLoaderMixin
+
+    """
 
     def load_file(self, file_path):
 
