@@ -2,10 +2,12 @@ import csv
 import os
 import urllib.request
 
-from IPython import embed
-
-
 class FileLoaderMixin():
+    """ The FileLoaderMixin loads files either locally or remotely from Github (if run from an ipython notebook)
+
+    Currently supported filetypes are: .csv, .txt
+
+    """
 
     def load_file(self, file_path):
 
@@ -26,7 +28,7 @@ class FileLoaderMixin():
                 is_local = False
                 print(f"WARNING: The FileLoaderMixin should be placed in the main path of the gender_novels project."
                       f"It's currently in {local_path}. Until the Mixin is in the correct path, files are loaded " \
-                      f"remotely.")
+                      f"from Github.")
         except NameError:
             is_local = False
 
@@ -35,10 +37,12 @@ class FileLoaderMixin():
             return self._load_file_locally(file_path)
         else:
             print(f'loading {file_path} remotely')
-            return self._load_file_online(file_path)
+            return self._load_file_remotely(file_path)
 
 
     def _load_file_locally(self, file_path):
+
+
 
         # I need a way of getting the local path to the base of the repo. This file is currently in the base of the
         # repo so it returns the correct path. But it will change once this function gets moved.
@@ -53,7 +57,7 @@ class FileLoaderMixin():
         file.close()
         return result
 
-    def _load_file_online(self, file_path):
+    def _load_file_remotely(self, file_path):
 
         base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/'
         url = f'{base_path}/{file_path}'
@@ -85,6 +89,23 @@ class Corpus(FileLoaderMixin):
 
         return novels
 
+    def load_sample_novels_by_authors(self):
+        """ Use this function to get the sample novel texts as four variables
+        >>> c = Corpus('sample_novels')
+        >>> austen, dickens, eliot, hawthorne = c.load_sample_novels_by_authors()
+
+        :return:
+        """
+
+        assert self.corpus_name == 'sample_novels'
+
+        austen = self.novels[0].text
+        dickens = self.novels[1].text
+        eliot = self.novels[2].text
+        hawthorne = self.novels[3].text
+
+        return austen, dickens, eliot, hawthorne
+
 class Novel(FileLoaderMixin):
 
     def __init__(self, novel_metadata_dict):
@@ -104,7 +125,16 @@ class Novel(FileLoaderMixin):
             file_path = f'corpora/{self.corpus_name}/texts/{self.filename}'
             self.text = self.load_file(file_path)
 
+            # Extract Project Gutenberg Boilerplate
+            if self.text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
+                end_intro_boilerplate = self.text.find('*** START OF THIS PROJECT GUTENBERG EBOOK')
+                start_novel = self.text.find('***', end_intro_boilerplate + 5) + 3 # second set of *** indicates start
+                end_novel = self.text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+
+                self.text = self.text[start_novel:end_novel]
+                print(self.text[:100])
+
+
 if __name__ == '__main__':
 
     c = Corpus('sample_novels')
-    embed()
