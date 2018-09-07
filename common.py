@@ -132,7 +132,6 @@ class Novel(FileLoaderMixin):
                 end_novel = self.text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
 
                 self.text = self.text[start_novel:end_novel]
-                print(self.text[:100])
 
 
 if __name__ == '__main__':
