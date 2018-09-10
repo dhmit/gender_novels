@@ -1,6 +1,10 @@
 import csv
 import os
 import urllib.request
+from pathlib import Path
+
+DEBUG = False
+
 
 class FileLoaderMixin():
     """ The FileLoaderMixin loads files either locally or remotely from Github (if run from an ipython notebook)
@@ -10,13 +14,49 @@ class FileLoaderMixin():
     """
 
     def load_file(self, file_path):
+        """
+        Loads csv and txt files either locally or remotely from Github.
+        file_path can be string or Path object.
+
+        :rtype: str (txt file) or list of str (csv file)
+
+        When loading a txt file, load_file returns the text as a string
+        >>> f = FileLoaderMixin()
+        >>> novel_path = Path('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
+        >>> novel_text = f.load_file(novel_path)
+        >>> type(novel_text), len(novel_text)
+        (<class 'str'>, 486253)
+
+        csv files are returned as a list of strings, which can be further processed with Python's csv module
+        >>> corpus_metadata_path = Path('corpora', 'sample_novels', 'sample_novels.csv')
+        >>> corpus_metadata = f.load_file(corpus_metadata_path)
+        >>> type(corpus_metadata), len(corpus_metadata)
+        (<class 'list'>, 5)
+
+        If the file is not available locally (e.g. in an ipython notebook, it gets loaded from Github.
+        >>> novel_text_local = f._load_file_locally(novel_path, '.txt')
+        >>> novel_text_online = f._load_file_remotely(novel_path, '.txt')
+        >>> novel_text_local == novel_text_online
+        True
+
+        file_path can be a string or Path object
+        >>> novel_path_str = os.path.join('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
+        >>> novel_text_str = f.load_file(novel_path_str)
+        >>> novel_text == novel_text_str
+        True
+
+        """
+
+        # if the file_path is a string, turn to Path object.
+        if isinstance(file_path, str):
+            file_path = Path(file_path)
 
         # make sure that we only try to load supported file types
         supported_file_types = {'.csv', '.txt'}
-        current_file_type = file_path[file_path.rfind('.'):]
-        if not current_file_type in supported_file_types:
-            raise ValueError("The FileLoaderMixin currently supports {supported_file_types} but not "
-                             "{current_file_type}.")
+        current_file_type = file_path.parts[-1][file_path.parts[-1].rfind('.'):]
+        if current_file_type not in supported_file_types:
+            err = f"The FileLoaderMixin currently supports {supported_file_types} but not {current_file_type}."
+            raise ValueError(err)
 
         # check if we are working locally and in the correct directory
         # __file__ is only available if executed from a file but not from an ipython shell or notebook
@@ -26,61 +66,79 @@ class FileLoaderMixin():
             is_local = True
             if not local_path.endswith('/gender_novels'):
                 is_local = False
-                print(f"WARNING: The FileLoaderMixin should be placed in the main path of the gender_novels project."
-                      f"It's currently in {local_path}. Until the Mixin is in the correct path, files are loaded " \
-                      f"from Github.")
+                warning = "WARNING: The FileLoaderMixin should be placed in the main path of the gender_novels project."
+                warning += f"It's currently in {local_path}. Until the Mixin is in the correct path, files are loaded "
+                warning += "from Github."
+                print(warning)
         except NameError:
             is_local = False
 
         if is_local:
-            print(f'loading {file_path} locally.')
-            return self._load_file_locally(file_path)
+            if DEBUG:
+                print(f'loading {file_path} locally.')
+            return self._load_file_locally(file_path, current_file_type)
         else:
-            print(f'loading {file_path} remotely')
-            return self._load_file_remotely(file_path)
+            if DEBUG:
+                print(f'loading {file_path} remotely')
+            return self._load_file_remotely(file_path, current_file_type)
 
-
-    def _load_file_locally(self, file_path):
-
-
+    def _load_file_locally(self, file_path, current_file_type):
 
         # I need a way of getting the local path to the base of the repo. This file is currently in the base of the
         # repo so it returns the correct path. But it will change once this function gets moved.
-        local_base_path = os.path.abspath(os.path.dirname(__file__))
-        file = open(f'{local_base_path}/{file_path}', mode='r')
+        local_base_path = Path(os.path.abspath(os.path.dirname(__file__)))
+        file = open(local_base_path.joinpath(file_path), mode='r')
 
-        if file_path.endswith('.csv'):
+        if current_file_type == '.csv':
             result = file.readlines()
-        elif file_path.endswith('.txt'):
+        elif current_file_type == '.txt':
             result = file.read()
 
         file.close()
         return result
 
-    def _load_file_remotely(self, file_path):
+    def _load_file_remotely(self, file_path, current_file_type):
 
         base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/'
         url = f'{base_path}/{file_path}'
         response = urllib.request.urlopen(url)
+        encoding = response.headers.get_param('charset')
 
-        if url.endswith('.csv'):
-            return [line.decode('utf8') for line in response.readlines()]
-        elif url.endswith('.txt'):
-            return response.read().decode('utf8')
+        if current_file_type == '.csv':
+            return [line.decode(encoding) for line in response.readlines()]
+        elif current_file_type == '.txt':
+            text = response.read().decode(encoding)
+            # When loading the text online, each end of line has \r and \n -> replace with only \n
+            return text.replace('\r\n', '\n')
+
 
 class Corpus(FileLoaderMixin):
+    """ The corpus class is used to load the metadata and full texts of all novels in a corpus
+
+    Once loaded, each corpus contains a list of Novel objects
+    >>> c = Corpus('sample_novels')
+    >>> type(c.novels), len(c.novels)
+    (<class 'list'>, 4)
+    >>> c.novels[0].author
+    'Austen, Jane'
+
+    """
 
     def __init__(self, corpus_name):
         self.corpus_name = corpus_name
-        print("here", type(self))
         self.novels = self._load_novels()
 
     def _load_novels(self):
 
         novels = []
 
-        csv_path = f'corpora/{self.corpus_name}/{self.corpus_name}.csv'
-        csv_file = self.load_file(csv_path)
+        relative_csv_path = Path('corpora', self.corpus_name, f'{self.corpus_name}.csv')
+        try:
+            csv_file = self.load_file(relative_csv_path)
+        except FileNotFoundError:
+            err = f"Could not find the metadata csv file for the '{self.corpus_name}' corpus in the expected location "
+            err += f"({relative_csv_path})."
+            raise FileNotFoundError(err)
         csv_reader = csv.DictReader(csv_file)
 
         for novel_metadata in csv_reader:
@@ -89,10 +147,17 @@ class Corpus(FileLoaderMixin):
 
         return novels
 
+
     def load_sample_novels_by_authors(self):
-        """ Use this function to get the sample novel texts as four variables
+        """ This function returns the texts of the four novels in the sample_novels corpus as a tuple
+        This function is used for the first DH Lab demonstration.
+
+        :rtype: tuple
+
         >>> c = Corpus('sample_novels')
         >>> austen, dickens, eliot, hawthorne = c.load_sample_novels_by_authors()
+        >>> len(austen)
+        467018
 
         :return:
         """
@@ -106,34 +171,57 @@ class Corpus(FileLoaderMixin):
 
         return austen, dickens, eliot, hawthorne
 
+
 class Novel(FileLoaderMixin):
+    """ The Novel class loads and holds the full text and metadata (author, title, publication date) of a novel
+
+    >>> novel_metadata = {'author':'Austen, Jane', 'title':'Persuasion', 'corpus_name':'sample_novels', 'date': '1818'}
+    >>> novel_metadata['filename'] = 'austen_persuasion.txt'
+    >>> novel = Novel(novel_metadata)
+    >>> type(novel.text), len(novel.text)
+    (<class 'str'>, 467018)
+
+    """
 
     def __init__(self, novel_metadata_dict):
-        for k, v in novel_metadata_dict.items():
-            setattr(self, k, v)
+
+        if not hasattr(novel_metadata_dict, 'items'):
+            raise ValueError('novel_metadata_dict must be a dictionary or support .items()')
 
         # Check that the essential attributes for the novel exists.
         # Currently available attributes that are not checked are: country_publication, author_gender, and notes.
-        assert hasattr(self, 'author')
-        assert hasattr(self, 'date')
-        assert hasattr(self, 'title')
-        assert hasattr(self, 'corpus_name')
-        assert hasattr(self, 'filename')
+        for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
+            if key not in novel_metadata_dict:
+                raise ValueError(f'novel_metadata_dict must have an entry for "{key}"')
 
+        for k, v in novel_metadata_dict.items():
+            setattr(self, k, v)
 
         if not hasattr(self, 'text'):
-            file_path = f'corpora/{self.corpus_name}/texts/{self.filename}'
-            self.text = self.load_file(file_path)
+            self.text = self._load_novel_text()
 
-            # Extract Project Gutenberg Boilerplate
-            if self.text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-                end_intro_boilerplate = self.text.find('*** START OF THIS PROJECT GUTENBERG EBOOK')
-                start_novel = self.text.find('***', end_intro_boilerplate + 5) + 3 # second set of *** indicates start
-                end_novel = self.text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+    def _load_novel_text(self):
+        """Loads the text of a novel and removes boilerplate at the beginning and end
 
-                self.text = self.text[start_novel:end_novel]
+        Currently only supports boilerplate removal for Project Gutenberg ebooks.
+
+        :rtype: str
+        """
+        file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
+        text = self.load_file(file_path)
+
+        # Extract Project Gutenberg Boilerplate
+        if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
+            end_intro_boilerplate = text.find('*** START OF THIS PROJECT GUTENBERG EBOOK')
+            start_novel = text.find('***', end_intro_boilerplate + 5) + 3 # second set of *** indicates start
+            end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+            text = text[start_novel:end_novel]
+
+        return text
+
 
 
 if __name__ == '__main__':
 
     c = Corpus('sample_novels')
+
