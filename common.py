@@ -208,7 +208,12 @@ class Novel(FileLoaderMixin):
         :rtype: str
         """
         file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
-        text = self.load_file(file_path)
+
+        try:
+            text = self.load_file(file_path)
+        except FileNotFoundError:
+            err = f"Could not find the novel text file at the expected location ({file_path})."
+            raise FileNotFoundError(err)
 
         # Extract Project Gutenberg Boilerplate
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
