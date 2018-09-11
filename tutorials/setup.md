@@ -11,7 +11,41 @@ Please note: We only support Mac and Windows computers.
 they figure things out by themselves or are is Linux not allowed?
 
 
-## Setting Up the Git Repository
+## Install Python
+First things first, you need to have a current version of Python.
+To check if you have Python installed, open a Terminal (Mac, look under
+"Applications") or Powershell (Windows) and type the following command.
+(Note: Don't enter the initial "$". It's just a way of showing that we
+are currently working in a terminal.
+
+```command
+$ python3 --version
+```
+
+
+![](images/setup_python_1.png)
+
+There are three possible options.
+- If the prompt returns Python 3.6 or 3.7, you're all set.
+- If it returns Python 3.5 or earlier, you need to update Python 3 to the
+3.7 version. Lisa has written guides on how to do this for both
+[Mac](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos#step-4-%E2%80%94-installing-python-3)
+and
+[Windows.](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-windows-10#step-4-%E2%80%94-installing-python-3)
+- If you get an error, for example "command not found," it means that you
+don't have Python 3 installed. In this case, you can follow Lisa's
+guides on how to install Python 3 for
+[Mac](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos)
+and
+[Windows.](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-windows-10)
+
+As an added bonus, Lisa's tutorials will also guide you through the installation of a package manager, either Homebrew
+(Mac) or Chocolatey (Windows).
+
+
+## Setting Up Git and the Github Repository
+As an added bonus, Lisa's tutorials will also guide you through the installation of a package manager, either Homebrew
+(Mac) or Chocolatey (Windows).
 
 #### Install git
 We will use git to work together on our shared codebase. Git is a
@@ -103,33 +137,6 @@ step, we need set up a new Python virtual environment.
 A virtual environment isolates the libraries and tools that we use for
 our project from those we might use in other projects.
 
-#### Install Python
-First things first, you need to have a current version of Python.
-To check if you have Python installed, open a Terminal (Mac, look under
-"Applications") or Powershell (Windows) and type the following command.
-(Note: Don't enter the initial "$". It's just a way of showing that we
-are currently working in a terminal.
-
-```
-$ python3 --version
-```
-
-
-![](images/setup_python_1.png)
-
-There are three possible options.
-- If the prompt returns Python 3.6 or 3.7, you're all set.
-- If it returns Python 3.5 or earlier, you need to update Python 3 to the
-3.7 version. Lisa has written guides on how to do this for both
-[Mac](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos#step-4-%E2%80%94-installing-python-3)
-and
-[Windows.](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-windows-10#step-4-%E2%80%94-installing-python-3)
-- If you get an error, for example "command not found," it means that you
-don't have Python 3 installed. In this case, you can follow Lisa's
-guides on how to install Python 3 for
-[Mac](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos)
-and
-[Windows.](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-windows-10)
 
 #### Create a Virtual Environment
 As mentioned above, you want to have a separate virtual environment
@@ -142,9 +149,9 @@ or Powershell (Windows), you can use the commands below to create a
 new directory called "Environments" (mkdir for make directions) and then
 change into that directory (cd for change directory).
 
-```console
-$ mkdir Environments
-$ cd Environments
+```bash
+mkdir Environments
+cd Environments
 ```
 
 Once you are in the "Enviroments" directory, you can create a new
