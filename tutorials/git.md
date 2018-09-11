@@ -33,7 +33,7 @@ also the repository that we all contribute our documented and tested code to.
 
 ![](images/git_init_2.png) 
 
-
+aeu
 Second, there is your personal fork of the project on Github. When you set it 
 up, this fork was an exact copy of the upstream master repo. However, the fork
 is created, this repo is under your control and you can use it to stage changes
@@ -43,7 +43,13 @@ before submitting them to the upstream master.
 
 Third, there is the clone of the project on your local computer. This is the 
 version that you'll actually be working with. Again, this local repository 
-starts out as an exact copy of your remote fork but once you start coding, 
+starts out as an exact copy of your remote fork. 
+
+![](images/git_init_4.png)
+
+As soon as you start working on the code on your local machine, 
+
+but once you start coding, 
 you will make changes to this repository that are independent of both your 
 Github fork and the upstream master.
 
