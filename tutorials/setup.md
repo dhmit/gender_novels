@@ -110,7 +110,7 @@ To check if you have Python installed, open a Terminal (Mac, look under
 (Note: Don't enter the initial "$". It's just a way of showing that we
 are currently working in a terminal.
 
-```
+```command
 $ python3 --version
 ```
 
