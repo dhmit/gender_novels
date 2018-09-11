@@ -150,8 +150,8 @@ new directory called "Environments" (mkdir for make directions) and then
 change into that directory (cd for change directory).
 
 ```bash
-mkdir Environments
-cd Environments
+$ mkdir Environments
+$ cd Environments
 ```
 
 Once you are in the "Enviroments" directory, you can create a new
@@ -204,7 +204,7 @@ IPython, an interactive Python shell.
 To install these packages as well as any other future dependencies,
 you can run
 ```console
-(gender_novels) $ pip3 install -r requirements.txt
+(gender_novels) $ pip install -r requirements.txt
 ```
 If you get a "no such file or directory" error, you are most likely
 in the wrong directory.
@@ -215,7 +215,7 @@ To test if you have the correct Python version as well as all of the
 required libraries you should run unboxing.py in the
 tutorials directory by running
 ```console
-(gender_novels) $ python3 tutorials/setup_test.py
+(gender_novels) $ python tutorials/setup_test.py
 ```
 Running this script will tell you if your installation succeeded.
 

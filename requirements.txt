@@ -1,2 +1,5 @@
 gender-guesser==0.4.0
 ipython
+jupyter
+matplotlib
+numpy
