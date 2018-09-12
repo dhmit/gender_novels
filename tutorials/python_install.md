@@ -166,7 +166,7 @@ cd Environments
 From within this directory, you can create a virtual environment with venv. We'll use the name `my_env` in this tutorial, but you should use a virtual environment name that is meaningful for your project.
 
 ```
-python3.6 -m venv my_env
+python3 -m venv my_env
 ```
 
 The final step is to activate the virtual environment. The commands for Mac and Windows machines are slightly different.
@@ -189,4 +189,6 @@ Whichever operating system you use, your shell window should now be prefixed wit
 (my_env) $
 ```
 
-With Python fully set up, we can move onto installing and setting up Git. 
+With Python fully set up, we can move onto installing and setting up Git.
+
+*This tutorial was based on [How To Install Python 3 and Set Up a Local Programming Environment on Windows 10](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-windows-10#step-5-%E2%80%94-setting-up-a-virtual-environment) and [How To Install Python 3 and Set Up a Local Programming Environment on macOS](https://www.digitalocean.com/community/tutorials/how-to-install-python-3-and-set-up-a-local-programming-environment-on-macos).*
