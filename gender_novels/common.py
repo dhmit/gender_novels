@@ -147,6 +147,36 @@ class Corpus(FileLoaderMixin):
 
         return novels
 
+    def count_authors_by_gender(self, gender):
+        """
+        This function returns the number of authors with the specified gender (male, female,
+        unknown)
+
+        >>> c = Corpus('sample_novels')
+        >>> c.count_authors_by_gender('female')
+        2
+
+        # Accepted inputs are 'male', 'female', and 'unknown' but no abbreviations.
+        >>> c.count_authors_by_gender('m')
+        Traceback (most recent call last):
+        ValueError: Gender must be "male", "female", or "unknown" but not m.
+
+        :rtype: int
+        """
+
+        if gender not in {'male', 'female', 'unknown'}:
+            raise ValueError(f'Gender must be "male", "female", or "unknown" but not {gender}.')
+
+        # check if all novels have an author_gender attribute
+        for novel in self.novels:
+            if not hasattr(novel, 'author_gender'):
+                err = f'Cannot count author genders in {self.corpus_name} corpus. The novel'
+                err +=f'{novel.title} by {novel.author} lacks the attribute "author_gender."'
+                raise AttributeError(err)
+
+        gender_count = sum([1 if novel.author_gender==gender else 0 for novel in self.novels])
+
+        return gender_count
 
     def load_sample_novels_by_authors(self):
         """ This function returns the texts of the four novels in the sample_novels corpus as a tuple
