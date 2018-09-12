@@ -1,8 +1,28 @@
+# Installing and Setting Up Git
+
+We will use Git to work together on our shared codebase. Git is version-control open-source software that allows us to work on code individually while we test, document, and prepare new functions and features. Once we are ready to share the new additions to the larger project, we can open a pull request to receive feedback and modify our code until it is accepted and incorporated into the larger project's codebase.
+
+GitHub 
+
+This guide will set you up with Git and GitHub on a Windows or Mac machine.
+
+**Please note**: We can only provide technical support for Mac and Windows computers.
+
+
 ## Install Git
 
-We will use Git to work together on our shared codebase. Git is a version-control software that allows us to work on code individually until a new function or feature is ready and tested. At this point, the new code gets "pushed" to our [main repository](https://github.com/dhmit/gender_novels) and becomes part of the code base of everyone working on the project.
 
 ### Windows
+
+You should have Chocolatey installed on your machine to manage packages. If you don't have Chocolatey installed, you can work through the Windows section of the [Python Installation guide](https://github.com/dhmit/gender_novels/blob/master/gender_novels/tutorials/python_install.md).
+
+Running PowerShell as Administrator, type the following command:
+
+```
+choco install -y git
+```
+
+Git should be installed into your system. When installation is complete, you can move on to the **Set Up GitHub** section.
 
 ### Mac
 
@@ -10,8 +30,8 @@ We will use Git to work together on our shared codebase. Git is a version-contro
 Next, you should create a [Github account](https://github.com/join) if
 you don't already have one.
 
-(Note: You can get unlimited private repos by signing up for the
-[Student Developer Pack.)](https://education.github.com/pack)
+Note: You can get unlimited private repos by signing up for the
+[Student Developer Pack.](https://education.github.com/pack)
 
 #### Fork the gender_novels Repository
 The code and data for our gender novels project is held at
