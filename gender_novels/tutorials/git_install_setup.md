@@ -153,6 +153,8 @@ tell you what still needs to be fixed.
 
 #### Final Step: Update the Repository
 
+//SR: this needs to be fetch and merge, not just fetch
+
 Before making any modifications to the code on your computer, it's
 always a good idea to check if there are any updates to the codebase
 on Github. This helps to avoid conflicts between your codebase and the
