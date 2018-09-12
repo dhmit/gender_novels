@@ -18,8 +18,6 @@ class FileLoaderMixin():
         Loads csv and txt files either locally or remotely from Github.
         file_path can be string or Path object.
 
-        :rtype: str (txt file) or list of str (csv file)
-
         When loading a txt file, load_file returns the text as a string
         >>> f = FileLoaderMixin()
         >>> novel_path = Path('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
@@ -44,6 +42,8 @@ class FileLoaderMixin():
         >>> novel_text_str = f.load_file(novel_path_str)
         >>> novel_text == novel_text_str
         True
+
+        :rtype: str (txt file) or list of str (csv file)
 
         """
 
@@ -152,14 +152,13 @@ class Corpus(FileLoaderMixin):
         """ This function returns the texts of the four novels in the sample_novels corpus as a tuple
         This function is used for the first DH Lab demonstration.
 
-        :rtype: tuple
-
-        >>> c = Corpus('sample_novels')
+        >>> from gender_novels import common
+        >>> c = common.Corpus('sample_novels')
         >>> austen, dickens, eliot, hawthorne = c.load_sample_novels_by_authors()
         >>> len(austen)
         467018
 
-        :return:
+        :rtype: tuple
         """
 
         assert self.corpus_name == 'sample_novels'
@@ -227,6 +226,6 @@ class Novel(FileLoaderMixin):
 
 
 if __name__ == '__main__':
-
-    c = Corpus('sample_novels')
+    from dh_testers.testRunner import main_test
+    main_test()
 
