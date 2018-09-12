@@ -1,4 +1,3 @@
-dh_testers
 gender-guesser==0.4.0
 ipython
 jupyter

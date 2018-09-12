@@ -22,9 +22,6 @@ setuptools.setup(
     author_email="cuthbert@mit.edu",
     description="Descriptions of Gender in Writing",
     install_requires=REQUIRED_PACKAGES,
-    dependency_links= [
-        'https://github.com/dhmit/dh_testers.git#egg=dh_testers'
-    ],
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/dhmit/gender_novels",
