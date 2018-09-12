@@ -1,0 +1,34 @@
+import sys
+import setuptools
+
+with open('requirements.txt') as f:
+    REQUIRED_PACKAGES = f.read().strip().split('\n')
+
+with open("README.md", "r") as fh:
+    LONG_DESCRIPTION = fh.read()
+
+# Check if Python 3.6 or 3.7 is installed.
+PYTHON_VERSION = sys.version_info
+if PYTHON_VERSION.major != 3 or PYTHON_VERSION.minor < 8:
+    ERR = ('gender_novels only supports Python Versions 3.6 and 3.7. Your '
+           f'current Python version is {PYTHON_VERSION.major}.'
+           f'{PYTHON_VERSION.minor}.')
+    sys.exit(ERR)
+
+setuptools.setup(
+    name="gender_novels",
+    version="0.1.0",
+    author="Michael Scott Cuthbert",
+    author_email="cuthbert@mit.edu",
+    description="Descriptions of Gender in Writing",
+    install_requires=REQUIRED_PACKAGES,
+    long_description=LONG_DESCRIPTION,
+    long_description_content_type="text/markdown",
+    url="https://github.com/dhmit/gender_novels",
+    packages=setuptools.find_packages(),
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
+)
