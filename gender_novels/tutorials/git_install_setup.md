@@ -1,19 +1,50 @@
+# Installing and Setting Up Git
+
+We will use Git to work together on our shared codebase. Git is version-control open-source software that allows us to work on code individually while we test, document, and prepare new functions and features. Once we are ready to share the new additions to the larger project, we can open a pull request to receive feedback and modify our code until it is accepted and incorporated into the larger project's codebase.
+
+GitHub is a popular code repository web-based hosting service web-based hosting service that uses Git to help developers collaborate on code. It offers a desktop program to help make Git more intuitive.
+
+This guide will set you up with Git and GitHub on a Windows or Mac machine.
+
+**Please note**: We can only provide technical support for Mac and Windows computers.
+
 ## Install Git
 
-We will use Git to work together on our shared codebase. Git is a version-control software that allows us to work on code individually until a new function or feature is ready and tested. At this point, the new code gets "pushed" to our [main repository](https://github.com/dhmit/gender_novels) and becomes part of the code base of everyone working on the project.
+We will take you through installing Git for Windows or Mac. But first, you should check to see if you happen to have Git installed already. Open up a Terminal or PowerShell window and type the following command:
+
+```
+git --version
+```
+
+If Git is not installed, you will receive output that indicates that `git` is not a recognized command, and you should move on to installation below.
+
+If you received a version number, then you do have Git installed, and you can move onto the **Set Up GitHub** section.
 
 ### Windows
 
+You should have Chocolatey installed on your machine to manage packages. If you don't have Chocolatey installed, you can work through the Windows section of the [Python Installation guide](https://github.com/dhmit/gender_novels/blob/master/gender_novels/tutorials/python_install.md).
+
+Running PowerShell as Administrator, type the following command:
+
+```
+choco install -y git
+```
+
+Git should be installed into your system. When installation is complete, you can move on to the **Set Up GitHub** section.
+
 ### Mac
 
+On a local Macintosh computer, if you type a Git command into your Terminal window (as in `git --version` above), you’ll be prompted to install Git if it is not already on your system. When you receive this prompt, you should agree to have Git installed and follow the instructions and respond to the prompts in your Terminal window.
+
+With this complete, you can move on to the **Set Up GitHub** section.
+
 ## Set Up GitHub
-Next, you should create a [Github account](https://github.com/join) if
-you don't already have one.
 
-(Note: You can get unlimited private repos by signing up for the
-[Student Developer Pack.)](https://education.github.com/pack)
+Next, you should create a [GitHub account](https://github.com/join)if you don't already have one.
 
-#### Fork the gender_novels Repository
+It is worth noting that you can get added benefits through GitHub and other technology organizations — including unlimited private code repos — by signing up for the [Student Developer Pack.](https://education.github.com/pack)
+
+#### Fork the Repository
 The code and data for our gender novels project is held at
 https://github.com/dhmit/gender_novels. To enable us all to work on the
 project individually without interfering with someone else's work, we
@@ -131,3 +162,5 @@ You can fetch the latest update with Github Desktop by clicking on
 "Fetch Origin."
 
 ![](images/setup_fetchupdates_1.png)
+
+*This tutorial was based on [How To Contribute to Open Source: Getting Started with Git](https://www.digitalocean.com/community/tutorials/how-to-contribute-to-open-source-getting-started-with-git#installing-git-on-macos).

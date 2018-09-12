@@ -22,7 +22,7 @@ setuptools.setup(
     author_email="cuthbert@mit.edu",
     description="Descriptions of Gender in Writing",
     install_requires=REQUIRED_PACKAGES,
-    dependency_links=[
+    dependency_links= [
         # Links must be appendend by `-{StringWithAtLeastOneNumber}`
         # see https://github.com/pypa/pip/issues/3610#issuecomment-356687173
         'git+https://github.com/dhmit/dh_testers.git#egg=dh_testers-9876543210'
