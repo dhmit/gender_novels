@@ -1,6 +1,6 @@
 ## Install Git
 
-We will use Git to work together on our shared codebase. Git is a version-control software that allows us to work on code individually until a new function or feature is ready and tested. At this point the new code gets "pushed" to our [main repository](https://github.com/dhmit/gender_novels) and becomes part of the code base of everyone working on the project.
+We will use Git to work together on our shared codebase. Git is a version-control software that allows us to work on code individually until a new function or feature is ready and tested. At this point, the new code gets "pushed" to our [main repository](https://github.com/dhmit/gender_novels) and becomes part of the code base of everyone working on the project.
 
 ### Windows
 
