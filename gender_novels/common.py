@@ -18,8 +18,6 @@ class FileLoaderMixin():
         Loads csv and txt files either locally or remotely from Github.
         file_path can be string or Path object.
 
-        :rtype: str (txt file) or list of str (csv file)
-
         When loading a txt file, load_file returns the text as a string
         >>> f = FileLoaderMixin()
         >>> novel_path = Path('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
@@ -44,6 +42,8 @@ class FileLoaderMixin():
         >>> novel_text_str = f.load_file(novel_path_str)
         >>> novel_text == novel_text_str
         True
+
+        :rtype: str (txt file) or list of str (csv file)
 
         """
 
@@ -147,19 +147,48 @@ class Corpus(FileLoaderMixin):
 
         return novels
 
+    def count_authors_by_gender(self, gender):
+        """
+        This function returns the number of authors with the specified gender (male, female,
+        unknown)
+
+        >>> c = Corpus('sample_novels')
+        >>> c.count_authors_by_gender('female')
+        2
+
+        # Accepted inputs are 'male', 'female', and 'unknown' but no abbreviations.
+        >>> c.count_authors_by_gender('m')
+        Traceback (most recent call last):
+        ValueError: Gender must be "male", "female", or "unknown" but not m.
+
+        :rtype: int
+        """
+
+        if gender not in {'male', 'female', 'unknown'}:
+            raise ValueError(f'Gender must be "male", "female", or "unknown" but not {gender}.')
+
+        # check if all novels have an author_gender attribute
+        for novel in self.novels:
+            if not hasattr(novel, 'author_gender'):
+                err = f'Cannot count author genders in {self.corpus_name} corpus. The novel'
+                err +=f'{novel.title} by {novel.author} lacks the attribute "author_gender."'
+                raise AttributeError(err)
+
+        gender_count = sum([1 if novel.author_gender==gender else 0 for novel in self.novels])
+
+        return gender_count
 
     def load_sample_novels_by_authors(self):
         """ This function returns the texts of the four novels in the sample_novels corpus as a tuple
         This function is used for the first DH Lab demonstration.
 
-        :rtype: tuple
-
-        >>> c = Corpus('sample_novels')
+        >>> from gender_novels import common
+        >>> c = common.Corpus('sample_novels')
         >>> austen, dickens, eliot, hawthorne = c.load_sample_novels_by_authors()
         >>> len(austen)
         467018
 
-        :return:
+        :rtype: tuple
         """
 
         assert self.corpus_name == 'sample_novels'
@@ -227,6 +256,6 @@ class Novel(FileLoaderMixin):
 
 
 if __name__ == '__main__':
-
-    c = Corpus('sample_novels')
+    from dh_testers.testRunner import main_test
+    main_test()
 
