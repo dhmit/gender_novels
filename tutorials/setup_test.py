@@ -18,7 +18,8 @@ def unboxing_test():
         print("\nCheck: Python Version 3.6 or 3.7 -- Passed.")
     else:
         # I wasn't sure what error to properly raise here
-        raise AssertionError("\nCheck: Python Version 3.6 or 3.7 -- Failed. Your current Python version is: {}.{}".format(
+        raise AssertionError(
+            "\nCheck: Python Version 3.6 or 3.7 -- Failed. Your current Python version is: {}.{}".format(
             python_version.major, python_version.minor)
         )
 
