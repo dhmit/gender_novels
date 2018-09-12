@@ -47,13 +47,18 @@ starts out as an exact copy of your remote fork.
 
 ![](images/git_init_4.png)
 
-As soon as you start working on the code on your local machine, 
+Here's an important point: As soon as you start working on the code on your 
+local machine, you are changing files but your local repository doesn't change
+yet. Git tracks the changes that you make to the repository files but it 
+doesn't store them in the repository itself until you explicitly save them
+(called "commit") to your local repository. The advantage of this process is
+that it makes it easy to reset to an earlier state if you make a mistake.
 
-but once you start coding, 
-you will make changes to this repository that are independent of both your 
-Github fork and the upstream master.
+#### Workflow: Code Commits, Pushes and Pull Requests
+When you work with git, your code moves from work in progress to your
+Github fork and finally to the main upstream repo. 
 
-#### Workflow: Code Pushes and Pull Requests
+Let's look at how this works in practice. 
 
 #### Code Pushes and Pull Requests
 
