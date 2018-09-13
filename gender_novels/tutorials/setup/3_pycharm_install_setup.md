@@ -8,7 +8,7 @@ if you run into problems.
 
 ![](../images/pycharm_1.png) 
 
-#### Installation
+## Installation
 
 As students, you can get PyCharm for free by 
 [signing up for a student account.](https://www.jetbrains.com/student/)
@@ -21,6 +21,7 @@ Make sure that you get the Professional Edition.
 The installation process differs slightly between Mac and Windows but you can 
 select the default settings in both cases. 
 
+## Initialization
 Once the installation process is finished, open up the PyCharm application. This
 will open up an activation screen. You can activate PyCharm by entering the email
 and password that you used before to sign up for a Jetbrains account.
@@ -61,13 +62,42 @@ This will bring up the main PyCharm window with the loaded gender_novels directo
 on the left.
 ![](../images/pycharm_config_1.png)
 
-Next, we're going to import 
+## Configuration
+
+Next, we're going to import the DH Lab PyCharm settings. First 
+[download the settings file.](https://github.com/dhmit/gender_novels/raw/master/gender_novels/tutorials/setup/pycharm_settings.jar)
+Then, go to file, "Import Settings..."
+![](../images/pycharm_config_2.png)
+
+Import all components.
+![](../images/pycharm_config_3.png)
+
+As a final step, we'll change some configuration settings.
+
+On Mac, select PyCharm -> Preferences, On Windows File -> Settings
+![](../images/pycharm_config_4.png)
 
 
+Under "Appearance & Behavior" -> Appearance, you can select either the dark
+"Darcula" theme or the "Light" theme. 
+![](../images/pycharm_config_5.png)
 
+Then, you need to configure your Python interpreter under "Project: gender_novels"
+-> Project Interpreter. Click on the wheel in the top right and select "Add".
+![](../images/pycharm_config_6.png)
 
+Select "Existing environment" and click on the "..." to the right.
+![](../images/pycharm_config_7.png)
 
+Here, you need to navigate to the environment directory of 
+gender_novels Python environment that you had 
+First, you need to navigate to the directory of the gender_novels Python 
+environment that you had set up in the "Install Python 3" tutorial. From
+there, you select the python executable in the bin folder. So the full path is
+`<environment_directory>/bin/python`.
+![](../images/pycharm_config_8.png)
 
-Windows: File -> Settings...
+Back in the main menu, click "Apply" to activate the updated settings.
+![](../images/pycharm_config_9.png)
 
-End of interpreter config: click apply.
+Congratulations. You're now done with the PyCharm installation and configuration.
