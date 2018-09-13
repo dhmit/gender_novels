@@ -42,3 +42,4 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
 )
+test=False
