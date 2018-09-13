@@ -30,15 +30,15 @@ Running PowerShell as Administrator, type the following command:
 choco install -y git
 ```
 
-Git should be installed into your system. When installation is complete, you can move on to the **Set Up GitHub** section.
+Git should be installed into your system. When installation is complete, you can move on to the **Create a GitHub Account** section.
 
 ### Mac
 
 On a local Macintosh computer, if you type a Git command into your Terminal window (as in `git --version` above), you’ll be prompted to install Git if it is not already on your system. When you receive this prompt, you should agree to have Git installed and follow the instructions and respond to the prompts in your Terminal window.
 
-With this complete, you can move on to the **Set Up GitHub** section.
+With this complete, you can move on to the **Create a GitHub Account** section.
 
-## Set Up GitHub
+## Create a GitHub Account
 
 Next, you should create a [GitHub account](https://github.com/join)if you don't already have one.
 
