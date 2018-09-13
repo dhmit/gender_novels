@@ -13,7 +13,7 @@ You can check whether you have Python 3 already installed by opening a terminal 
 python3 --version
 ```
 
-![](images/setup_python_1.png)
+![](../images/setup_python_1.png)
 
 If you receive an error or a version of Python lower than 3.6, you should continue to install for your operating system, by following the relevant section below.
 
