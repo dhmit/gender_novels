@@ -78,6 +78,13 @@ Note: You are not allowed to use nested list comprehensions.
 
 **Maximum method length is 50 lines.** If your method is longer than 50 lines, undoubtedly it is multiple methods masquerading as one. Break it up.  Similarly it’s usually also the case for something has many nested for loops.  Pylint will enforce no more than five nested loops.
 
+**Don't print.** If something is necessary for debugging, use the global DEBUG. We will add a more sophisticated debugging system in the future.
+```python
+if DEBUG:
+    print("Setting up an environment")
+```
+
+
 
 
 ## New Modules
@@ -132,6 +139,8 @@ def count_authors_by_gender(self, gender):
 When writing code this way, with the test first and the code later, you’ll immediately start to think of things that could go wrong that you’ll want to check: What happens if the user enters abbreviations, for example `m` for male or `f` for female? Check that. Do all novels have an `author_gender` attribute? Check that. After a few weeks of coding this way, you will find that you code **faster** by writing the tests first than the other way around.
 
 **Note**: You are allowed to submit a pull request that only contains documentation and tests for code even before you have written the code. That way, another student in your group can then implement the code. However, you cannot submit code without tests and documentation.
+
+Don’t use `@param`, etc. alone to describe the type of parameters or return values. Explain their type and function in clear English.
 
 ### Testing
 // check with Myke
