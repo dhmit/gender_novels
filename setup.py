@@ -11,8 +11,8 @@ with open("README.md", "r") as fh:
 PYTHON_VERSION = sys.version_info
 if PYTHON_VERSION.major != 3 or PYTHON_VERSION.minor < 6:
     ERR = ('gender_novels only supports Python Versions 3.6 and 3.7. Your '
-           f'current Python version is {PYTHON_VERSION.major}.'
-           f'{PYTHON_VERSION.minor}.')
+           'current Python version is {}.{}'.format(PYTHON_VERSION.major,
+                                                    PYTHON_VERSION.minor))
     sys.exit(ERR)
 
 setuptools.setup(
