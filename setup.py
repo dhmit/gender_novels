@@ -1,3 +1,6 @@
+"""
+Setup script for gender_novels installation
+"""
 import sys
 import setuptools
 
@@ -9,21 +12,23 @@ with open("README.md", "r") as fh:
 
 # Check if Python 3.6 or 3.7 is installed.
 PYTHON_VERSION = sys.version_info
-if PYTHON_VERSION.major != 3 or PYTHON_VERSION.minor < 6:
-    ERR = ('gender_novels only supports Python Versions 3.6 and 3.7. Your '
-           f'current Python version is {PYTHON_VERSION.major}.'
-           f'{PYTHON_VERSION.minor}.')
+if PYTHON_VERSION.major < 3 or (PYTHON_VERSION.major == 3 and PYTHON_VERSION.minor < 6):
+    ERR = ('gender_novels only supports Python Versions 3.6 and 3.7. '
+           + 'Your current Python version is {0}.{1}.'.format(
+                str(PYTHON_VERSION.major),
+                str(PYTHON_VERSION.minor)
+            ))
     sys.exit(ERR)
 
 setuptools.setup(
     name="gender-novels",
     version="0.1.0",
-    author="Michael Scott Cuthbert",
-    author_email="cuthbert@mit.edu",
+    author="MIT Digital Humanities Lab",
+    author_email="digitalhumanities@mit.edu",
     description="Descriptions of Gender in Writing",
     install_requires=REQUIRED_PACKAGES,
     dependency_links= [
-        # Links must be appendend by `-{StringWithAtLeastOneNumber}`
+        # Links must be appended by `-{StringWithAtLeastOneNumber}`
         # see https://github.com/pypa/pip/issues/3610#issuecomment-356687173
         'git+https://github.com/dhmit/dh_testers.git#egg=dh_testers-9876543210'
     ],
