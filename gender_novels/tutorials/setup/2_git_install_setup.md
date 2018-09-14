@@ -130,13 +130,22 @@ You should run this script to install your dependencies by typing the following 
 python setup.py develop
 ```
 
-You should receive output that indicates installation was successful, similar to the following:
-
+Next, try running:
 ```
-Installation was successful
+python setup.py test
 ```
+This will test, among other things, whether or not the installation of the
+gender_novels package and our testing suite was successful. If everything worked, 
+it should return:
+```
+Ran <x> tests in <y>s
 
-You are now ready to collaborate on a DH Lab project!
+OK
+```
+If you get this output, you have successfully installed and set up git, 
+Github, and Github Desktop.
 
+If you are installing all of the DH Lab software, you can now move on to 
+[install the PyCharm IDE.](https://github.com/dhmit/gender_novels/blob/master/gender_novels/tutorials/setup/3_pycharm_install_setup.md)
 
 *This tutorial was based on [How To Contribute to Open Source: Getting Started with Git](https://www.digitalocean.com/community/tutorials/how-to-contribute-to-open-source-getting-started-with-git#installing-git-on-macos).*
