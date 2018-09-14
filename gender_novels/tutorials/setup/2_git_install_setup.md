@@ -140,7 +140,7 @@ This will reset the environment. Let's re-enter the environment now with the `so
 
 ```
 [Mac]
-. ~/Environments/bin/activate
+. ~/Environments/my_env/bin/activate
 ```
 
 ```
