@@ -35,7 +35,6 @@ class Imports(unittest.TestCase):
         for package in ['gender_novels', 'dh_testers']:
             try:
                 importlib.import_module(package)
-                self.
                 self.assertTrue(True, f'{package} loaded successfully.')
             except ModuleNotFoundError:
                 self.fail(f'{package} could not be loaded.')
