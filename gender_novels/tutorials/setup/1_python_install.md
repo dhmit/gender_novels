@@ -59,6 +59,8 @@ PowerShell will then prompt us to provide an execution policy, and since we want
 RemoteSigned
 ```
 
+It will give you a warning that you are changing your execution policy.  Click "Y" to save.
+
 Next, we're going to install a package manager which will help us automate installation processes for Python and other tools. Chocolatey is a command-line package manager built for Windows that works like `apt-get` does on Linux. We can install it by typing the following:
 
 ```
