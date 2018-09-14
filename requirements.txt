@@ -1,6 +1,6 @@
 dh_testers
 gender-guesser==0.4.0
-ipython
+ipython==6.5
 jupyter
 matplotlib
 numpy
