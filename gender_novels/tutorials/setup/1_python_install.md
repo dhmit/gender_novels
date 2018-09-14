@@ -8,10 +8,17 @@ This document will walk you through the process of installing Python to start wo
 Though many operating systems ship with a version of Python, we need to ensure that we're using the most up-to-date version available. We'll walk you through installation for both Mac and Windows computers via package managers.
 
 You can check whether you have Python 3 already installed by opening a terminal window and typing:
+(Note: if you don't know how to open a terminal, see below--the process is different for Macs and
+Windows)
 
 ```
 python3 --version
 ```
+If that doesn't work, try also
+```
+python --version
+```
+
 
 ![](../images/setup_python_1.png)
 
@@ -21,11 +28,14 @@ If you receive an error or a version of Python lower than 3.6, you should contin
 Open Windows PowerShell, which you can do by right-clicking on the Start menu icon on the lower left-hand corner of your screen.
 
 When the menu pops up, you should click on “Search,” then type “PowerShell” into the search bar.
+**Do not use Command Prompt.**
+![](../images/powershell_command_prompt.png)
 
-Right-click on “Windows PowerShell,” the Desktop app. **Do not use Command Prompt.**
+Right-click on “Windows PowerShell,” the Desktop app. 
 
 Select `Run as Administrator.`
 
+This is important: You need to use PowerShell, not the Command prompt.
 When you are prompted with a dialogue box that asks *Do you want to allow this app to make changes to your PC?* click on **Yes**.
 
 We can switch out of the system folder by typing the following command:
