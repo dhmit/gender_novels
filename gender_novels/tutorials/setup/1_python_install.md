@@ -14,7 +14,8 @@ Windows)
 ```
 python3 --version
 ```
-If that doesn't work, try also
+If that doesn't work, try:
+
 ```
 python --version
 ```
@@ -31,7 +32,7 @@ When the menu pops up, you should click on “Search,” then type “PowerShell
 **Do not use Command Prompt.**
 ![](../images/powershell_command_prompt.png)
 
-Right-click on “Windows PowerShell,” the Desktop app. 
+Right-click on “Windows PowerShell,” the Desktop app.
 
 Select `Run as Administrator.`
 
@@ -73,7 +74,7 @@ choco install -y python3
 You’ll want to confirm that Python is installed and ready to go. Use the command `refreshenv` or **close and re-open PowerShell as an Administrator**, then check the version of Python available to you on your local machine:
 
 ```
-python3 --version
+python --version
 ```
 
 With Python fully installed, we can move onto setting up a programming environment.
