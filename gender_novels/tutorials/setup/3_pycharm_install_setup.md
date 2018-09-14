@@ -1,8 +1,8 @@
 # PyCharm Installation and Setup
 
-In the Digital Humanities Lab, we'll be using the PyCharm IDE.
+In the Digital Humanities Lab, we'll be using the PyCharm IDE from JetBrains.
 
-An IDE or **I**ntegrated **D**evelopment **E**nvironment developed by JetBrains that gives you the ability to write, run, test, and lint code all in one place. The PyCharm interface looks like this:
+An IDE or **I**ntegrated **D**evelopment **E**nvironment gives you the ability to write, run, test, and lint code all in one place. The PyCharm interface looks like this:
 
 ![PyCharm IDE interface](../images/pycharm_1.png)
 

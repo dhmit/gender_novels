@@ -22,7 +22,7 @@ Open Windows PowerShell, which you can do by right-clicking on the Start menu ic
 
 When the menu pops up, you should click on “Search,” then type “PowerShell” into the search bar.
 
-Right-click on “Windows PowerShell,” the Desktop app.
+Right-click on “Windows PowerShell,” the Desktop app. **Do not use Command Prompt.**
 
 Select `Run as Administrator.`
 
