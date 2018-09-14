@@ -172,6 +172,7 @@ You can set up as many Python programming environments as you would like. Each e
 Choose which directory you would like to put your Python programming environments in, or create a new directory with mkdir, as in:
 
 ```
+cd ~
 mkdir Environments
 cd Environments
 ```
