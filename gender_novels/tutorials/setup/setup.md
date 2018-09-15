@@ -5,6 +5,16 @@ even in 2018. After the first group meetings on Friday, September 14, we went ba
 instructions and tried to overhaul them to make them easier. You're right now looking at the 
 result of that effort. 
 
+This guide includes a complete installation of Python, git, and PyCharm on your computer. 
+Many of you have already complete some of these steps. Hence, if you are certain or almost certain
+that you have already completed one of the listed steps, you can move to the next one.
+
+Here's a brief list of the changes, compared to the guides from Friday:
+- No use of the command line
+- Use of the graphical Python installer from python.org
+- Setup of the virtual environment is done by PyCharm
+
+We hope this will make it easier for your to setup your Python enviroment.
 
 ## 1. Install Python
 
