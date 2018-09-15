@@ -270,7 +270,7 @@ Next, go to "Tools" -> "Run setup.py Task..."
 **Note: If you cannot see "Run setup.py Task" in the menu, you might have the wrong 
 or no file open. In particular, you might have a file from the venv folder (in orange)
 open. Try opening setup.py or common.py or other python files in the directory until
-you see the option "Run setup.py Task".
+you see the option "Run setup.py Task".**
 ![](../images/pycharm_env_2.png)
 
 Either double-click on "develop" or type "develop" into the task name window and hit 
