@@ -14,7 +14,8 @@ Windows)
 ```
 python3 --version
 ```
-If that doesn't work, try also
+If that doesn't work, try:
+
 ```
 python --version
 ```
@@ -31,7 +32,7 @@ When the menu pops up, you should click on “Search,” then type “PowerShell
 **Do not use Command Prompt.**
 ![](../images/powershell_command_prompt.png)
 
-Right-click on “Windows PowerShell,” the Desktop app. 
+Right-click on “Windows PowerShell,” the Desktop app.
 
 Select `Run as Administrator.`
 
@@ -58,6 +59,8 @@ PowerShell will then prompt us to provide an execution policy, and since we want
 RemoteSigned
 ```
 
+It will give you a warning that you are changing your execution policy.  Click "Y" to save.
+
 Next, we're going to install a package manager which will help us automate installation processes for Python and other tools. Chocolatey is a command-line package manager built for Windows that works like `apt-get` does on Linux. We can install it by typing the following:
 
 ```
@@ -73,7 +76,7 @@ choco install -y python3
 You’ll want to confirm that Python is installed and ready to go. Use the command `refreshenv` or **close and re-open PowerShell as an Administrator**, then check the version of Python available to you on your local machine:
 
 ```
-python3 --version
+python --version
 ```
 
 With Python fully installed, we can move onto setting up a programming environment.
@@ -169,6 +172,7 @@ You can set up as many Python programming environments as you would like. Each e
 Choose which directory you would like to put your Python programming environments in, or create a new directory with mkdir, as in:
 
 ```
+cd ~
 mkdir Environments
 cd Environments
 ```
@@ -176,7 +180,13 @@ cd Environments
 From within this directory, you can create a virtual environment with venv. We'll use the name `my_env` in this tutorial, but you should use a virtual environment name that is meaningful for your project.
 
 ```
+[Mac]
 python3 -m venv my_env
+```
+
+```
+[Windows]
+python -m venv my_env
 ```
 
 The final step is to activate the virtual environment. The commands for Mac and Windows machines are slightly different.
@@ -184,12 +194,14 @@ The final step is to activate the virtual environment. The commands for Mac and 
 If you're using macOS, type the following into Terminal:
 
 ```
+[Mac]
 source my_env/bin/activate
 ```
 
 If you're using Windows, type the following into PowerShell:
 
 ```
+[Windows]
 my_env\Scripts\activate
 ```
 
