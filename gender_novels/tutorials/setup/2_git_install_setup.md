@@ -119,7 +119,7 @@ You'll know your environment is active if you see the environment name in your p
 Navigate to your local copy of the repository with the `cd` command. This may look something like this:
 
 ```
-cd ~/GitHub/repo-name
+cd ~/<GitHub-repo-name-path>
 ```
 
 Within that repository should be a Python script called `setup.py` that will install all of the dependencies you'll need to complete this project.
