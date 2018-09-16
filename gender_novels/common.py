@@ -7,7 +7,8 @@ DEBUG = False
 
 
 class FileLoaderMixin:
-    """ The FileLoaderMixin loads files either locally or remotely from Github (if run from an ipython notebook)
+    """ The FileLoaderMixin loads files either locally or remotely from Github (if run from an
+    ipython notebook)
 
     Currently supported filetypes are: .csv, .txt
     """
@@ -28,13 +29,15 @@ class FileLoaderMixin:
         >>> type(novel_text), len(novel_text)
         (<class 'str'>, 486253)
 
-        csv files are returned as a list of strings, which can be further processed with Python's csv module
+        csv files are returned as a list of strings, which can be further processed with Python's
+        csv module
         >>> corpus_metadata_path = Path('corpora', 'sample_novels', 'sample_novels.csv')
         >>> corpus_metadata = f.load_file(corpus_metadata_path)
         >>> type(corpus_metadata), len(corpus_metadata)
         (<class 'list'>, 5)
 
-        If the file is not available locally (e.g. in an ipython notebook, it gets loaded from Github.
+        If the file is not available locally (e.g. in an ipython notebook, it gets loaded from
+        Github.
         >>> novel_text_local = f.load_file_locally(novel_path, '.txt')
         >>> novel_text_online = f.load_file_remotely(novel_path, '.txt')
         >>> novel_text_local == novel_text_online
@@ -58,20 +61,21 @@ class FileLoaderMixin:
         supported_file_types = {'.csv', '.txt'}
         current_file_type = file_path.parts[-1][file_path.parts[-1].rfind('.'):]
         if current_file_type not in supported_file_types:
-            err = f"The FileLoaderMixin currently supports {supported_file_types} but not {current_file_type}."
+            err = (f"The FileLoaderMixin currently supports {supported_file_types} but not ",
+                   f"{current_file_type}.")
             raise ValueError(err)
 
         # check if we are working locally and in the correct directory
-        # __file__ is only available if executed from a file but not from an ipython shell or notebook
-        # in those cases, the file has to be loaded remotely from github.
+        # __file__ is only available if executed from a file but not from an ipython shell or
+        # notebook. In those cases, the file has to be loaded remotely from github.
         try:
             local_path = os.path.abspath(os.path.dirname(__file__))
             is_local = True
             if not local_path.endswith('/gender_novels'):
                 is_local = False
-                warning = "WARNING: The FileLoaderMixin should be placed in the main path of the gender_novels project."
-                warning += f"It's currently in {local_path}. Until the Mixin is in the correct path, files are loaded "
-                warning += "from Github."
+                warning = ("WARNING: The FileLoaderMixin should be placed in the main path of ",
+                           f"the gender_novels project.It's currently in {local_path}. Until the ",
+                           "Mixin is in the correct path, files are loaded from Github.")
                 print(warning)
         except NameError:
             is_local = False
@@ -87,8 +91,9 @@ class FileLoaderMixin:
 
     @staticmethod
     def load_file_locally(file_path, current_file_type):
-        # I need a way of getting the local path to the base of the repo. This file is currently in the base of the
-        # repo so it returns the correct path. But it will change once this function gets moved.
+        # I need a way of getting the local path to the base of the repo. This file is currently in
+        # the base of the repo so it returns the correct path. But it will change once this
+        # function gets moved.
         local_base_path = Path(os.path.abspath(os.path.dirname(__file__)))
         file = open(local_base_path.joinpath(file_path), mode='r')
 
@@ -104,8 +109,9 @@ class FileLoaderMixin:
 
     @staticmethod
     def load_file_remotely(file_path, current_file_type):
-        base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/gender_novels/'
+        base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/gender_novels'
         url = f'{base_path}/{file_path}'
+        print(f"Remote URL: {url}")
         response = urllib.request.urlopen(url)
         encoding = response.headers.get_param('charset')
 
@@ -143,8 +149,8 @@ class Corpus(FileLoaderMixin):
         try:
             csv_file = self.load_file(relative_csv_path)
         except FileNotFoundError:
-            err = f"Could not find the metadata csv file for the '{self.corpus_name}' corpus in the expected location "
-            err += f"({relative_csv_path})."
+            err = (f"Could not find the metadata csv file for the '{self.corpus_name}' corpus in ",
+                   f"the expected location ({relative_csv_path}).")
             raise FileNotFoundError(err)
         csv_reader = csv.DictReader(csv_file)
 
@@ -156,8 +162,8 @@ class Corpus(FileLoaderMixin):
 
     def count_authors_by_gender(self, gender):
         """
-        This function returns the number of authors with the specified gender (male, female,
-        unknown)
+        This function returns the number of authors with the specified gender (male, female, non-
+        binary, and unknown)
 
         >>> from gender_novels.common import Corpus
         >>> c = Corpus('sample_novels')
@@ -179,8 +185,8 @@ class Corpus(FileLoaderMixin):
         # check if all novels have an author_gender attribute
         for novel in self.novels:
             if not hasattr(novel, 'author_gender'):
-                err = f'Cannot count author genders in {self.corpus_name} corpus. The novel'
-                err += f'{novel.title} by {novel.author} lacks the attribute "author_gender."'
+                err = f"Cannot count author genders in {self.corpus_name} corpus. The novel"
+                err += f"{novel.title} by {novel.author} lacks the attribute \"author_gender.\""
                 raise AttributeError(err)
 
         gender_count = sum([1 if novel.author_gender == gender else 0 for novel in self.novels])
@@ -188,7 +194,7 @@ class Corpus(FileLoaderMixin):
         return gender_count
 
     def load_sample_novels_by_authors(self):
-        """ This function returns the texts of the four novels in the sample_novels corpus as a tuple
+        """ This function returns the texts of the four novels in the sample_novels corpus as tuple
         This function is used for the first DH Lab demonstration.
 
         >>> from gender_novels import common
@@ -199,8 +205,11 @@ class Corpus(FileLoaderMixin):
 
         :rtype: tuple
         """
-        # TODO(SR): remove bare asserts
-        assert self.corpus_name == 'sample_novels'
+
+        if self.corpus_name != 'sample_novels':
+            err = ("load_sample_novels_by_author can only be used with the 'sample_novels'",
+                   f"corpus but not with '{self.corpus_name}'")
+            raise ValueError(err)
 
         austen = self.novels[0].text
         dickens = self.novels[1].text
@@ -211,7 +220,8 @@ class Corpus(FileLoaderMixin):
 
 
 class Novel(FileLoaderMixin):
-    """ The Novel class loads and holds the full text and metadata (author, title, publication date) of a novel
+    """ The Novel class loads and holds the full text and metadata (author, title, publication date)
+     of a novel
 
     >>> from gender_novels import common
     >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
@@ -266,7 +276,8 @@ class Novel(FileLoaderMixin):
         # Extract Project Gutenberg Boilerplate
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
             end_intro_boilerplate = text.find('*** START OF THIS PROJECT GUTENBERG EBOOK')
-            start_novel = text.find('***', end_intro_boilerplate + 5) + 3  # second set of *** indicates start
+            # second set of *** indicates start
+            start_novel = text.find('***', end_intro_boilerplate + 5) + 3
             end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
             text = text[start_novel:end_novel]
 
