@@ -217,6 +217,13 @@ tutorials directory by running
 ```console
 (gender_novels) $ python tutorials/setup_test.py
 ```
+if it tells you file not found, try this instead:
+
+```console
+(gender_novels) $ python gender_novels/tutorials/setup_test.py
+```
+
+
 Running this script will tell you if your installation succeeded.
 
 ![](images/setup_test_1.png)
