@@ -6,11 +6,10 @@ from pathlib import Path
 DEBUG = False
 
 
-class FileLoaderMixin():
+class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or remotely from Github (if run from an ipython notebook)
 
     Currently supported filetypes are: .csv, .txt
-
     """
 
     def load_file(self, file_path):
@@ -19,7 +18,11 @@ class FileLoaderMixin():
         file_path can be string or Path object.
 
         When loading a txt file, load_file returns the text as a string
-        >>> f = FileLoaderMixin()
+
+        >>> from pathlib import Path
+        >>> from gender_novels import common
+
+        >>> f = common.FileLoaderMixin()
         >>> novel_path = Path('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
         >>> novel_text = f.load_file(novel_path)
         >>> type(novel_text), len(novel_text)
@@ -32,21 +35,21 @@ class FileLoaderMixin():
         (<class 'list'>, 5)
 
         If the file is not available locally (e.g. in an ipython notebook, it gets loaded from Github.
-        >>> novel_text_local = f._load_file_locally(novel_path, '.txt')
-        >>> novel_text_online = f._load_file_remotely(novel_path, '.txt')
+        >>> novel_text_local = f.load_file_locally(novel_path, '.txt')
+        >>> novel_text_online = f.load_file_remotely(novel_path, '.txt')
         >>> novel_text_local == novel_text_online
         True
 
         file_path can be a string or Path object
-        >>> novel_path_str = os.path.join('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
+
+        >>> import os
+        >>> novel_path_str = os.sep.join(['corpora', 'sample_novels', 'texts', 'austen_persuasion.txt'])
         >>> novel_text_str = f.load_file(novel_path_str)
         >>> novel_text == novel_text_str
         True
 
-        :rtype: str (txt file) or list of str (csv file)
-
+        Returns a str (txt file) or list of strs (csv file)
         """
-
         # if the file_path is a string, turn to Path object.
         if isinstance(file_path, str):
             file_path = Path(file_path)
@@ -76,14 +79,14 @@ class FileLoaderMixin():
         if is_local:
             if DEBUG:
                 print(f'loading {file_path} locally.')
-            return self._load_file_locally(file_path, current_file_type)
+            return self.load_file_locally(file_path, current_file_type)
         else:
             if DEBUG:
                 print(f'loading {file_path} remotely')
-            return self._load_file_remotely(file_path, current_file_type)
+            return self.load_file_remotely(file_path, current_file_type)
 
-    def _load_file_locally(self, file_path, current_file_type):
-
+    @staticmethod
+    def load_file_locally(file_path, current_file_type):
         # I need a way of getting the local path to the base of the repo. This file is currently in the base of the
         # repo so it returns the correct path. But it will change once this function gets moved.
         local_base_path = Path(os.path.abspath(os.path.dirname(__file__)))
@@ -93,13 +96,15 @@ class FileLoaderMixin():
             result = file.readlines()
         elif current_file_type == '.txt':
             result = file.read()
+        else:
+            raise Exception('Cannot load if current_file_type is not .csv or .txt')
 
         file.close()
         return result
 
-    def _load_file_remotely(self, file_path, current_file_type):
-
-        base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/'
+    @staticmethod
+    def load_file_remotely(file_path, current_file_type):
+        base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/gender_novels/'
         url = f'{base_path}/{file_path}'
         response = urllib.request.urlopen(url)
         encoding = response.headers.get_param('charset')
@@ -113,9 +118,11 @@ class FileLoaderMixin():
 
 
 class Corpus(FileLoaderMixin):
-    """ The corpus class is used to load the metadata and full texts of all novels in a corpus
+    """The corpus class is used to load the metadata and full texts of all novels in a corpus
 
     Once loaded, each corpus contains a list of Novel objects
+
+    >>> from gender_novels.common import Corpus
     >>> c = Corpus('sample_novels')
     >>> type(c.novels), len(c.novels)
     (<class 'list'>, 4)
@@ -152,29 +159,31 @@ class Corpus(FileLoaderMixin):
         This function returns the number of authors with the specified gender (male, female,
         unknown)
 
+        >>> from gender_novels.common import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
         2
 
-        # Accepted inputs are 'male', 'female', and 'unknown' but no abbreviations.
+        Accepted inputs are 'male', 'female', 'non-binary' and 'unknown' but no abbreviations.
+
         >>> c.count_authors_by_gender('m')
         Traceback (most recent call last):
-        ValueError: Gender must be "male", "female", or "unknown" but not m.
+        ValueError: Gender must be male, female, non-binary, unknown but not m.
 
         :rtype: int
         """
-
-        if gender not in {'male', 'female', 'unknown'}:
-            raise ValueError(f'Gender must be "male", "female", or "unknown" but not {gender}.')
+        supported_genders = ('male', 'female', 'non-binary', 'unknown')
+        if gender not in supported_genders:
+            raise ValueError(f'Gender must be {", ".join(supported_genders)} but not {gender}.')
 
         # check if all novels have an author_gender attribute
         for novel in self.novels:
             if not hasattr(novel, 'author_gender'):
                 err = f'Cannot count author genders in {self.corpus_name} corpus. The novel'
-                err +=f'{novel.title} by {novel.author} lacks the attribute "author_gender."'
+                err += f'{novel.title} by {novel.author} lacks the attribute "author_gender."'
                 raise AttributeError(err)
 
-        gender_count = sum([1 if novel.author_gender==gender else 0 for novel in self.novels])
+        gender_count = sum([1 if novel.author_gender == gender else 0 for novel in self.novels])
 
         return gender_count
 
@@ -190,7 +199,7 @@ class Corpus(FileLoaderMixin):
 
         :rtype: tuple
         """
-
+        # TODO(SR): remove bare asserts
         assert self.corpus_name == 'sample_novels'
 
         austen = self.novels[0].text
@@ -204,29 +213,39 @@ class Corpus(FileLoaderMixin):
 class Novel(FileLoaderMixin):
     """ The Novel class loads and holds the full text and metadata (author, title, publication date) of a novel
 
-    >>> novel_metadata = {'author':'Austen, Jane', 'title':'Persuasion', 'corpus_name':'sample_novels', 'date': '1818'}
-    >>> novel_metadata['filename'] = 'austen_persuasion.txt'
-    >>> novel = Novel(novel_metadata)
+    >>> from gender_novels import common
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    ...                   'corpus_name': 'sample_novels', 'date': '1818',
+    ...                   'filename': 'austen_persuasion.txt'}
+    >>> novel = common.Novel(novel_metadata)
     >>> type(novel.text), len(novel.text)
     (<class 'str'>, 467018)
-
     """
 
-    def __init__(self, novel_metadata_dict):
+    def __init__(self, novel_metadata_dict: object):
 
         if not hasattr(novel_metadata_dict, 'items'):
             raise ValueError('novel_metadata_dict must be a dictionary or support .items()')
 
         # Check that the essential attributes for the novel exists.
-        # Currently available attributes that are not checked are: country_publication, author_gender, and notes.
         for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
             if key not in novel_metadata_dict:
                 raise ValueError(f'novel_metadata_dict must have an entry for "{key}"')
 
-        for k, v in novel_metadata_dict.items():
-            setattr(self, k, v)
+        self.author = novel_metadata_dict['author']
+        self.data = novel_metadata_dict['date']
+        self.title = novel_metadata_dict['title']
+        self.corpus_name = novel_metadata_dict['corpus_name']
+        self.filename = novel_metadata_dict['filename']
 
-        if not hasattr(self, 'text'):
+        # optional attributes
+        self.country_publication = novel_metadata_dict.get('country_publication', None)
+        self.author_gender = novel_metadata_dict.get('author_gender', None)
+        self.notes = novel_metadata_dict.get('notes', None)
+
+        if 'text' in novel_metadata_dict:
+            self.text = novel_metadata_dict['text']
+        else:
             self.text = self._load_novel_text()
 
     def _load_novel_text(self):
@@ -247,15 +266,13 @@ class Novel(FileLoaderMixin):
         # Extract Project Gutenberg Boilerplate
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
             end_intro_boilerplate = text.find('*** START OF THIS PROJECT GUTENBERG EBOOK')
-            start_novel = text.find('***', end_intro_boilerplate + 5) + 3 # second set of *** indicates start
+            start_novel = text.find('***', end_intro_boilerplate + 5) + 3  # second set of *** indicates start
             end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
             text = text[start_novel:end_novel]
 
         return text
 
 
-
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
-
