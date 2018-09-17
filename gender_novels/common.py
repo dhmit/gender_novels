@@ -1,5 +1,6 @@
 import csv
 import os
+import string
 import urllib.request
 from pathlib import Path
 
@@ -313,6 +314,36 @@ class Novel(FileLoaderMixin):
             text = text[start_novel:end_novel]
 
         return text
+
+    def get_tokenized_text(self):
+        """
+        Tokenizes the text and returns it as a list of tokens
+
+        This is a very simple way of tokenizing the text. We will replace it soon with a
+        better implementation that uses either regex or nltk
+        E.g. this version doesn't handle dashes or contractions
+
+        >>> from gender_novels import common
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion', 'date': '1818',
+        ...                   'corpus_name': 'sample_novels', 'filename': 'austen_persuasion.txt',
+        ...                   'text': '?!All-kinds %$< of pun*ct(uatio)n {a}nd sp+ecial cha/rs'}
+        >>> novel = common.Novel(novel_metadata)
+        >>> tokenized_text = novel.get_tokenized_text()
+        >>> tokenized_text
+        ['allkinds', 'of', 'punctuation', 'and', 'special', 'chars']
+
+        :rtype: list
+        """
+
+        # Excluded characters: !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~
+        excluded_characters = set(string.punctuation)
+        cleaned_text = ''
+        for character in self.text:
+            if character not in excluded_characters:
+                cleaned_text += character
+
+        tokenized_text = cleaned_text.lower().split()
+        return tokenized_text
 
 
 if __name__ == '__main__':
