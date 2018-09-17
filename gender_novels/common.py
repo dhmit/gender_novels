@@ -111,7 +111,6 @@ class FileLoaderMixin:
     def load_file_remotely(file_path, current_file_type):
         base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/gender_novels'
         url = f'{base_path}/{file_path}'
-        print(f"Remote URL: {url}")
         response = urllib.request.urlopen(url)
         encoding = response.headers.get_param('charset')
 
