@@ -5,7 +5,7 @@ from pathlib import Path
 
 DEBUG = False
 
-
+
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
     remotely from Github (if run from an ipython notebook)
@@ -122,7 +122,6 @@ class FileLoaderMixin:
         base_path = ('https://raw.githubusercontent.com/dhmit/'
                      + 'gender_novels/master/gender_novels/')
         url = f'{base_path}/{file_path}'
-        print(f"Remote URL: {url}")
         response = urllib.request.urlopen(url)
         encoding = response.headers.get_param('charset')
 
