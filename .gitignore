@@ -111,3 +111,6 @@ venv.bak/
 .DS_store
 .project
 .pydevproject
+
+# Scratch File
+gender_novels/scratch.py
