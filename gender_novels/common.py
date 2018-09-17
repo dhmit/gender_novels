@@ -5,7 +5,7 @@ from pathlib import Path
 
 DEBUG = False
 
-
+
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
     remotely from Github (if run from an ipython notebook)
