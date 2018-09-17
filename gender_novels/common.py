@@ -5,7 +5,7 @@ from pathlib import Path
 
 DEBUG = False
 
-
+
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
     remotely from Github (if run from an ipython notebook)
@@ -122,6 +122,7 @@ class FileLoaderMixin:
         base_path = ('https://raw.githubusercontent.com/dhmit/'
                      + 'gender_novels/master/gender_novels/')
         url = f'{base_path}/{file_path}'
+        print(f"Remote URL: {url}")
         response = urllib.request.urlopen(url)
         encoding = response.headers.get_param('charset')
 
@@ -217,6 +218,7 @@ class Corpus(FileLoaderMixin):
     def load_sample_novels_by_authors(self):
         """ This function returns the texts of the four novels
         in the sample_novels corpus as a tuple
+
         This function is used for the first DH Lab demonstration.
 
         >>> from gender_novels import common
@@ -228,8 +230,11 @@ class Corpus(FileLoaderMixin):
 
         :rtype: tuple
         """
-        # TODO(SR): remove bare asserts
-        assert self.corpus_name == 'sample_novels'
+
+        if self.corpus_name != 'sample_novels':
+            err = ("load_sample_novels_by_author can only be used with the 'sample_novels'",
+                   f"corpus but not with '{self.corpus_name}'")
+            raise ValueError(err)
 
         austen = self.novels[0].text
         dickens = self.novels[1].text

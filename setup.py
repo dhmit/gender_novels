@@ -27,11 +27,6 @@ setuptools.setup(
     author_email="digitalhumanities@mit.edu",
     description="Descriptions of Gender in Writing",
     install_requires=REQUIRED_PACKAGES,
-    dependency_links=[
-        # Links must be appended by `-{StringWithAtLeastOneNumber}`
-        # see https://github.com/pypa/pip/issues/3610#issuecomment-356687173
-        'git+https://github.com/dhmit/dh_testers.git#egg=dh_testers-9876543210'
-    ],
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/dhmit/gender_novels",
