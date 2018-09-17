@@ -5,6 +5,7 @@ from pathlib import Path
 
 DEBUG = False
 
+
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
     remotely from Github (if run from an ipython notebook)
@@ -162,8 +163,8 @@ class Corpus(FileLoaderMixin):
         try:
             csv_file = self.load_file(relative_csv_path)
         except FileNotFoundError:
-            err = "Could not find the metadata csv file for the "'
-            err += '{self.corpus_name}' corpus in the expected location "
+            err = "Could not find the metadata csv file for the "
+            err += "'{self.corpus_name}' corpus in the expected location "
             err += f"({relative_csv_path})."
             raise FileNotFoundError(err)
         csv_reader = csv.DictReader(csv_file)
@@ -220,7 +221,8 @@ class Corpus(FileLoaderMixin):
 
         >>> from gender_novels import common
         >>> c = common.Corpus('sample_novels')
-        >>> austen, dickens, eliot, hawthorne = c.load_sample_novels_by_authors()
+        >>> sample_texts = c.load_sample_novels_by_authors()
+        >>> austen, dickens, eliot, hawthorne = sample_texts
         >>> len(austen)
         467018
 
@@ -250,7 +252,7 @@ class Novel(FileLoaderMixin):
     (<class 'str'>, 467018)
     """
 
-    def __init__(self, novel_metadata_dict: object):
+    def __init__(self, novel_metadata_dict):
 
         if not hasattr(novel_metadata_dict, 'items'):
             raise ValueError(
