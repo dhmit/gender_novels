@@ -5,9 +5,9 @@ from pathlib import Path
 
 DEBUG = False
 
-
 class FileLoaderMixin:
-    """ The FileLoaderMixin loads files either locally or remotely from Github (if run from an ipython notebook)
+    """ The FileLoaderMixin loads files either locally or
+    remotely from Github (if run from an ipython notebook)
 
     Currently supported filetypes are: .csv, .txt
     """
@@ -23,18 +23,24 @@ class FileLoaderMixin:
         >>> from gender_novels import common
 
         >>> f = common.FileLoaderMixin()
-        >>> novel_path = Path('corpora', 'sample_novels', 'texts', 'austen_persuasion.txt')
+        >>> novel_path = Path('corpora', 'sample_novels',
+        ...                   'texts', 'austen_persuasion.txt')
         >>> novel_text = f.load_file(novel_path)
         >>> type(novel_text), len(novel_text)
         (<class 'str'>, 486253)
 
-        csv files are returned as a list of strings, which can be further processed with Python's csv module
-        >>> corpus_metadata_path = Path('corpora', 'sample_novels', 'sample_novels.csv')
+        csv files are returned as a list of strings, which can be
+        further processed with Python's csv module
+
+        >>> corpus_metadata_path = Path('corpora', 'sample_novels',
+        ...                             'sample_novels.csv')
         >>> corpus_metadata = f.load_file(corpus_metadata_path)
         >>> type(corpus_metadata), len(corpus_metadata)
         (<class 'list'>, 5)
 
-        If the file is not available locally (e.g. in an ipython notebook, it gets loaded from Github.
+        If the file is not available locally (e.g. in an ipython notebook,
+        it gets loaded from Github.
+
         >>> novel_text_local = f.load_file_locally(novel_path, '.txt')
         >>> novel_text_online = f.load_file_remotely(novel_path, '.txt')
         >>> novel_text_local == novel_text_online
@@ -43,7 +49,8 @@ class FileLoaderMixin:
         file_path can be a string or Path object
 
         >>> import os
-        >>> novel_path_str = os.sep.join(['corpora', 'sample_novels', 'texts', 'austen_persuasion.txt'])
+        >>> novel_path_str = os.sep.join(['corpora', 'sample_novels',
+        ...                               'texts', 'austen_persuasion.txt'])
         >>> novel_text_str = f.load_file(novel_path_str)
         >>> novel_text == novel_text_str
         True
@@ -58,19 +65,23 @@ class FileLoaderMixin:
         supported_file_types = {'.csv', '.txt'}
         current_file_type = file_path.parts[-1][file_path.parts[-1].rfind('.'):]
         if current_file_type not in supported_file_types:
-            err = f"The FileLoaderMixin currently supports {supported_file_types} but not {current_file_type}."
+            err = "The FileLoaderMixin currently supports "
+            err += "{supported_file_types} but not {current_file_type}."
             raise ValueError(err)
 
         # check if we are working locally and in the correct directory
-        # __file__ is only available if executed from a file but not from an ipython shell or notebook
+        # __file__ is only available if executed from a file but
+        # not from an ipython shell or notebook
         # in those cases, the file has to be loaded remotely from github.
         try:
             local_path = os.path.abspath(os.path.dirname(__file__))
             is_local = True
             if not local_path.endswith('/gender_novels'):
                 is_local = False
-                warning = "WARNING: The FileLoaderMixin should be placed in the main path of the gender_novels project."
-                warning += f"It's currently in {local_path}. Until the Mixin is in the correct path, files are loaded "
+                warning = "WARNING: The FileLoaderMixin should be placed "
+                warning += "in the main path of the gender_novels project."
+                warning += f"It's currently in {local_path}. Until the Mixin "
+                warning += "is in the correct path, files are loaded "
                 warning += "from Github."
                 print(warning)
         except NameError:
@@ -87,8 +98,10 @@ class FileLoaderMixin:
 
     @staticmethod
     def load_file_locally(file_path, current_file_type):
-        # I need a way of getting the local path to the base of the repo. This file is currently in the base of the
-        # repo so it returns the correct path. But it will change once this function gets moved.
+        # I need a way of getting the local path to the base of the repo.
+        # This file is currently in the base of the
+        # repo so it returns the correct path. But it will change once
+        # this function gets moved.
         local_base_path = Path(os.path.abspath(os.path.dirname(__file__)))
         file = open(local_base_path.joinpath(file_path), mode='r')
 
@@ -97,14 +110,16 @@ class FileLoaderMixin:
         elif current_file_type == '.txt':
             result = file.read()
         else:
-            raise Exception('Cannot load if current_file_type is not .csv or .txt')
+            raise Exception(
+                'Cannot load if current_file_type is not .csv or .txt')
 
         file.close()
         return result
 
     @staticmethod
     def load_file_remotely(file_path, current_file_type):
-        base_path = 'https://raw.githubusercontent.com/dhmit/gender_novels/master/gender_novels/'
+        base_path = ('https://raw.githubusercontent.com/dhmit/'
+                     + 'gender_novels/master/gender_novels/')
         url = f'{base_path}/{file_path}'
         response = urllib.request.urlopen(url)
         encoding = response.headers.get_param('charset')
@@ -113,12 +128,14 @@ class FileLoaderMixin:
             return [line.decode(encoding) for line in response.readlines()]
         elif current_file_type == '.txt':
             text = response.read().decode(encoding)
-            # When loading the text online, each end of line has \r and \n -> replace with only \n
+            # When loading the text online, each end of line
+            # has \r and \n -> replace with only \n
             return text.replace('\r\n', '\n')
 
 
 class Corpus(FileLoaderMixin):
-    """The corpus class is used to load the metadata and full texts of all novels in a corpus
+    """The corpus class is used to load the metadata and full
+    texts of all novels in a corpus
 
     Once loaded, each corpus contains a list of Novel objects
 
@@ -139,11 +156,14 @@ class Corpus(FileLoaderMixin):
 
         novels = []
 
-        relative_csv_path = Path('corpora', self.corpus_name, f'{self.corpus_name}.csv')
+        relative_csv_path = Path('corpora',
+                                 self.corpus_name,
+                                 f'{self.corpus_name}.csv')
         try:
             csv_file = self.load_file(relative_csv_path)
         except FileNotFoundError:
-            err = f"Could not find the metadata csv file for the '{self.corpus_name}' corpus in the expected location "
+            err = "Could not find the metadata csv file for the "'
+            err += '{self.corpus_name}' corpus in the expected location "
             err += f"({relative_csv_path})."
             raise FileNotFoundError(err)
         csv_reader = csv.DictReader(csv_file)
@@ -156,15 +176,16 @@ class Corpus(FileLoaderMixin):
 
     def count_authors_by_gender(self, gender):
         """
-        This function returns the number of authors with the specified gender (male, female,
-        unknown)
+        This function returns the number of authors with the
+        specified gender (male, female, non-binary, unknown)
 
         >>> from gender_novels.common import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
         2
 
-        Accepted inputs are 'male', 'female', 'non-binary' and 'unknown' but no abbreviations.
+        Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
+        but no abbreviations.
 
         >>> c.count_authors_by_gender('m')
         Traceback (most recent call last):
@@ -174,21 +195,27 @@ class Corpus(FileLoaderMixin):
         """
         supported_genders = ('male', 'female', 'non-binary', 'unknown')
         if gender not in supported_genders:
-            raise ValueError(f'Gender must be {", ".join(supported_genders)} but not {gender}.')
+            raise ValueError(
+                f'Gender must be {", ".join(supported_genders)} '
+                + f'but not {gender}.')
 
         # check if all novels have an author_gender attribute
         for novel in self.novels:
             if not hasattr(novel, 'author_gender'):
-                err = f'Cannot count author genders in {self.corpus_name} corpus. The novel'
-                err += f'{novel.title} by {novel.author} lacks the attribute "author_gender."'
+                err = f'Cannot count author genders in {self.corpus_name} '
+                err += 'corpus. The novel '
+                err += f'{novel.title} by {novel.author} lacks '
+                err += 'the attribute "author_gender."'
                 raise AttributeError(err)
 
-        gender_count = sum([1 if novel.author_gender == gender else 0 for novel in self.novels])
+        gender_count = sum([1 if novel.author_gender == gender
+                            else 0 for novel in self.novels])
 
         return gender_count
 
     def load_sample_novels_by_authors(self):
-        """ This function returns the texts of the four novels in the sample_novels corpus as a tuple
+        """ This function returns the texts of the four novels
+        in the sample_novels corpus as a tuple
         This function is used for the first DH Lab demonstration.
 
         >>> from gender_novels import common
@@ -211,7 +238,8 @@ class Corpus(FileLoaderMixin):
 
 
 class Novel(FileLoaderMixin):
-    """ The Novel class loads and holds the full text and metadata (author, title, publication date) of a novel
+    """ The Novel class loads and holds the full text and
+    metadata (author, title, publication date) of a novel
 
     >>> from gender_novels import common
     >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
@@ -225,12 +253,14 @@ class Novel(FileLoaderMixin):
     def __init__(self, novel_metadata_dict: object):
 
         if not hasattr(novel_metadata_dict, 'items'):
-            raise ValueError('novel_metadata_dict must be a dictionary or support .items()')
+            raise ValueError(
+                'novel_metadata_dict must be a dictionary or support .items()')
 
         # Check that the essential attributes for the novel exists.
         for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
             if key not in novel_metadata_dict:
-                raise ValueError(f'novel_metadata_dict must have an entry for "{key}"')
+                raise ValueError(
+                    f'novel_metadata_dict must have an entry for "{key}"')
 
         self.author = novel_metadata_dict['author']
         self.data = novel_metadata_dict['date']
@@ -239,7 +269,8 @@ class Novel(FileLoaderMixin):
         self.filename = novel_metadata_dict['filename']
 
         # optional attributes
-        self.country_publication = novel_metadata_dict.get('country_publication', None)
+        self.country_publication = novel_metadata_dict.get(
+            'country_publication', None)
         self.author_gender = novel_metadata_dict.get('author_gender', None)
         self.notes = novel_metadata_dict.get('notes', None)
 
@@ -249,9 +280,11 @@ class Novel(FileLoaderMixin):
             self.text = self._load_novel_text()
 
     def _load_novel_text(self):
-        """Loads the text of a novel and removes boilerplate at the beginning and end
+        """Loads the text of a novel and removes
+        boilerplate at the beginning and end
 
-        Currently only supports boilerplate removal for Project Gutenberg ebooks.
+        Currently only supports boilerplate removal for
+        Project Gutenberg ebooks.
 
         :rtype: str
         """
@@ -260,13 +293,16 @@ class Novel(FileLoaderMixin):
         try:
             text = self.load_file(file_path)
         except FileNotFoundError:
-            err = f"Could not find the novel text file at the expected location ({file_path})."
+            err = "Could not find the novel text file "
+            err += "at the expected location ({file_path})."
             raise FileNotFoundError(err)
 
         # Extract Project Gutenberg Boilerplate
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-            end_intro_boilerplate = text.find('*** START OF THIS PROJECT GUTENBERG EBOOK')
-            start_novel = text.find('***', end_intro_boilerplate + 5) + 3  # second set of *** indicates start
+            end_intro_boilerplate = text.find(
+                '*** START OF THIS PROJECT GUTENBERG EBOOK')
+            # second set of *** indicates start
+            start_novel = text.find('***', end_intro_boilerplate + 5) + 3
             end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
             text = text[start_novel:end_novel]
 
