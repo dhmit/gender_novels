@@ -5,3 +5,7 @@ jupyter
 matplotlib
 numpy
 pylint
+wordcloud
+nltk
+nltk.corpus
+nltk.tokenize
