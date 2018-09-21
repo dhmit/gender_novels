@@ -48,14 +48,13 @@ class Novel(common.FileLoaderMixin):
             self.text = self._load_novel_text()
 
     def _load_novel_text(self):
-        """Loads the text of a novel and removes
-        boilerplate at the beginning and end
+        """Loads the text of a novel and removes boilerplate at the beginning and end
 
-        Currently only supports boilerplate removal for
-        Project Gutenberg ebooks.
+        Currently only supports boilerplate removal for Project Gutenberg ebooks.
 
         :rtype: str
         """
+
         file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
 
         try:
