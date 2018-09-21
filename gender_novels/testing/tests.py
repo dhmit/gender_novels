@@ -38,7 +38,6 @@ def count_vowels(word):
     return total
 
 
-
 class Count(unittest.TestCase):
     def test_sum_count(self):
         self.assertEqual(sum_to_num(10), 55)
