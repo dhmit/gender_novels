@@ -1,20 +1,47 @@
 import unittest
 
-def count_to_ten():
-    '''
-    Counts to ten.
+def sum_to_num(max_number):
+    """
+    Returns the sum from 0 to max_number inclusive.
 
     >>> from gender_novels.testing import tests
-    >>> x = tests.count_to_ten()
+    >>> x = tests.sum_to_num(3)
     >>> x
-    10
-    '''
-    return 10
+    6
+
+    >>> x = tests.sum_to_num(100)
+    >>> x
+    5050
+    """
+    sum_result = 0
+    for n in range(max_number + 1):
+        sum_result += n
+    return sum_result
+
+def count_vowels(word):
+    """
+    >>> from gender_novels.testing import tests
+    >>> tests.count_vowels('asdf')
+    1
+
+    note that y will not be counted as a vowel.  This
+    behavior may change in future versions.
+
+    :param word:
+    :return:
+    """
+    # TODO(cuthbert): implement smart y code.
+    total = 0
+    for letter in word:
+        if letter in 'aeiou':
+            total += 1
+    return total
+
 
 
 class Count(unittest.TestCase):
-    def test_count(self):
-        self.assertEqual(1 + 2, 3)
+    def test_sum_count(self):
+        self.assertEqual(sum_to_num(10), 55)
 
 
 class Imports(unittest.TestCase):
