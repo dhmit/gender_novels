@@ -1,7 +1,6 @@
-import csv
 import os
-import string
 import urllib.request
+
 from pathlib import Path
 
 DEBUG = False
@@ -78,7 +77,7 @@ class FileLoaderMixin:
         try:
             local_path = os.path.abspath(os.path.dirname(__file__))
             is_local = True
-            if not local_path.endswith('/gender_novels'):
+            if not local_path.endswith('gender_novels'):
                 is_local = False
                 warning = "WARNING: The FileLoaderMixin should be placed "
                 warning += "in the main path of the gender_novels project."
