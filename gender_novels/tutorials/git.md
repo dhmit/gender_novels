@@ -1,7 +1,5 @@
 # Git Tutorial
 
-dflj
-
 This tutorial presupposes that you have set up git, Github, and Github
 Desktop as described in the
 [setup tutorial.](https://github.com/dhmit/gender_novels/blob/devbranch/tutorials/setup.md)
