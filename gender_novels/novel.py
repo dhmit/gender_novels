@@ -105,6 +105,42 @@ class Novel(common.FileLoaderMixin):
         tokenized_text = cleaned_text.lower().split()
         return tokenized_text
 
+    def find_quoted_text(self):
+        """
+        Finds all of the quoted statements in the novel text
+
+        >>> from gender_novels import novel
+        >>> test_text = '"This is a quote" and also "This is my quote"'
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt', 'text' : test_text}
+        >>> test_novel = novel.Novel(novel_metadata)
+        >>> test_novel.find_quoted_text()
+        ['"This is a quote"', '"This is my quote"']
+
+        //TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
+        single quote
+
+        :return: list of complete quotation strings
+        """
+        text_list = self.text.split()
+        quotes = []
+        current_quote = []
+        quote_in_progress = False
+
+        for word in text_list:
+            if quote_in_progress:
+                current_quote.append(word)
+                if word[-1] == "\"" and word[-2] != ',':
+                    quote_in_progress = False
+                    quotes.append(' '.join(current_quote))
+                    current_quote = []
+            else:
+                if word[0] == "\"":
+                    quote_in_progress = True
+                    current_quote.append(word)
+
+        return quotes
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
