@@ -18,7 +18,6 @@ make your and our life easier we also won't cover git's command line interface
 and only look at the Github Desktop GUI (It's generally easier to make mistakes
 with a command line because the GUI will usually ask you multiple times if
 you are sure that you want to delete your work.)
-(It covers just the specific workflow that we will use in the DH Lab.)
 
 
 #### General Outline: Local, Remote, and Upstream
@@ -26,42 +25,78 @@ you are sure that you want to delete your work.)
 In every project, we will work with three different versions of the same
 repository. You have already worked with all of them during the setup process.
 
-![](images/git_init_1.png)
+![](images/git/git_init_1.png)
 First, there is the
 [master repository](https://github.com/dhmit/gender_novels)
 on Github. It contains the authoritative current version of our project. It is
 also the repository that we all contribute our documented and tested code to.
 
-![](images/git_init_2.png)
+![](images/git/git_init_2.png)
 
-aeu
 Second, there is your personal fork of the project on Github. When you set it
 up, this fork was an exact copy of the upstream master repo. However, the fork
 is created, this repo is under your control and you can use it to stage changes
 before submitting them to the upstream master.
 
-![](images/git_init_3.png)
+![](images/git/git_init_3.png)
 
 Third, there is the clone of the project on your local computer. This is the
 version that you'll actually be working with. Again, this local repository
 starts out as an exact copy of your remote fork.
 
-![](images/git_init_4.png)
-
-Here's an important point: As soon as you start working on the code on your
+Note: As soon as you start working on the code on your
 local machine, you are changing files but your local repository doesn't change
 yet. Git tracks the changes that you make to the repository files but it
 doesn't store them in the repository itself until you explicitly save them
 (called "commit") to your local repository. The advantage of this process is
 that it makes it easy to reset to an earlier state if you make a mistake.
 
-#### Workflow: Code Commits, Pushes and Pull Requests
+## Workflow: Code Commits, Pushes and Pull Requests
 When you work with git, your code moves from work in progress to your
 Github fork and finally to the main upstream repo.
 
-Let's look at how this works in practice.
+#### Workflow: A Schematic Overview
+Here's a schematic overview of how this works.
 
-#### Code Pushes and Pull Requests
+![](images/git/git_workflow_1.png)
 
+First, you fetch and merge any updates from the upstream master.
+![](images/git/git_workflow_2.png)
 
-#### Branches
+Then, you are ready to implement a new idea, write tests and documentation, and finally the 
+necessary code.
+
+Note: These changes are saved on your local machine but they are not yet saved in your local
+git repository.
+![](images/git/git_workflow_3.png)
+
+When you are ready to share your work with the whole lab, you should first fetch and merge 
+updates from the upstream master--someone might have been working on the same file as you did.
+![](images/git/git_workflow_4.png)
+
+This combines any potential upstream changes with your local changes.
+![](images/git/git_workflow_5.png)
+
+Now, you're ready to save your work to your local repository, which is called a "commit."
+You can think of a commit as a save point in a video-game--if you make mistakes in the future,
+you can reset to this save point.
+![](images/git/git_workflow_6.png)
+
+So far, you have only saved your changes to your local machine. Next, you want to save your
+changes to your changes on your github fork. This is called a "push." You "push" your changes
+to your fork.
+![](images/git/git_workflow_7.png)
+
+Finally, to share your changes with the whole lab, you initialize a "pull request." This is a
+request that your code gets reviewed and, if suitable, incorporated in the main repository.
+![](images/git/git_workflow_8.png)
+
+A "pull request" is different from a "push." When you push your code, the fork automatically
+takes on the state of your local repository. In contrast, when you submit a pull request, 
+you are asking that your changes get incorporated into the upstream master repository. However,
+the changes won't appear in the upstream master until it passes the tests of our continuous
+integration system and a staff member or the quality assurance specialist has reviewed and 
+approved them. 
+![](images/git/git_workflow_9.png)
+
+#### The Workflow in Practice--Which Buttons Do I Press?
