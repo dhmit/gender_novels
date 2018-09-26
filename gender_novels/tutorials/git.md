@@ -44,7 +44,7 @@ Third, there is the clone of the project on your local computer. This is the
 version that you'll actually be working with. Again, this local repository
 starts out as an exact copy of your remote fork.
 
-Note: As soon as you start working on the code on your
+As soon as you start working on the code on your
 local machine, you are changing files but your local repository doesn't change
 yet. Git tracks the changes that you make to the repository files but it
 doesn't store them in the repository itself until you explicitly save them
@@ -111,3 +111,15 @@ master.
 
 ![](images/git/git_workflow_practice_1.png)
 
+
+You are now ready to write new code or, as I am doing right now, new tutorials for
+other lab members. As soon as you make changes to your files, they will also show up
+in Github Desktop.
+
+
+![](images/git/git_workflow_practice_2.png)
+
+Once you are done with your changes, you should save your work by "committing" it.
+
+
+![](images/git/git_workflow_practice_3.png)
