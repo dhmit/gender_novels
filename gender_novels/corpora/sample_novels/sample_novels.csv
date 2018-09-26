@@ -3,3 +3,4 @@ author,date,title,country_publication,author_gender,filename,notes
 "Dickens, Charles",1859,A Tale of Two Cities,England,male,dickens_twocities.txt,
 "Eliot, George",1871,"Middlemarch, A Study of Provincial Life",England,female,eliot_middlemarch.txt,
 "Hawthorne, Nathaniel",1850,The Scarlet Letter,United States,male,hawthorne_scarlet.txt,
+"Melville, Herman",1851,Moby-Dick or The Whale,United States,male,melville_moby.txt,
