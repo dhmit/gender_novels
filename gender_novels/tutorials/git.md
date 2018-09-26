@@ -205,7 +205,3 @@ command to reset your fork:
 ```terminal
 `git push --force origin master`
 ```
-
-
-
-
