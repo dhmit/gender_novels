@@ -103,7 +103,7 @@ class Novel(common.FileLoaderMixin):
                 cleaned_text += character
 
         tokenized_text = cleaned_text.lower().split()
-        return tokenized_text\
+        return tokenized_text
 
     def find_quoted_text(self):
         """
