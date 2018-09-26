@@ -6,18 +6,18 @@ Desktop as described in the
 
 #### Overview
 
-The problem with git is that it is too powerful and gives you too many options
-and comes with a vocabulary of its own, filled with pushes, pulls, merges, and
-branches.
+Git is a wonderful for collaborative coding work. It allows all of us to work on the same 
+codebase and combine the changes that we make. The problem with git is that it is too powerful 
+and gives you too many options and comes with a vocabulary of its own, filled with pushes, pulls,
+merges, and branches.
 
 ![](https://imgs.xkcd.com/comics/git.png)
 
-This tutorial isn't a deep dive into the curious world of git. What it covers
-are only the essential parts that you need to know to work in the DH Lab. To
-make your and our life easier we also won't cover git's command line interface
-and only look at the Github Desktop GUI (It's generally easier to make mistakes
-with a command line because the GUI will usually ask you multiple times if
-you are sure that you want to delete your work.)
+This tutorial isn't a deep dive into the curious world of git. What it covers are only the 
+essential parts that you need to know to work in the DH Lab. To make your and our life easier we 
+also won't cover git's command line interface and only look at the Github Desktop GUI (It's 
+generally easier to make mistakes with a command line because the GUI will usually ask you 
+multiple times if you are sure that you want to delete your work.)
 
 
 #### General Outline: Local, Remote, and Upstream
@@ -162,5 +162,50 @@ a = 11
 ```
 When trying to merge these two files, git will throw up its arms in the air and give you an error
 message that looks like this:
-![](images/git/git_workflow_merge_1.png)
+![](images/git/git_merge_1.png)
+
+Generally, what you want to do in those cases is to revert your local changes. As a general rule,
+ the upstream master is always right and you need to fix this conflict on your machine.
+ 
+The easiest way of fixing this merge error is to right-click on the offending file (in this case:
+ sample_novels.csv) and select "Discard Changes."
+
+**Note**: If you want to keep some of the changes that you made to the file that causes the 
+merge conflict, one option is to copy and past those changes to scratch.py, discard changes to 
+the file, merge the changes from upstream master, and copy and paste the changes from scratch.py 
+back into the original file. 
+
+**Caution**: Don't select "Discard All Changes..."--unless you want to delete all of your changes 
+to all files since the last commit.
+![](images/git/git_merge_2.png)
+
+### Commit Mistakes
+What to do if you have committed something by mistake?
+
+If the difference is just one or two lines, the easiest solution is to just revert those changes 
+by hand and commit them--voila.
+
+If the changes were more substantial and/or you have messed up your local repo more generally, 
+here's a procedure you can use to reset your local repository or your Github fork to the latest 
+stage of the upstream master.
+
+**Caution. There's a high likelihood that you will delete a lot of your own work with these 
+commands.**
+
+To reset your local repository to the last stage of the upstream master, open a terminal (Mac) or
+ Powershell (Windows), navigate to the the base gender_novels path. There, you can enter the 
+ following command. **Again, if you're not sure if you're doing this the right way, come see us.**
+ 
+```terminal
+git reset --hard upstream/master
+```
+
+If you have already pushed your changes to your Github fork, you also need to run the following 
+command to reset your fork:
+```terminal
+`git push --force origin master`
+```
+
+
+
 
