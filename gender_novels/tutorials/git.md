@@ -53,7 +53,7 @@ local repository doesn't change yet. Git tracks the changes that you make to the
 When you work with git, your code moves from work in progress to your
 Github fork and finally to the main upstream repo.
 
-#### Workflow: A Schematic Overview
+### Workflow: A Schematic Overview
 Here's a schematic overview of how this works.
 
 ![](images/git/git_workflow_1.png)
@@ -97,9 +97,10 @@ integration system and a staff member or the quality assurance specialist has re
 approved them. 
 ![](images/git/git_workflow_9.png)
 
-#### The Workflow in Practice--Which Buttons Do I Press?
+### The Workflow in Practice--Which Buttons Do I Press?
 
 
+#### Fetch and Merge Updates
 First, fetch and merge all of the updates from the upstream master.
 
 "Fetch" gathers all of the updates from the upstream master. 
@@ -108,12 +109,58 @@ First, fetch and merge all of the updates from the upstream master.
 
 ![](images/git/git_workflow_practice_1.png)
 
-
+#### Write Documentation, Code, Tutorials...
 You are now ready to write new code or, as I am doing right now, new tutorials for other lab 
 members. As soon as you make changes to your files, they will also show up in Github Desktop.
 ![](images/git/git_workflow_practice_2.png)
 
-Once you are done with your changes, you should save your work by "committing" it.
+
+#### Commit Changes
+Once you are done with your changes, you should save your work by "committing" it to your local 
+repository.
+
+First, you should fetch and merge updates from the upstream master again. It's possible that 
+someone else made modifications to the same files as you did and you want to have those changes 
+before you commit your own changes. (See the screenshots above.)
+
+Here's how you commit code to your local repository.
 ![](images/git/git_workflow_practice_3.png)
 
+#### Push Changes to Your Github Fork
 You can now "push" your changes to your fork on Github by clicking "Push origin" in Github.
+![](images/git/git_workflow_practice_4.png)
+
+#### Open a Pull Request
+If you want share your code with the rest of the lab, you need to issue a "pull request."
+
+Remember this difference: You own your own fork on Github (<Github username>/gender_novels), which 
+means that you can just "push" your code there, overwriting any earlier state. However, you don't
+ own the upstream master (dhmit/gender_novels). To make changes to the upstream master, you need 
+ to request that your code gets incorporated in that repository. Here's how that process works.
+![](images/git/git_workflow_practice_5.png)
+
+When you have submitted a pull request, one of the staff members or the quality assurance 
+specialist will review your pull request. Expect that we will often ask for further modifications
+ before merging your changes into the upstream master.
+ 
+## Troubeshooting
+
+### Merge Conflicts
+Git is great because it allows multiple people to work together on the same piece of 
+software--until it gets confused about how to merge different copies of the same file. Welcome to
+ the "merge conflict."
+ 
+ A merge conflict happens when git can't merge two copies of the same file.
+ 
+For example, the fourth line of my test.py may read as
+```python
+a = 10
+```
+On the upstream master, that same line in test.py may be
+```python
+a = 11
+```
+When trying to merge these two files, git will throw up its arms in the air and give you an error
+message that looks like this:
+![](images/git/git_workflow_merge_1.png)
+
