@@ -37,6 +37,7 @@ def count_vowels(word):
             total += 1
     return total
 
+    for i in range(len(text)):
 
 class Count(unittest.TestCase):
     def test_sum_count(self):
