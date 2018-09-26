@@ -82,6 +82,7 @@ class Novel(common.FileLoaderMixin):
         This is a very simple way of tokenizing the text. We will replace it soon with a
         better implementation that uses either regex or nltk
         E.g. this version doesn't handle dashes or contractions
+        TODO: Figure out why this doesn't work in get_count
 
         >>> from gender_novels import novel
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion', 'date': '1818',
@@ -141,6 +142,33 @@ class Novel(common.FileLoaderMixin):
                     current_quote.append(word)
 
         return quotes
+
+    def get_count(self, word):
+        """
+        Returns the number of instances of str word in the text.  N.B.: Not case-sensitive.
+        >>> from gender_novels import novel
+        >>> summary = ("Hester was convicted of adultery. ",
+        ...            "which made her very sad, and then Arthur was also sad, and everybody was ",
+        ...            "sad and then Arthur died and it was very sad.  Sadness.")
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.get_count("sad")
+        4
+
+        :param word: word to be counted in text
+        :return: int
+        """
+        word = word.lower()
+        count = 0
+        words = self.get_tokenized_text()
+        for w in words:
+            w = w.rstrip(string.punctuation)  # this line shouldn't be needed,
+            # but get_tokenized_text is not working
+            if (w == word):
+                count += 1
+        return count
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
