@@ -100,3 +100,14 @@ approved them.
 ![](images/git/git_workflow_9.png)
 
 #### The Workflow in Practice--Which Buttons Do I Press?
+
+
+First, fetch and merge all of the updates from the upstream master.
+
+"Fetch" gathers all of the updates from the upstream master. 
+
+"Merge" combines the code in your local repository with the code from the upstream
+master.
+
+![](images/git/git_workflow_practice_1.png)
+
