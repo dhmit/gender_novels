@@ -109,7 +109,6 @@ class Novel(common.FileLoaderMixin):
         """
         Finds all of the quoted statements in the novel text
 
-
         >>> from gender_novels import novel
         >>> test_text = '"This is a quote" and also "This is my quote"'
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
