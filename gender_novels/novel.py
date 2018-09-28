@@ -118,10 +118,10 @@ class Novel(common.FileLoaderMixin):
         >>> test_novel.find_quoted_text()
         ['"This is a quote"', '"This is my quote"']
 
-        //TODO: Make this test pass
+        //TODO: Make this test pass - Note: test still doesn't pass, but I changed test result, must discuss with Isaac and Squad
         >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote"'
         >>> test_novel.find_quoted_text()
-        ['"Miss A.E.--," "a quote"']
+        ['"Miss A.E.-- a quote"']
 
         //TODO: Make this test pass
         //TODO: One approach would be to find the shortest possible closed quote.
