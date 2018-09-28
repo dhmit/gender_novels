@@ -119,9 +119,9 @@ class Novel(common.FileLoaderMixin):
         ['"This is a quote"', '"This is my quote"']
 
         //TODO: Make this test pass
-        >>> test_novel.text = 'Test case: "Miss A. E.--," [...] "a quote"'
+        >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote"'
         >>> test_novel.find_quoted_text()
-        ['"Miss A.E.--"', '"a quote"']
+        ['"Miss A.E.--," "a quote"']
 
         //TODO: Make this test pass
         //TODO: One approach would be to find the shortest possible closed quote.
@@ -139,18 +139,25 @@ class Novel(common.FileLoaderMixin):
         quotes = []
         current_quote = []
         quote_in_progress = False
+        quote_is_paused = False
 
         for word in text_list:
-            if quote_in_progress:
+            if word[0] == "\"":
+                quote_in_progress = True
+                quote_is_paused = False
                 current_quote.append(word)
-                if word[-1] == "\"" and word[-2] != ',':
-                    quote_in_progress = False
-                    quotes.append(' '.join(current_quote))
-                    current_quote = []
-            else:
-                if word[0] == "\"":
-                    quote_in_progress = True
+            elif quote_in_progress:
+                if not quote_is_paused:
                     current_quote.append(word)
+                if word[-1] == "\"":
+                    if word[-2] != ',':
+                        quote_in_progress = False
+                        quote_is_paused = False
+                        quotes.append(' '.join(current_quote))
+                        current_quote = []
+                    else:
+                        quote_is_paused = True
+
 
         return quotes
 
