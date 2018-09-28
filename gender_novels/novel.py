@@ -118,7 +118,7 @@ class Novel(common.FileLoaderMixin):
         >>> test_novel.find_quoted_text()
         ['"This is a quote"', '"This is my quote"']
 
-        //TODO: Make this test pass
+        //TODO: Make this test pass - test now passes, but must discuss about expected test result
         >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote"'
         >>> test_novel.find_quoted_text()
         ['"Miss A.E.--," "a quote"']
