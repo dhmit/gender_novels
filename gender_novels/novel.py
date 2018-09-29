@@ -186,6 +186,47 @@ class Novel(common.FileLoaderMixin):
                 count += 1
         return count
 
+    def words_associated(self, wlist):
+        """
+        Returns a dictionary of the words found after each word in wlist
+       Throws an error if wlist is not a list
+       Note: dictionary keys are always all lowercase
+
+        >>> from gender_novels import novel
+        >>> summary = "She took a lighter out of her purse and handed it over to him."
+        >>> summary += " He lit his cigarette and took a deep drag from it, and then began "
+        >>> summary += "his speech which ended in a proposal. Her tears drowned the ring."
+        >>> summary += " TBH i know nothing about this story."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.words_associated(["his", "her"])
+        {'his': ['cigarette', 'speech'], 'her': ['purse', 'tears']}
+
+        :param wlist:
+        :return: dict{ word : [lst_of_following_words]}
+        """
+
+        check = [0] * len(wlist)
+        dictionary = {}
+        text = self.get_tokenized_text()
+        for w in wlist:
+            wlist[wlist.index(w)] = w.lower()
+            dictionary[w.lower()] = []
+
+        for word in text:
+            if word in wlist:
+                check[wlist.index(word)] = 1
+            elif 1 in check:
+                index = check.index(1)
+                dictionary[wlist[index]].append(word)
+                check[index] = 0
+
+        return dictionary
+
+
+
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
