@@ -186,6 +186,34 @@ class Novel(common.FileLoaderMixin):
                 count += 1
         return count
 
+
+    def get_count_words(self, words):
+        """
+        Returns the number of instances of str words in the text as a dictionary.  N.B.: Not case-sensitive.
+        >>> from gender_novels import novel
+        >>> summary = "Hester was convicted of adultery. "
+        >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
+        >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.get_count_words(["sad", "and"])
+        {"sad":4, "and":4}
+
+        :param word: a list of words to be counted in text
+        :return: a dictionary where the key is the word and the value is the count 
+        """
+        dictionary = {} 
+        text_list = self.get_tokenized_text()
+        for word in words:
+            word = word.lower()
+            dictionary[word] = 0
+        for w in text_list:
+            if w in dictionary.keys():
+                dictionary[w] += 1
+        return dictionary
+
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
