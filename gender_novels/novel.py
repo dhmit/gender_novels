@@ -2,6 +2,7 @@ import string
 from pathlib import Path
 
 from gender_novels import common
+from collections import Counter
 
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
@@ -186,11 +187,10 @@ class Novel(common.FileLoaderMixin):
                 count += 1
         return count
 
-    def words_associated(self, wlist):
+    def words_associated(self, word):
         """
-        Returns a dictionary of the words found after each word in wlist
-       Throws an error if wlist is not a list
-       Note: dictionary keys are always all lowercase
+        Returns a dictionary of the words found after given word
+        Note: words always return lowercase
 
         >>> from gender_novels import novel
         >>> summary = "She took a lighter out of her purse and handed it over to him."
@@ -201,29 +201,24 @@ class Novel(common.FileLoaderMixin):
         ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
-        >>> scarlett.words_associated(["his", "her"])
-        {'his': ['cigarette', 'speech'], 'her': ['purse', 'tears']}
+        >>> scarlett.words_associated("his")
+        Counter({'cigarette': 1, 'speech': 1})
 
         :param wlist:
         :return: dict{ word : [lst_of_following_words]}
         """
-
-        check = [0] * len(wlist)
-        dictionary = {}
+        word = word.lower()
+        word_count = Counter()
+        check = False
         text = self.get_tokenized_text()
-        for w in wlist:
-            wlist[wlist.index(w)] = w.lower()
-            dictionary[w.lower()] = []
 
-        for word in text:
-            if word in wlist:
-                check[wlist.index(word)] = 1
-            elif 1 in check:
-                index = check.index(1)
-                dictionary[wlist[index]].append(word)
-                check[index] = 0
-
-        return dictionary
+        for w in text:
+            if w == word:
+                check = True
+            elif check:
+                word_count[w] += 1
+                check = False
+        return word_count
 
 
 
