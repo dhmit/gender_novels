@@ -1,3 +1,21 @@
-div{
-    padding: 20px;
+div {
+    padding: 10px;
+}
+
+.header {
+    background-color: black;
+}
+
+.header-text {
+    color: white;
+    font-weight: bold;
+    font-size: 70px;
+    text-align: center;
+    transform: scale(1.25);
+}
+
+#clock {
+    font-size: 30px;
+    font-family: Helvetica;
+    font-style: italic;
 }
