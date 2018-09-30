@@ -204,7 +204,7 @@ class Novel(common.FileLoaderMixin):
         >>> scarlett.words_associated("his")
         Counter({'cigarette': 1, 'speech': 1})
 
-        :param wlist:
+        :param word:
         :return: a Counter() object with {word:occurrences}
         """
         word = word.lower()
