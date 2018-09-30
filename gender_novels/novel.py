@@ -205,7 +205,7 @@ class Novel(common.FileLoaderMixin):
         Counter({'cigarette': 1, 'speech': 1})
 
         :param wlist:
-        :return: dict{ word : [lst_of_following_words]}
+        :return: a Counter() object with {word:occurrences}
         """
         word = word.lower()
         word_count = Counter()
