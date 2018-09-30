@@ -189,7 +189,8 @@ class Novel(common.FileLoaderMixin):
 
     def words_associated(self, word):
         """
-        Returns a dictionary of the words found after given word
+        Returns a counter of the words found after given word
+        In the case of double/repeated words, the counter would include the word itself and the next new word
         Note: words always return lowercase
 
         >>> from gender_novels import novel
@@ -213,11 +214,11 @@ class Novel(common.FileLoaderMixin):
         text = self.get_tokenized_text()
 
         for w in text:
-            if w == word:
-                check = True
-            elif check:
+            if check:
                 word_count[w] += 1
                 check = False
+            if w == word:
+                check = True
         return word_count
 
 
