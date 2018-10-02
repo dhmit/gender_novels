@@ -1,35 +1,37 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Gender Novels Project</title>
+    <title>MIT DH Lab</title>
 
+    <!-- Bootstrap modules -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"/>
-    <script type="text/javascript" src="{{ url_for('static', filename='js/clock.js') }}"></script>
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
+    <!-- DH Lab modules -->
+    <link rel="stylesheet" href="../static/css/index.css"/>
+    <script type="text/javascript" src="../static/js/clock.js"></script>
 </head>
-
 <body>
-
-    <!--  Bootstrap uses a grid system wherin every column should be in a row, which in turn should
-    be in a container.
-    For an overview of the system, see https://getbootstrap.com/docs/4.1/layout/grid/ -->
-    <div class="container">
-          <div class="row">
-                <div class="col-md-12">
-                    <h1>The Gender Novels Project</h1>
-                    <h3>A Work in Progress</h3>
-
-                    <div id="clock"></div>
-                </div>
+    <!-- Header -->
+    <div class="container header">
+          <div class="row align-items-center justify-content-start">
+              <div class="col-md-auto">
+                  <img src="../graphics/MIT_logo.png"/>
+              </div>
+              <div class="col-md">
+                  <h1 class="header-text">Digital Humanities</h1>
+              </div>
           </div>
     </div>
-
+    <!-- Clock -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div id="clock"></div>
+        </div>
+    </div>
 </body>
 </html>
