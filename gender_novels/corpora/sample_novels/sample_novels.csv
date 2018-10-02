@@ -16,5 +16,6 @@ author,date,title,country_publication,author_gender,filename,notes
 "Poe, Edgar Allen",1838,The Narrative of Arthur Gordon Pym of Nantucket,United States,male,poe_narrative.txt,
 "Shelley, Mary Wollstonecraft",1818,"Frankenstein; or, The Modern Prometheus",England,female,shelley_frankenstein.txt,
 "Stevenson, Robert Louis",1886,The Strange Case of Dr. Jekyll and Mr. Hyde,England,male,stevenson_jekyll.txt,
+"Stoker, Bram",1897,Dracula,England,male,stoker_dracula.txt,
 "Wells, Herbert George",1897,The Invisible Man,England,male,wells_invisibleman.txt,
 "Wilde, Oscar",1890,The Picture of Dorian Gray,England,male,wilde_doriangray.txt,
