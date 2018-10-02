@@ -2,6 +2,7 @@ import string
 from pathlib import Path
 
 from gender_novels import common
+from collections import Counter
 
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
@@ -185,6 +186,42 @@ class Novel(common.FileLoaderMixin):
             if (w == word):
                 count += 1
         return count
+
+    def words_associated(self, word):
+        """
+        Returns a counter of the words found after given word
+        In the case of double/repeated words, the counter would include the word itself and the next new word
+        Note: words always return lowercase
+
+        >>> from gender_novels import novel
+        >>> summary = "She took a lighter out of her purse and handed it over to him."
+        >>> summary += " He lit his cigarette and took a deep drag from it, and then began "
+        >>> summary += "his speech which ended in a proposal. Her tears drowned the ring."
+        >>> summary += " TBH i know nothing about this story."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.words_associated("his")
+        Counter({'cigarette': 1, 'speech': 1})
+
+        :param word:
+        :return: a Counter() object with {word:occurrences}
+        """
+        word = word.lower()
+        word_count = Counter()
+        check = False
+        text = self.get_tokenized_text()
+
+        for w in text:
+            if check:
+                word_count[w] += 1
+                check = False
+            if w == word:
+                check = True
+        return word_count
+
+
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
