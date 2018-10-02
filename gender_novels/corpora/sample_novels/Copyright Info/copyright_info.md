@@ -15,10 +15,9 @@ Public Domain without requesting special permissions.
 
 * Any book **first published before 1923** is in the Public Domain in the United States.
 
-* As we are working in the United States, we  
-operate entirely within US copyright law. The above "published before 1923" rule is the only our 
-only consideration. (*NB: There are some additional points to consider explicated below, but this
- is the primary consideration.*)
+* As we are working in the United States, we operate entirely within US copyright law. The above "published before 1923" rule is our 
+biggest consideration. (*NB: There are some further details explained below, but this is the 
+biggest rule.*)
 
 * Project Gutenberg and HathiTrust are both based in the United States, so the bulk of their book
  uploads are in the Public Domain in the United States. (*See below for exceptions*)
