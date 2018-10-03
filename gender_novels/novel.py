@@ -1,3 +1,4 @@
+import re
 import string
 from pathlib import Path
 
@@ -27,24 +28,44 @@ class Novel(common.FileLoaderMixin):
         # Check that the essential attributes for the novel exists.
         for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
             if key not in novel_metadata_dict:
-                raise ValueError(
-                    f'novel_metadata_dict must have an entry for "{key}"')
+                raise ValueError(f'novel_metadata_dict must have an entry for "{key}". Full ',
+                                 f'metadata: {novel_metadata_dict}')
+
+        # check that the author starts with a capital letter
+        if not novel_metadata_dict['author'][0].isupper():
+            raise ValueError('The last name of the author should be upper case.',
+                             f'{novel_metadata_dict["author"]} is likely incorrect in',
+                             f'{novel_metadata_dict}.')
+
+        # Check that the date is a year (4 consecutive integers)
+        if not re.match(r'^\d{4}$', novel_metadata_dict['date']):
+            raise ValueError('The novel date should be a year (4 integers), not',
+                             f'{novel_metadata_dict["date"]}. Full metadata: {novel_metadata_dict}')
 
         self.author = novel_metadata_dict['author']
-        self.data = novel_metadata_dict['date']
+        self.date = int(novel_metadata_dict['date'])
         self.title = novel_metadata_dict['title']
         self.corpus_name = novel_metadata_dict['corpus_name']
         self.filename = novel_metadata_dict['filename']
 
         # optional attributes
-        self.country_publication = novel_metadata_dict.get(
-            'country_publication', None)
-        self.author_gender = novel_metadata_dict.get('author_gender', None)
+        self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
+        self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
+
+        if self.author_gender not in {'female', 'male', 'non-binary', 'unknown'}:
+            raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
+                             f'but not {self.author_gender}. Full metadata: {novel_metadata_dict}')
 
         if 'text' in novel_metadata_dict:
             self.text = novel_metadata_dict['text']
         else:
+
+            # Check that the filename looks like a filename (ends in .txt)
+            if not self.filename.endswith('.txt'):
+                raise ValueError(
+                    f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
+                    f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
 
     def _load_novel_text(self):
@@ -169,7 +190,7 @@ class Novel(common.FileLoaderMixin):
         >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
         >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
         >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
-        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
         >>> scarlett.get_count_of_word("sad")
@@ -195,7 +216,7 @@ class Novel(common.FileLoaderMixin):
         >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
         >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
         >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
-        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
         >>> scarlett.get_count_words(["sad", "and"])
