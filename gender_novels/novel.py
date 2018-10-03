@@ -3,7 +3,6 @@ import string
 from pathlib import Path
 
 from gender_novels import common
-from collections import Counter
 
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
@@ -208,41 +207,33 @@ class Novel(common.FileLoaderMixin):
                 count += 1
         return count
 
-    def words_associated(self, word):
-        """
-        Returns a counter of the words found after given word
-        In the case of double/repeated words, the counter would include the word itself and the next new word
-        Note: words always return lowercase
 
+    def get_count_words(self, words):
+        """
+        Returns the number of instances of str words in the text as a dictionary.  N.B.: Not case-sensitive.
         >>> from gender_novels import novel
-        >>> summary = "She took a lighter out of her purse and handed it over to him."
-        >>> summary += " He lit his cigarette and took a deep drag from it, and then began "
-        >>> summary += "his speech which ended in a proposal. Her tears drowned the ring."
-        >>> summary += " TBH i know nothing about this story."
+        >>> summary = "Hester was convicted of adultery. "
+        >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
+        >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
         >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
         ...                   'corpus_name': 'sample_novels', 'date': '2018',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
-        >>> scarlett.words_associated("his")
-        Counter({'cigarette': 1, 'speech': 1})
+        >>> scarlett.get_count_words(["sad", "and"])
+        {"sad":4, "and":4}
 
-        :param word:
-        :return: a Counter() object with {word:occurrences}
+        :param word: a list of words to be counted in text
+        :return: a dictionary where the key is the word and the value is the count 
         """
-        word = word.lower()
-        word_count = Counter()
-        check = False
-        text = self.get_tokenized_text()
-
-        for w in text:
-            if check:
-                word_count[w] += 1
-                check = False
-            if w == word:
-                check = True
-        return word_count
-
-
+        dictionary = {} 
+        text_list = self.get_tokenized_text()
+        for word in words:
+            word = word.lower()
+            dictionary[word] = 0
+        for w in text_list:
+            if w in dictionary.keys():
+                dictionary[w] += 1
+        return dictionary
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test

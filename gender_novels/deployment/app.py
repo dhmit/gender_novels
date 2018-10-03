@@ -12,10 +12,8 @@ print(app.config)
 def render_index():
     return render_template('index.html')
 
-
 @app.route('/team')
 def render_team():
-
     """
     Renders the team page
 
@@ -25,9 +23,8 @@ def render_team():
 
 
 if __name__ == '__main__':
+    app.run(host='127.0.0.1', port='8021')
 
     # open a webbrowser on the landing page
     import webbrowser
     webbrowser.open('http://127.0.0.1:8021/', new=2)
-    app.run(host='127.0.0.1', port='8021')
-
