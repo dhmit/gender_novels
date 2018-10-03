@@ -203,5 +203,5 @@ git reset --hard upstream/master
 If you have already pushed your changes to your Github fork, you also need to run the following 
 command to reset your fork:
 ```terminal
-`git push --force origin master`
+git push --force origin master
 ```
