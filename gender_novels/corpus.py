@@ -13,9 +13,9 @@ class Corpus(common.FileLoaderMixin):
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
     >>> type(c.novels), len(c.novels)
-    (<class 'list'>, 4)
+    (<class 'list'>, 33)
     >>> c.novels[0].author
-    'Austen, Jane'
+    'Alcott, Louisa May'
 
     """
 
@@ -53,7 +53,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
-        2
+        16
 
         Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
         but no abbreviations.
@@ -83,34 +83,6 @@ class Corpus(common.FileLoaderMixin):
                             else 0 for novel in self.novels])
 
         return gender_count
-
-    def load_sample_novels_by_authors(self):
-        """ This function returns the texts of the four novels
-        in the sample_novels corpus as a tuple
-
-        This function is used for the first DH Lab demonstration.
-
-        >>> from gender_novels import corpus
-        >>> c = corpus.Corpus('sample_novels')
-        >>> sample_texts = c.load_sample_novels_by_authors()
-        >>> austen, dickens, eliot, hawthorne = sample_texts
-        >>> len(austen)
-        467018
-
-        :rtype: tuple
-        """
-
-        if self.corpus_name != 'sample_novels':
-            err = ("load_sample_novels_by_author can only be used with the 'sample_novels'",
-                   f"corpus but not with '{self.corpus_name}'")
-            raise ValueError(err)
-
-        austen = self.novels[0].text
-        dickens = self.novels[1].text
-        eliot = self.novels[2].text
-        hawthorne = self.novels[3].text
-
-        return austen, dickens, eliot, hawthorne
 
 
 if __name__ == '__main__':

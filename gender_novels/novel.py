@@ -1,7 +1,9 @@
+import re
 import string
 from pathlib import Path
 
 from gender_novels import common
+from collections import Counter
 
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
@@ -27,24 +29,44 @@ class Novel(common.FileLoaderMixin):
         # Check that the essential attributes for the novel exists.
         for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
             if key not in novel_metadata_dict:
-                raise ValueError(
-                    f'novel_metadata_dict must have an entry for "{key}"')
+                raise ValueError(f'novel_metadata_dict must have an entry for "{key}". Full ',
+                                 f'metadata: {novel_metadata_dict}')
+
+        # check that the author starts with a capital letter
+        if not novel_metadata_dict['author'][0].isupper():
+            raise ValueError('The last name of the author should be upper case.',
+                             f'{novel_metadata_dict["author"]} is likely incorrect in',
+                             f'{novel_metadata_dict}.')
+
+        # Check that the date is a year (4 consecutive integers)
+        if not re.match(r'^\d{4}$', novel_metadata_dict['date']):
+            raise ValueError('The novel date should be a year (4 integers), not',
+                             f'{novel_metadata_dict["date"]}. Full metadata: {novel_metadata_dict}')
 
         self.author = novel_metadata_dict['author']
-        self.data = novel_metadata_dict['date']
+        self.date = int(novel_metadata_dict['date'])
         self.title = novel_metadata_dict['title']
         self.corpus_name = novel_metadata_dict['corpus_name']
         self.filename = novel_metadata_dict['filename']
 
         # optional attributes
-        self.country_publication = novel_metadata_dict.get(
-            'country_publication', None)
-        self.author_gender = novel_metadata_dict.get('author_gender', None)
+        self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
+        self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
+
+        if self.author_gender not in {'female', 'male', 'non-binary', 'unknown'}:
+            raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
+                             f'but not {self.author_gender}. Full metadata: {novel_metadata_dict}')
 
         if 'text' in novel_metadata_dict:
             self.text = novel_metadata_dict['text']
         else:
+
+            # Check that the filename looks like a filename (ends in .txt)
+            if not self.filename.endswith('.txt'):
+                raise ValueError(
+                    f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
+                    f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
 
     def _load_novel_text(self):
@@ -118,8 +140,20 @@ class Novel(common.FileLoaderMixin):
         >>> test_novel.find_quoted_text()
         ['"This is a quote"', '"This is my quote"']
 
+        //TODO: Make this test pass
+        >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
+        >>> test_novel.find_quoted_text()
+        ['"Miss A.E.-- a quote."']
+
+        //TODO: Make this test pass
+        //TODO: One approach would be to find the shortest possible closed quote.
+        >>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
+        >>> test_novel.find_quoted_text()
+        ['"Closed quote."']
+
         //TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
-        single quote
+        //TODO(Redlon & Murray): single quote
+        //TODO: Look for more complicated test cases in our existing novels.
 
         :return: list of complete quotation strings
         """
@@ -127,20 +161,88 @@ class Novel(common.FileLoaderMixin):
         quotes = []
         current_quote = []
         quote_in_progress = False
+        quote_is_paused = False
 
         for word in text_list:
-            if quote_in_progress:
+            if word[0] == "\"":
+                quote_in_progress = True
+                quote_is_paused = False
                 current_quote.append(word)
-                if word[-1] == "\"" and word[-2] != ',':
-                    quote_in_progress = False
-                    quotes.append(' '.join(current_quote))
-                    current_quote = []
-            else:
-                if word[0] == "\"":
-                    quote_in_progress = True
+            elif quote_in_progress:
+                if not quote_is_paused:
                     current_quote.append(word)
+                if word[-1] == "\"":
+                    if word[-2] != ',':
+                        quote_in_progress = False
+                        quote_is_paused = False
+                        quotes.append(' '.join(current_quote))
+                        current_quote = []
+                    else:
+                        quote_is_paused = True
+
 
         return quotes
+
+    def get_count_of_word(self, word):
+        """
+        Returns the number of instances of str word in the text.  N.B.: Not case-sensitive.
+        >>> from gender_novels import novel
+        >>> summary = "Hester was convicted of adultery. "
+        >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
+        >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.get_count_of_word("sad")
+        4
+
+        :param word: word to be counted in text
+        :return: int
+        """
+        word = word.lower()
+        count = 0
+        words = self.get_tokenized_text()
+        for w in words:
+            if (w == word):
+                count += 1
+        return count
+
+    def words_associated(self, word):
+        """
+        Returns a counter of the words found after given word
+        In the case of double/repeated words, the counter would include the word itself and the next new word
+        Note: words always return lowercase
+
+        >>> from gender_novels import novel
+        >>> summary = "She took a lighter out of her purse and handed it over to him."
+        >>> summary += " He lit his cigarette and took a deep drag from it, and then began "
+        >>> summary += "his speech which ended in a proposal. Her tears drowned the ring."
+        >>> summary += " TBH i know nothing about this story."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.words_associated("his")
+        Counter({'cigarette': 1, 'speech': 1})
+
+        :param word:
+        :return: a Counter() object with {word:occurrences}
+        """
+        word = word.lower()
+        word_count = Counter()
+        check = False
+        text = self.get_tokenized_text()
+
+        for w in text:
+            if check:
+                word_count[w] += 1
+                check = False
+            if w == word:
+                check = True
+        return word_count
+
+
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
