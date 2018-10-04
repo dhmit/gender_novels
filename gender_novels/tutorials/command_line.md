@@ -4,7 +4,10 @@ The command line or terminal environment is widely used by SysAdmins, software d
 
 In this guide, we'll go through some common commands to familiarize yourself with the terminal environment. We'll assume a UNIX-like system; Windows users should run PowerShell as an administrator to be able to use similar commands.
 
-## pwd
+
+## Moving Around Directories
+
+#### pwd
 
 The `pwd` command is used to show the current working directory. It stands for **p**rint **w**orking **d**irectory.
 
@@ -20,7 +23,7 @@ When you press enter following this command, you will receive output that prints
 
 With this feedback, you should now know what directory you're currently accessing from the terminal.
 
-## ls
+#### ls
 
 The `ls` command is used to *list* the contents of the current directory:
 
@@ -86,7 +89,7 @@ Documents
 
 You generally will not need to access hidden files, but there are occasions when you may need to manually edit settings (with great power comes great responsibility).
 
-## cd
+#### cd
 
 The `cd` command stands for **c**hange **d**irectory. To execute the command you will need to pass the path or relative path to a directory to the command, as in:
 
@@ -139,6 +142,19 @@ var 				Users				net
 Volumes				opt
 ```
 
+#### Relative and Absolute Paths
+Paths can be entered in a relative or absolute way. Relative means that we are changing directory 
+relative to our current working directory. So if your working directory is 
+`Users/<your-user-name>`, and you want to enter the sub-folder `dhlab`, you have two options. 
+
+Using a relative path `cd dhlab`
+
+Using an absolute path `cd /Users/cuthbert/dhlab`
+
+Note the `/` at the beginning of the absolute path. You indicate that you're using an absolute
+path by starting your path with a forward (Windows backward) slash. If your path doesn't start
+with a slash, your terminal will assume that you're using a relative path.
+
 Practice navigating around your file system with the commands you have learned so far.
 
 ## Autocompletion and History
@@ -157,7 +173,7 @@ history
 
 Here you should see all the commands you have run since opening the terminal window.
 
-## Connecting to a Server
+## SSH: Connecting to a Server
 
 You can connect to a remote server or computer through the terminal. To do so, you'll be using the `ssh` command, which stands for **S**ecure **S**ocket **S**hell. You'll need to have a user on the server and to know the user's password or have an SSH key to connect.
 
@@ -170,3 +186,73 @@ ssh user-name@ip-address
 The IP address will be a series of numbers that will direct you to the correct server.
 
 If you do not have an SSH key, you'll be prompted for a password. When you type the password in, you won't have any visual feedback of your keystrokes. When you are done typing your password, press the `ENTER` key.
+
+To disconnect from the remote server, type `exit` into the command line.
+
+
+## Editing Files
+
+You can edit a file by opening it with the nano text editor.
+
+```
+nano <filename>
+```
+
+If a `<filename>` file already exists, nano will open it. Otherwise, it will create a new empty 
+file 
+called `<filename>` that you can then fill.
+
+To quit nano, enter `Ctrl-X`. This opens a dialogue box where you can then select if you want to 
+save your changes or not.
+
+
+## man: The Manual Page
+
+The shell comes with its own user guide, the manual page, which can tell you what a command
+does and what parameters it accepts.
+
+You can access this guide by entering 
+``` 
+man <command>
+```
+
+For example,
+```
+man ls
+```
+gives you the manual page for the list command.
+
+```
+NAME
+     ls -- list directory contents
+
+SYNOPSIS
+     ls [-ABCFGHLOPRSTUW@abcdefghiklmnopqrstuwx1] [file ...]
+
+DESCRIPTION
+     For each operand that names a file of a type other than directory, ls
+     displays its name as well as any requested, associated information.  For
+     each operand that names a file of type directory, ls displays the names
+     of files contained within that directory, as well as any requested, asso-
+     ciated information.
+     
+     [...]
+
+     The following options are available:
+
+     -@      Display extended attribute keys and sizes in long (-l) output.
+
+     -1      (The numeric digit ``one''.)  Force output to be one entry per
+             line.  This is the default when output is not to a terminal.
+
+     -A      List all entries except for . and ...  Always set for the super-
+             user.
+
+     -a      Include directory entries whose names begin with a dot (.).
+    [...]
+
+```
+
+To exit the manual, you usually have to press `q`.
+
+
