@@ -1,4 +1,7 @@
 author,date,title,country_publication,author_gender,filename,notes
+"Alcott, Louisa May",1868,Little Women,United States,female,alcott_littlewomen.txt,
+"Alcott, Louisa May",1886,"Jo's Boys, and How They Turned Out",United States,female,alcott_josboys.txt
+"Alcott, Louisa May",1871,"Little Men: Life at Plumfield with Jo's Boys",United States,female,alcott_littlemen.txt
 "Austen, Jane",1818,Persuasion,England,female,austen_persuasion.txt,
 "Brontë, Charlotte",1857,The Professor,England,female,bronte_professor.txt,
 "Brontë, Anne",1848,The Tenant of Wildfell Hall,England,female,bronte_wildfell.txt,
@@ -8,8 +11,14 @@ author,date,title,country_publication,author_gender,filename,notes
 "Conrad, Joseph",1899,Heart of Darkness,England,male,conrad_darkness.txt
 "Dickens, Charles",1859,A Tale of Two Cities,England,male,dickens_twocities.txt,
 "Eliot, George",1871,"Middlemarch, A Study of Provincial Life",England,female,eliot_middlemarch.txt,
+"Gale, Zona",1915,"Heart's Kindred",United States,female,gale_heartskindred.txt,
+"Gallon, Tom",1911,"Dead Man's Love",England,male,gallon_deadmanslove.txt
 "Gaskell, Elizabeth",1853,Ruth,England,female,gaskell_ruth.txt,
 "Hawthorne, Nathaniel",1850,The Scarlet Letter,United States,male,hawthorne_scarlet.txt,
+"Jacobs, William Wymark",1908,Salthaven,England,male,jacobs_salthaven.txt,
+"James, Henry",1877,The American,United States,male,james_american.txt,
+"Jefferies, Richard",1885,"After London. Or, Wild England",England,male,jefferies_wildengland.txt,
+"Jerome, Jerome",1889,Three Men in a Boat,England,male,jerome_threemen.txt,
 "Kipling, Rudyard",1900,Kim,England,male,kipling_kim.txt,
 "Melville, Herman",1851,Moby Dick or The Whale,United States,male,melville_moby.txt,
 "Opie, Amelia",1904,Adeline Mowbray,England,female,opie_adeline.txt,
@@ -17,5 +26,9 @@ author,date,title,country_publication,author_gender,filename,notes
 "Shelley, Mary Wollstonecraft",1818,"Frankenstein; or, The Modern Prometheus",England,female,shelley_frankenstein.txt,
 "Stevenson, Robert Louis",1886,The Strange Case of Dr. Jekyll and Mr. Hyde,England,male,stevenson_jekyll.txt,
 "Stoker, Bram",1897,Dracula,England,male,stoker_dracula.txt,
+"Ward, Humphry",1900,Eleanor,England,female,ward_eleanor.txt,
+"Warner, Charles",1886,Their Pilgrimage,United States,male,warner_pilgrimage.txt,
+"Wells, Herbert George",1895,The Time Machine,England,male,wells_thetimemachine.txt,
 "Wells, Herbert George",1897,The Invisible Man,England,male,wells_invisibleman.txt,
 "Wilde, Oscar",1890,The Picture of Dorian Gray,England,male,wilde_doriangray.txt,
+"Wood, Ellen",1861,East Lynne,England,female,wood_eastlynne.txt,

@@ -109,7 +109,12 @@ class FileLoaderMixin:
         if current_file_type == '.csv':
             result = file.readlines()
         elif current_file_type == '.txt':
-            result = file.read()
+            try:
+                result = file.read()
+            except UnicodeDecodeError as err:
+                print(f'File loading error with {file_path}.')
+                raise err
+
         else:
             raise Exception(
                 'Cannot load if current_file_type is not .csv or .txt')
