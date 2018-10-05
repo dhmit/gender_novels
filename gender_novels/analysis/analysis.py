@@ -42,9 +42,6 @@ def get_count_words(novel, words):
         dic_word_counts[word] = novel.get_count_of_word(word)
     return dic_word_counts
 
-if __name__ == '__main__':
-    test_function()
-
 def get_comparative_word_freq(freqs):
     """
     Returns a dictionary of the frequency of words counted relative to each other
@@ -53,9 +50,6 @@ def get_comparative_word_freq(freqs):
     :return: dictionary
 
     >>> from gender_novels import novel
-    >>> summary = "Hester was convicted of adultery. "
-    >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
-    >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
     >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
     ...                   'corpus_name': 'sample_novels', 'date': '1900',
     ...                   'filename': 'hawthorne_scarlet.txt'}
@@ -76,3 +70,8 @@ def get_comparative_word_freq(freqs):
         comp_freqs[k] = round(freq, 5)
 
     return comp_freqs
+
+if __name__ == '__main__':
+    test_function()
+
+
