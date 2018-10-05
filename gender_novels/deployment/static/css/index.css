@@ -1,6 +1,14 @@
+/* Base HTML tags */
+
 div {
     padding: 10px;
 }
+
+p {
+    word-wrap: break-word;
+}
+
+/* Custom classes */
 
 .header {
     background-color: black;
@@ -9,12 +17,35 @@ div {
 .header-text {
     color: white;
     font-weight: bold;
-    font-size: 70px;
+    font-size: 100px;
     text-align: center;
-    transform: scale(1.25);
 }
 
-#clock {
+.projects-button {
+    /* MIT logo red */
+    background-color: #A31F34;
+    border: none;
+    width: 20vw;
+    height: 50vh;
+}
+
+.projects-button-text {
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    position: absolute;
+    top: 5%;
+    left: 10%;
+}
+
+.preview-text {
+    width: 30vw;
+    height: 50vh;
+}
+
+/* Custom IDs */
+
+#wip {
     font-size: 30px;
     font-family: Helvetica;
     font-style: italic;
