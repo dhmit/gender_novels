@@ -242,6 +242,30 @@ class Novel(common.FileLoaderMixin):
                 check = True
         return word_count
 
+    def get_word_freq(self, word):
+        """
+        Returns dictionary with key as word and value as the frequency of appearance in book
+        :param words: str
+        :return: double
+
+        >>> from gender_novels import novel
+        >>> summary = "Hester was convicted of adultery. "
+        >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
+        >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '1900',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> f = scarlett.get_word_freq('sad')
+        >>> f
+        0.13333
+        """
+        book_length = len(self.get_tokenized_text())
+        w_count = self.get_count_of_word(word)
+        word_freq = round((w_count / book_length), 5)
+
+        return word_freq
+
 
 
 if __name__ == '__main__':
