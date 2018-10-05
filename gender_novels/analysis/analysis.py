@@ -11,34 +11,21 @@ import matplotlib.pyplot as plt
 
 
 def test_function():
-    """
-    TODO: Analysis team: please delete this function as soon as you write your own functions
-    TODO: into this file--I only set it up so you'd have a place to start.
+    d = {"Austin": [.5, .5], "Elliot": [.8, .2], "Sam": [.14, .22]}
+    display_gender_freq(d=d, title="he_she_freq")  # made up data that works
 
+
+def display_gender_freq(d, title):
+    """
+    takes in a dictionary sorted by author and gender frequencies, and a title
+    and outputs the resulting graph to 'visualizations/title.pdf' AND 'visualizations/title.png'
+    dictionary format {"Author/Novel": [he_freq, she_freq]}
+
+    Will scale to allow inputs of larger dictionaries with non-binary values
+
+    :param d, title:
     :return:
     """
-    '''
-    corpus = Corpus('sample_novels')
-    for novel in corpus.novels:
-        count_she = novel.get_count_of_word('she')
-        count_he = novel.get_count_of_word('he')
-        print(f'{novel.author}: {novel.title}. Count she: {count_she}. Count he: {count_he}.')
-    '''
-    d = {"Austin": [.5, .5], "Elliot": [.8, .2], "Sam": [.14, .22]}
-    display_gender_data(d)  # made up data that works
-
-
-def display_gender_data(d):
-    """
-    takes in a dictionary sorted by author and gender frequencies
-                and returns a graph visualization
-                dictionary format {"Author/Novel": [he_freq, she_freq]}
-
-                Will scale to allow inputs of larger dictionaries with non-binary values
-
-                :param d:
-                :return:
-                """
     he_val = []
     she_val = []
     authors = []
@@ -78,8 +65,11 @@ def display_gender_data(d):
     ax.legend()
 
     fig.tight_layout()
-    plt.show()
-    return
+    #plt.show()
+    filepng = "visualizations/" + title + ".png"
+    filepdf = "visualizations/" + title + ".pdf"
+    plt.savefig(filepng, bbox_inches='tight')
+    plt.savefig(filepdf, bbox_inches='tight')
 
 
 if __name__ == '__main__':
