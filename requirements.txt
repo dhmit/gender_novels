@@ -8,3 +8,4 @@ numpy
 pylint
 wordcloud
 nltk
+gutenberg

@@ -10,7 +10,7 @@ print(app.config)
 
 @app.route('/')
 def render_index():
-    return render_template('index.html')
+    return render_template('gender_novels.html')
 
 
 @app.route('/team')
@@ -25,7 +25,6 @@ def render_team():
 
 
 if __name__ == '__main__':
-
     # open a webbrowser on the landing page
     import webbrowser
     webbrowser.open('http://127.0.0.1:8021/', new=2)
