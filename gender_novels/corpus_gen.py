@@ -2,6 +2,7 @@ import csv
 import gutenberg
 import re
 from pathlib import Path
+import unittest
 
 from gender_novels import common
 from gender_novels import novel
@@ -19,7 +20,8 @@ def get_novel_text(novel_id):
 
 def get_publication_date(novel_id):
     """
-        For a given novel with id novel_id this function attempts a variety of methods to try and find the publication date
+        For a given novel with id novel_id this function attempts a variety of methods to try and
+        find the publication date
         :param novel_id: int
         :return: int
         @TODO: implement this function
@@ -29,12 +31,15 @@ def get_publication_date(novel_id):
 def get_publication_date_from_copyright(novel_text):
     """
         Tries to extract the publication date from the copyright statement in the given text
-        
-        >>> get_publication_date_from_copyright("This work blah blah blah blah COPYRIGHT, 1894 blah blah blah and they all died.")
+        >>> novel_text = "This work blah blah blah blah COPYRIGHT, 1894 blah
+        >>> novel_text += and they all died."
+        >>> from gender_novels import corpus_gen
+        >>> get_publication_date_from_copyright(novel_text)
         1894
         
         @TODO: should this function take the novel's text as a string or the id or?
-        @TODO: should function also try to find publication years not prefaced with "copyright" at the risk of finding arbitrary 4-digit numbers?
+        @TODO: should function also try to find publication years not prefaced with "copyright" at
+            the risk of finding arbitrary 4-digit numbers?
         :param novel_text: string
         :return: int
         """
