@@ -54,7 +54,7 @@ class Novel(common.FileLoaderMixin):
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
 
-        if self.author_gender not in {'female', 'male', 'non-binary', 'unknown'}:
+        if self.author_gender not in {'female', 'male', 'non-binary', 'unknown', 'both'}:
             raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
                              f'but not {self.author_gender}. Full metadata: {novel_metadata_dict}')
 
