@@ -1,0 +1,10 @@
+/* Base HTML tags */
+
+div {
+    padding: 10px;
+}
+
+p {
+    word-wrap: break-word;
+}
+
