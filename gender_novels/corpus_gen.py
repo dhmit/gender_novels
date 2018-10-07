@@ -37,6 +37,9 @@ def generate_corpus_gutenberg():
     #     write_metadata(novel_metadata)
     pass
 
+# Yes I know all these functions are now slightly wrong I'll fix that when I
+# write all their doc comments
+
 def get_novel_text_gutenberg(novel_id):
     """
     For a given novel id returns the full text of that novel as a string
