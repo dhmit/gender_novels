@@ -1,7 +1,5 @@
 import re
 import string
-from gutenberg.acquire import load_etext
-from gutenberg.cleanup import strip_headers
 from pathlib import Path
 
 from gender_novels import common
@@ -12,7 +10,7 @@ class Novel(common.FileLoaderMixin):
     metadata (author, title, publication date) of a novel
 
     >>> from gender_novels import novel
-    >>> novel_metadata = {'id': '105', 'author': 'Austen, Jane', 'title': 'Persuasion',
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
     ...                   'corpus_name': 'sample_novels', 'date': '1818',
     ...                   'filename': 'austen_persuasion.txt'}
     >>> austen = novel.Novel(novel_metadata)
@@ -29,7 +27,7 @@ class Novel(common.FileLoaderMixin):
                 'novel_metadata_dict must be a dictionary or support .items()')
 
         # Check that the essential attributes for the novel exists.
-        for key in ('id', 'author', 'date', 'title', 'corpus_name', 'filename'):
+        for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
             if key not in novel_metadata_dict:
                 raise ValueError(f'novel_metadata_dict must have an entry for "{key}". Full ',
                                  f'metadata: {novel_metadata_dict}')
@@ -45,7 +43,6 @@ class Novel(common.FileLoaderMixin):
             raise ValueError('The novel date should be a year (4 integers), not',
                              f'{novel_metadata_dict["date"]}. Full metadata: {novel_metadata_dict}')
 
-        self.id = int(novel_metadata_dict['id'])
         self.author = novel_metadata_dict['author']
         self.date = int(novel_metadata_dict['date'])
         self.title = novel_metadata_dict['title']
@@ -80,29 +77,23 @@ class Novel(common.FileLoaderMixin):
         :rtype: str
         """
 
-        # file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
-        #
-        # try:
-        #     text = self.load_file(file_path)
-        # except FileNotFoundError:
-        #     err = "Could not find the novel text file "
-        #     err += "at the expected location ({file_path})."
-        #     raise FileNotFoundError(err)
+        file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
 
-
+        try:
+            text = self.load_file(file_path)
+        except FileNotFoundError:
+            err = "Could not find the novel text file "
+            err += "at the expected location ({file_path})."
+            raise FileNotFoundError(err)
 
         # Extract Project Gutenberg Boilerplate
-        # if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-        #     end_intro_boilerplate = text.find(
-        #         '*** START OF THIS PROJECT GUTENBERG EBOOK')
-        #     # second set of *** indicates start
-        #     start_novel = text.find('***', end_intro_boilerplate + 5) + 3
-        #     end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
-        #     text = text[start_novel:end_novel]
-
-        text = strip_headers(load_etext(self.id)).strip()
-        # @TODO: make this pull from mirror, not gutenberg site, and make it
-        # work for other corpuses
+        if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
+            end_intro_boilerplate = text.find(
+                '*** START OF THIS PROJECT GUTENBERG EBOOK')
+            # second set of *** indicates start
+            start_novel = text.find('***', end_intro_boilerplate + 5) + 3
+            end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+            text = text[start_novel:end_novel]
 
         return text
 
