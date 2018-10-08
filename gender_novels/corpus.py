@@ -13,7 +13,7 @@ class Corpus(common.FileLoaderMixin):
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
     >>> type(c.novels), len(c.novels)
-    (<class 'list'>, 33)
+    (<class 'list'>, 99)
     >>> c.novels[0].author
     'Alcott, Louisa May'
 
@@ -53,7 +53,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
-        16
+        38
 
         Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
         but no abbreviations.
