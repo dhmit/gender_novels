@@ -30,17 +30,18 @@ def generate_corpus_gutenberg():
     #     if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
     #         continue
     #     novel_metadata['country_publication'] = get_country_publication(author,
-    #         title
+    #         title)
     #     novel_metadata['author_gender'] = get_author_gender(author)
     #     novel_metadata['subject'] = get_subject(author, title, id)
     #     # write to csv
-    #     write_metadata(novel_metadata)
+    #     write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
     pass
 
 def is_valid_novel_gutenberg(id):
     """
     Determines whether book with this Gutenberg id is actually an English
-    language "novel"
+    language "novel".  Returns false if the book is not or doesn't actually
+    exist.
     N.B. does not check if novel is in correct publication range
 
     >>> from gender_novels import corpus_gen
@@ -86,10 +87,13 @@ def get_title_gutenberg(id):
 
 def get_novel_text_gutenberg(novel_id):
     """
-    For a given novel id returns the full text of that novel from gutenberg as a string
+    For a given novel id returns the full text of that novel from gutenberg as
+    a string
 
     >>> from gender_novels import corpus_gen
-    >>>
+    >>> scarlet_letter = get_novel_text_gutenberg(33)
+    >>> scarlet_letter[:18]
+    'THE SCARLET LETTER'
 
     :param novel_id: int
     :return: str
@@ -99,8 +103,18 @@ def get_novel_text_gutenberg(novel_id):
 
 def get_publication_date(author, title, id = None):
     """
-    For a given novel with id novel_id this function attempts a variety of methods to try and
-    find the publication date
+    For a given novel with id novel_id this function attempts a variety of
+    methods to try and find the publication date
+    If it can't returns None
+
+    >>> from gender_novels import corpus_gen
+    >>> get_publication_date("Hawthorne, Nathaniel", "The Scarlet Letter", 33)
+    1850
+
+    >>> from gender_novels import corpus_gen
+    >>> get_publication_date("Dick, Phillip K.", "Mr. Spaceship", 32522)
+    1953
+
     :param author: str
     :param title: str
     :param id: int
@@ -111,7 +125,10 @@ def get_publication_date(author, title, id = None):
 
 def get_publication_date_from_copyright(novel_text):
     """
-    Tries to extract the publication date from the copyright statement in the given text
+    Tries to extract the publication date from the copyright statement in the
+    given text
+    Otherwise returns None
+
     >>> novel_text = "This work blah blah blah blah COPYRIGHT, 1894 blah
     >>> novel_text += and they all died."
     >>> from gender_novels import corpus_gen
@@ -119,13 +136,63 @@ def get_publication_date_from_copyright(novel_text):
     1894
 
     TODO: should this function take the novel's text as a string or the id or?
-    TODO: should function also try to find publication years not prefaced with "copyright" at
-        the risk of finding arbitrary 4-digit numbers?
+    TODO: should function also try to find publication years not prefaced with
+        "copyright" at the risk of finding arbitrary 4-digit numbers?
     :param novel_text: string
     :return: int
     """
     match = re.search(r"(COPYRIGHT\,*\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
     return match.group(2)
+
+def get_country_publication(author, title):
+    """
+    Tries to get the country of novel
+    @TODO: Country of origin or residence of author?
+
+    >>> from gender_novels import corpus_gen
+    >>> get_country_publication("Hawthorne, Nathaniel", "The Scarlet Letter")
+    'United States'
+
+    :param author: str
+    :param title: str
+    :return: str
+    """
+    # TODO(duan): implement this function
+    pass
+
+def get_author_gender(author):
+    """
+    Tries to get gender of author, 'female', 'male', or 'non-binary'.
+    If it fails returns 'unknown'
+
+    >>> from gender_novels import corpus_gen
+    >>> get_author_gender("Hawthorne, Nathaniel")
+    male
+
+    :param author: str
+    :return: str
+    """
+    # TODO(duan): implement this function
+    pass
+
+def get_subject(author, title, id = None):
+    """
+    Tries to get subjects
+    TODO: Subject as defined by Gutenberg or LoC or what?
+    :param: author: str
+    :param: title: str
+    :param: id: int
+    :return: list
+    """
+    pass
+
+def write_metadata(novel_metadata, path):
+    """
+    Writes a row of metadata for a novel into the csv at path
+    :param: novel_metadata: dict
+    :param: path: Path
+    """
+    pass
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
