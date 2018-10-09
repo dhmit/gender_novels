@@ -4,6 +4,10 @@ This file is intended for individual analyses of the gender_novels project
 
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
+import nltk
+import collections
+from nltk.corpus import stopwords
+stop_words = set(stopwords.words('english'))
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,6 +69,34 @@ def get_comparative_word_freq(freqs):
 
     return comp_freqs
 
+def get_counts_by_pos(freqs):
+    """
+    Returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
+    and the value is a counter object of words of that part of speech and their frequencies
+    Also filters out words like "is", "the" (nltk stop words)
+
+    >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
+    {'VBN': Counter({'baked':1}), 'NN': Counter({'chair':9}), 'VBG': Counter({'swimming':16})}
+     >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
+    {'RB': Counter({'quietly': 42, 'usually': 7})}
+
+    :param freqs:
+    :return:
+    """
+
+    sorted_words = {}
+    # for each word in the counter
+    for word in freqs.keys():
+        # filter out if in nltk's list of stop words, e.g. is, the
+        if word not in stop_words:
+            # get its part of speech tag from nltk's pos_tag function
+            tag = nltk.pos_tag([word])[0][1]
+            # add that word to the counter object in the relevant dict entry
+            if tag not in sorted_words.keys():
+                sorted_words[tag] = collections.Counter({word:freqs[word]})
+            else:
+                sorted_words[tag].update({word:freqs[word]})
+    return sorted_words
 
 def display_gender_freq(d, title):
     """
