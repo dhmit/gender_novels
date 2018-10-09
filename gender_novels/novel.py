@@ -1,7 +1,6 @@
 import re
 import string
 from pathlib import Path
-import nltk
 
 from gender_novels import common
 from collections import Counter
@@ -127,17 +126,6 @@ class Novel(common.FileLoaderMixin):
 
         tokenized_text = cleaned_text.lower().split()
         return tokenized_text
-
-    def get_part_of_speech_tags(self):
-        """
-        Returns the text as a list of tuples
-
-        :return:
-        """
-
-        text = nltk.word_tokenize(self.text)
-        pos_tags = nltk.pos_tag(text)
-        from IPython import embed; embed()
 
     def find_quoted_text(self):
         """
