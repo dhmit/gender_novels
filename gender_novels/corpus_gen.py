@@ -1,5 +1,6 @@
 import csv
-import gutenberg
+from gutenberg.acquire import load_etext
+from gutenberg.cleanup import strip_headers
 import re
 from pathlib import Path
 import unittest
@@ -98,7 +99,8 @@ def get_novel_text_gutenberg(novel_id):
     :param novel_id: int
     :return: str
     """
-    text = gutenberg.cleanup.strip_headers(gutenberg.acquire.load_etext(novel_id)).strip()
+    # TODO: implement this function
+    text = strip_headers(load_etext(novel_id)).strip()
     return text
 
 def get_publication_date(author, title, id = None):
@@ -129,8 +131,8 @@ def get_publication_date_from_copyright(novel_text):
     given text
     Otherwise returns None
 
-    >>> novel_text = "This work blah blah blah blah COPYRIGHT, 1894 blah
-    >>> novel_text += and they all died."
+    >>> novel_text = "This work blah blah blah blah COPYRIGHT, 1894 blah"
+    >>> novel_text += "and they all died."
     >>> from gender_novels import corpus_gen
     >>> get_publication_date_from_copyright(novel_text)
     1894
@@ -142,7 +144,7 @@ def get_publication_date_from_copyright(novel_text):
     :return: int
     """
     match = re.search(r"(COPYRIGHT\,*\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
-    return match.group(2)
+    return int(match.group(2))
 
 def get_country_publication(author, title):
     """
