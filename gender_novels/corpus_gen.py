@@ -43,6 +43,11 @@ def is_valid_novel_gutenberg(id):
     Determines whether book with this Gutenberg id is actually an English
     language "novel".  Returns false if the book is not or doesn't actually
     exist.
+    Should check:
+    If book with this id exists
+    If book is under public domain
+    If book is in English
+    If book is a "novel"
     N.B. does not check if novel is in correct publication range
 
     >>> from gender_novels import corpus_gen
@@ -71,6 +76,7 @@ def get_author_gutenberg(id):
     :return: str
     """
     # TODO: should we format author names like this?
+    # TODO: possibly have this return a list of authors, rather than a single string, to handle multiple authors
     # TODO(duan): implement this function
     pass
 
