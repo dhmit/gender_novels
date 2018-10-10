@@ -20,21 +20,24 @@ def test_function():
 
 def get_count_words(novel, words):
     """
-        Returns the number of instances of each of elements of words in the text as a dictionary.  N.B.: Not case-sensitive.
-        >>> from gender_novels import novel
-        >>> summary = "Hester was convicted of adultery. "
-        >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
-        >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
-        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
-        ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
-        ...                   'filename': None, 'text': summary}
-        >>> scarlett = novel.Novel(novel_metadata)
-        >>> get_count_words(scarlett, ["sad", "and"])
-        {"sad":4, "and":4}
+    Takes in novel, a Novel object, and words, a list of words to be counted.
+    Returns a dictionary where the keys are the elements of 'words' list
+    and the values are the numbers of occurences of the elements in the novel.
+    N.B.: Not case-sensitive.
+    >>> from gender_novels import novel
+    >>> summary = "Hester was convicted of adultery. "
+    >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
+    >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+    ...                   'filename': None, 'text': summary}
+    >>> scarlett = novel.Novel(novel_metadata)
+    >>> get_count_words(scarlett, ["sad", "and"])
+    {"sad":4, "and":4}
 
-        :param words: a list of words to be counted in text
-        :return: a dictionary where the key is the word and the value is the count 
-        """
+    :param words: a list of words to be counted in text
+    :return: a dictionary where the key is the word and the value is the count 
+    """
     dic_word_counts = {}
     for word in words:
         dic_word_counts[word] = novel.get_count_of_word(word)
@@ -42,8 +45,8 @@ def get_count_words(novel, words):
 
 def get_comparative_word_freq(freqs):
     """
-    Returns a dictionary of the frequency of words counted relative to each other
-
+    Returns a dictionary of the frequency of words counted relative to each other.
+    
     :param freqs: dictionary
     :return: dictionary
 
@@ -71,10 +74,10 @@ def get_comparative_word_freq(freqs):
 
 def get_counts_by_pos(freqs):
     """
-    Returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
-    and the value is a counter object of words of that part of speech and their frequencies
-    Also filters out words like "is", "the" (nltk stop words)
-
+    This functions returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
+    and the value is a counter object of words of that part of speech and their frequencies.
+    It also filters out words like "is", "the". We used `nltk`'s stop words function for filtering.
+    
     >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
     {'VBN': Counter({'baked':1}), 'NN': Counter({'chair':9}), 'VBG': Counter({'swimming':16})}
      >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
@@ -100,8 +103,8 @@ def get_counts_by_pos(freqs):
 
 def display_gender_freq(d, title):
     """
-    takes in a dictionary sorted by author and gender frequencies, and a title
-    and outputs the resulting graph to 'visualizations/title.pdf' AND 'visualizations/title.png'
+    Takes in a dictionary sorted by author and gender frequencies, and a title.
+    Outputs the resulting graph to 'visualizations/title.pdf' AND 'visualizations/title.png'
     dictionary format {"Author/Novel": [he_freq, she_freq]}
 
     Will scale to allow inputs of larger dictionaries with non-binary values
