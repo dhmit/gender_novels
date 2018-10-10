@@ -188,13 +188,13 @@ For your code to be Python 3 compliant, be sure to include parentheses with your
 
 ### Blocks of Code
 
-You can use three backticks to create blocks of unformatted code.
+You can use three backticks on either side of code to create blocks of unformatted code.
 
-```
-```\
+
+\```
 print("meow")
-```\
-```
+\```
+
 
 ```
 print("meow")
@@ -205,13 +205,11 @@ print("meow")
 Many flavors of Markdown support highlighted code blocks for specific languages.
 
 ```
-
 ```python
 def meow:
     print("meow")
 ```
 
-```
 
 ```python
 def meow:
