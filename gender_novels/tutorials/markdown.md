@@ -104,6 +104,12 @@ __This is also bold text__
 _This is also italic text_
 ```
 
+**This is bold text**
+__This is also bold text__
+
+*This is italic text*
+_This is also italic text_
+
 ## Links
 
 You can add links to documents by putting the hyperlink text in square brackets, and the URL in parentheses.
@@ -185,10 +191,9 @@ For your code to be Python 3 compliant, be sure to include parentheses with your
 You can use three backticks to create blocks of unformatted code.
 
 ```
-
-```
+\```
 print("meow")
-```
+\```
 
 ```
 
@@ -221,7 +226,7 @@ function meow(){
     console.log("meow");
 }
 ```
- 
+
 ```
 
 ```javascript
