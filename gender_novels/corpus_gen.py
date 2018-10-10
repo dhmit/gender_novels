@@ -2,7 +2,6 @@ import csv
 from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
 import re
-import pywikibot
 from pathlib import Path
 import unittest
 
@@ -147,6 +146,7 @@ def get_publication_date_wikidata(author, title):
     :param title: str
     :return: int
     """
+    import pywikibot
 
     try:
         site = pywikibot.Site("en", "wikipedia")
