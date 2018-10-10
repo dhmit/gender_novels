@@ -9,3 +9,4 @@ pylint
 wordcloud
 nltk
 gutenberg
+pywikibot

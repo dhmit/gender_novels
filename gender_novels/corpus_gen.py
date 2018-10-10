@@ -4,6 +4,7 @@ from gutenberg.cleanup import strip_headers
 import re
 from pathlib import Path
 import unittest
+import pywikibot
 
 from gender_novels import common
 from gender_novels import novel
@@ -152,8 +153,6 @@ def get_publication_date_wikidata(author, title):
     :param title: str
     :return: int
     """
-    import pywikibot
-
     try:
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, title)

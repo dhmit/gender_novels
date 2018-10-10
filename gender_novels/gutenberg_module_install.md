@@ -33,3 +33,14 @@ After you download the wheel, install it and you're good to go:
 
     pip install bsddb3‑6.2.1‑cp35‑cp35m‑win_amd64.whl
  
+Alright, back to me: 
+
+None of the metadata functions will work until you do this: 
+
+    from gutenberg.acquire import get_metadata_cache
+    cache = get_metadata_cache()
+    cache.populate()
+    
+Sadly, depending on the speed of your machine, this could take several hours.  The file isn't that large, it just takes a long time to process.  
+Fortunately, you only need to do this once.  If you aren't using any metadata functions, 
+you don't need to populate right now and can probably put it off.  (In theory, only the computer generating the metadata csv should need this).
