@@ -86,6 +86,12 @@ To nest lists, indent with spaces.
    1. Point 3b
 ```
 
+1. Point 1
+1. Point 2
+1. Point 3
+   1. Point 3a
+   1. Point 3b
+
 ## Emphasis
 
 You can achieve **bold** and *italic* formatted text with either asterisks or underscores on either side of the word you wish to highlight.
@@ -137,7 +143,9 @@ If you need to include quotes within your markdown, you can indent them as block
 ```
 
 > Nel mezzo del cammin di nostra vita
+
 > mi ritrovai per una selva oscura,
+
 > ché la diritta via era smarrita.
 
 ## Tables
@@ -167,7 +175,7 @@ The columns of the table can be formatted to be aligned left, centered, or right
 You can include inline code by using backticks.
 
 ```
-For your code to be Python 3 compliant, be sure to include parentheses with your `print` statements, as in `print()`.
+For your code to be Python 3 compliant,include parentheses with your `print()` statements.
 ```
 
 For your code to be Python 3 compliant, be sure to include parentheses with your `print` statements, as in `print()`.
@@ -177,9 +185,11 @@ For your code to be Python 3 compliant, be sure to include parentheses with your
 You can use three backticks to create blocks of unformatted code.
 
 ```
+
 ```
 print("meow")
 ```
+
 ```
 
 ```
@@ -191,10 +201,12 @@ print("meow")
 Many flavors of Markdown support highlighted code blocks for specific languages.
 
 ```
+
 ```python
 def meow:
     print("meow")
 ```
+
 ```
 
 ```python
@@ -203,11 +215,13 @@ def meow:
 ```
 
 ```
+
 ```javascript
 function meow(){
     console.log("meow");
 }
 ```
+ 
 ```
 
 ```javascript
