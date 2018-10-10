@@ -206,27 +206,26 @@ print("meow")
 
 Many flavors of Markdown support highlighted code blocks for specific languages.
 
-```
+\```python
+
+def meow:
+    print("meow")
+
+\```
+
+
 ```python
 def meow:
     print("meow")
 ```
 
+\```javascript
 
-```python
-def meow:
-    print("meow")
-```
-
-```
-
-```javascript
 function meow(){
     console.log("meow");
 }
-```
 
-```
+\```
 
 ```javascript
 function meow(){
