@@ -2,6 +2,7 @@ import csv
 from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
 import re
+import pywikibot
 from pathlib import Path
 import unittest
 
@@ -123,7 +124,40 @@ def get_publication_date(author, title, id = None):
     :return: int
     TODO(duan): implement this function
     """
+    #This function will call other get_publication_date functions in turn until a publication date is found
     pass
+
+def get_publication_date_wikidata(author, title):
+    """
+    For a given novel with this author and title this function attempts to pull the publication year from Wikidata
+    Otherwise returns None
+    N.B.: This fails if the title is even slightly wrong (e.g. The Adventures of Huckleberry Finn vs Adventures of
+    Huckleberry Finn).  Should it be tried to fix that?
+
+    >>> from gender_novels import corpus_gen
+    >>> get_publication_date_wikidata("Francis Bacon", "Novum Organum")
+    1620
+    >>> get_publication_date_wikidata("Mingfei Duan", "How I Became a Billionaire and also the President")
+
+    :param author: str
+    :param title: str
+    :return: int
+    """
+    try:
+        site = pywikibot.Site("en", "wikipedia")
+        page = pywikibot.Page(site, title)
+        item = pywikibot.ItemPage.fromPage(page)
+        dictionary = item.get()
+        clm_dict = dictionary["claims"]
+        clm_list = clm_dict["P577"]
+        year = None
+        for clm in clm_list:
+            clm_trgt = clm.getTarget()
+            year = clm_trgt.year
+    except (pywikibot.exceptions.NoPage, KeyError):
+        return None
+    return year
+
 
 def get_publication_date_from_copyright(novel_text):
     """
@@ -144,7 +178,10 @@ def get_publication_date_from_copyright(novel_text):
     :return: int
     """
     match = re.search(r"(COPYRIGHT\,*\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
-    return int(match.group(2))
+    if (match == None):
+        return None
+    else:
+        return int(match.group(2))
 
 def get_country_publication(author, title):
     """
