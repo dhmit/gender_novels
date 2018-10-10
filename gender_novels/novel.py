@@ -210,7 +210,6 @@ class Novel(common.FileLoaderMixin):
 
         # If word_counts were not previously initialized, do it now and store it for the future.
         if not self.word_counts:
-            print("here")
             self.word_counts = Counter(self.get_tokenized_text())
 
         return self.word_counts[word]
