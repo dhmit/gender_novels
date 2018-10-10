@@ -133,16 +133,21 @@ def get_publication_date_wikidata(author, title):
     Otherwise returns None
     N.B.: This fails if the title is even slightly wrong (e.g. The Adventures of Huckleberry Finn vs Adventures of
     Huckleberry Finn).  Should it be tried to fix that?
+    Function also doesn't use author parameter
 
     >>> from gender_novels import corpus_gen
     >>> get_publication_date_wikidata("Francis Bacon", "Novum Organum")
     1620
     >>> get_publication_date_wikidata("Mingfei Duan", "How I Became a Billionaire and also the President")
 
+    >>> get_publication_date_wikidata("Jane Austen", "Persuasion")
+    1818
+
     :param author: str
     :param title: str
     :return: int
     """
+
     try:
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, title)
@@ -154,7 +159,12 @@ def get_publication_date_wikidata(author, title):
         for clm in clm_list:
             clm_trgt = clm.getTarget()
             year = clm_trgt.year
-    except (pywikibot.exceptions.NoPage, KeyError):
+    except (KeyError):
+        try:
+            return get_publication_date_wikidata(author, title + " (novel)")
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except (pywikibot.exceptions.NoPage):
         return None
     return year
 
