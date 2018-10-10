@@ -10,22 +10,37 @@ print(app.config)
 
 @app.route('/')
 def render_index():
-    return render_template('index.html')
+    return render_template('gender_novels.html')
+
+@app.route('/')
+def md_convert():
+    """
+    Converts file written in markdown to html
+    TODO (Xu): Find or create method
+    """
 
 
-@app.route('/team')
+
+
+
+
+@app.route('/team/')
 def render_team():
-
     """
     Renders the team page
-
     TODO (Backend Developer): Implement this route
-
     """
+    return render_template('team.html')
 
+@app.route('/projects/')
+def render_projects():
+    """
+    Renders the projects page
+    TODO (Xu): Implement this route with list of projects
+    """
+    return "Check out our Projects!"
 
 if __name__ == '__main__':
-
     # open a webbrowser on the landing page
     import webbrowser
     webbrowser.open('http://127.0.0.1:8021/', new=2)
