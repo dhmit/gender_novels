@@ -1,5 +1,14 @@
+.header {
+    background-color: black;
+}
+
 .header-text {
-    color: red;
-    font-size: 50px;
-    text-align: center;
+    color: white;
+}
+
+.github-logo {
+    height: auto;
+    width: auto;
+    max-height: 60px;
+    max-width: 60px;
 }
