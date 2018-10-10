@@ -56,6 +56,7 @@ class Novel(common.FileLoaderMixin):
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
+        self.word_counts = None
 
         if self.author_gender not in {'female', 'male', 'non-binary', 'unknown', 'both'}:
             raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
@@ -71,6 +72,7 @@ class Novel(common.FileLoaderMixin):
                     f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
                     f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
+
 
     def _load_novel_text(self):
         """Loads the text of a novel and removes boilerplate at the beginning and end
@@ -199,17 +201,19 @@ class Novel(common.FileLoaderMixin):
         >>> scarlett = novel.Novel(novel_metadata)
         >>> scarlett.get_count_of_word("sad")
         4
+        >>> scarlett.get_count_of_word('ThisWordIsNotInTheWordCounts')
+        0
 
         :param word: word to be counted in text
         :return: int
         """
-        word = word.lower()
-        count = 0
-        words = self.get_tokenized_text()
-        for w in words:
-            if (w == word):
-                count += 1
-        return count
+
+        # If word_counts were not previously initialized, do it now and store it for the future.
+        if not self.word_counts:
+            print("here")
+            self.word_counts = Counter(self.get_tokenized_text())
+
+        return self.word_counts[word]
 
     def words_associated(self, word):
         """
