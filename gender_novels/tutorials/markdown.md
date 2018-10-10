@@ -191,10 +191,9 @@ For your code to be Python 3 compliant, be sure to include parentheses with your
 You can use three backticks to create blocks of unformatted code.
 
 ```
-\```
+```\
 print("meow")
-\```
-
+```\
 ```
 
 ```
