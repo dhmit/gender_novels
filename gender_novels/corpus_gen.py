@@ -127,7 +127,7 @@ def get_publication_date(author, title, id = None):
     #This function will call other get_publication_date functions in turn until a publication date is found
     pass
 
-def get_publication_date_wikidata(author = None, title):
+def get_publication_date_wikidata(author, title):
     """
     For a given novel with this author and title this function attempts to pull the publication year from Wikidata
     Otherwise returns None
@@ -161,15 +161,7 @@ def get_publication_date_wikidata(author = None, title):
             year = clm_trgt.year
     except (KeyError):
         try:
-            page = pywikibot.Page(site, title + " (novel)")
-            item = pywikibot.ItemPage.fromPage(page)
-            dictionary = item.get()
-            clm_dict = dictionary["claims"]
-            clm_list = clm_dict["P577"]
-            year = None
-            for clm in clm_list:
-                clm_trgt = clm.getTarget()
-                year = clm_trgt.year
+            return get_publication_date_wikidata(author, title + " (novel)")
         except (pywikibot.exceptions.NoPage):
             return None
     except (pywikibot.exceptions.NoPage):
