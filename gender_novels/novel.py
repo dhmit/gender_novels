@@ -1,9 +1,12 @@
 import re
 import string
+from collections import Counter
 from pathlib import Path
 
+import nltk
+
 from gender_novels import common
-from collections import Counter
+
 
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
@@ -54,7 +57,7 @@ class Novel(common.FileLoaderMixin):
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
 
-        if self.author_gender not in {'female', 'male', 'non-binary', 'unknown'}:
+        if self.author_gender not in {'female', 'male', 'non-binary', 'unknown', 'both'}:
             raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
                              f'but not {self.author_gender}. Full metadata: {novel_metadata_dict}')
 
@@ -265,6 +268,30 @@ class Novel(common.FileLoaderMixin):
         word_freq = round((w_count / book_length), 5)
 
         return word_freq
+
+    def get_part_of_speech_tags(self):
+        """
+        Returns the part of speech tags as a list of tuples. The first part of each tuple is the
+        term, the second one the part of speech tag.
+        Note: the same word can have a different part of speech tag. In the example below,
+        see "refuse" and "permit"
+        >>> from gender_novels.novel import Novel
+        >>> summary = "They refuse to permit us to obtain the refuse permit."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '1900',
+        ...                   'filename': None, 'text': summary}
+        >>> novel = Novel(novel_metadata)
+        >>> novel.get_part_of_speech_tags()[:4]
+        [('They', 'PRP'), ('refuse', 'VBP'), ('to', 'TO'), ('permit', 'VB')]
+        >>> novel.get_part_of_speech_tags()[-4:]
+        [('the', 'DT'), ('refuse', 'NN'), ('permit', 'NN'), ('.', '.')]
+
+        :rtype: list
+        """
+
+        text = nltk.word_tokenize(self.text)
+        pos_tags = nltk.pos_tag(text)
+        return pos_tags
 
 
 
