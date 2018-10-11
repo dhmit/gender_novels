@@ -7,25 +7,30 @@ import unittest
 import pywikibot
 
 from gender_novels import common
-from gender_novels import novel
 
 # TODO: A lot of things
 
 GUTENBERG_MIRROR_PATH = ''
-GUTENBERG_METADATA_PATH = ''
+GUTENBERG_METADATA_PATH = Path('corpora', 'Gutenberg', 'Gutenberg.csv')
+metadata_list = ['id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
+                 'notes']
 
 def generate_corpus_gutenberg():
     """
     Generate metadata sheet of all novels we want from Gutenberg
     TODO: implement functions called here
     """
+    # write csv header
+    # with open(GUTENBERG_METADATA_PATH, 'w', newline='') as csvfile:
+    #     writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
+    #     writer.writeheader()
     # # go through all books in Gutenberg
     # for (id in range(gutenberg_number_of_books())): #would be nice if we could check number of books
     #     # check if book is valid novel by our definition
     #     if (!is_valid_novel_gutenberg(id)):
     #         continue
     #     # begin compiling metadata.  Metadata not finalized
-    #     novel_metadata = {'id': str(id), 'corpus': 'Gutenberg'}
+    #     novel_metadata = {'id': str(id), 'corpus_name': 'Gutenberg'}
     #     author = get_author_gutenberg(id)
     #     novel_metadata['author'] = author
     #     title = get_title_gutenberg(id)
@@ -310,13 +315,26 @@ def get_subject(author, title, id = None):
     """
     pass
 
-def write_metadata(novel_metadata, path):
+def write_metadata(novel_metadata):
     """
     Writes a row of metadata for a novel into the csv at path
+    Subject to change as metadata changes
+
+    Running this doctest actually generates a file
+    # >>> from gender_novels import corpus_gen
+    # >>> corpus_gen.write_metadata({'id': 105, 'author': 'Austen, Jane', 'title': 'Persuasion',
+    # ...                            'corpus_name': 'Gutenberg', 'date': '1818',
+    # ...                            'country_publication': 'England', 'subject': ['England -- Social life and customs -- 19th century -- Fiction'],
+    # ...                            'author_gender': 'female'})
+
     :param: novel_metadata: dict
     :param: path: Path
     """
-    pass
+    corpus = novel_metadata['corpus_name']
+    path = Path('corpora', corpus, f'{corpus}.csv')
+    with open(path, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
+        writer.writerow(novel_metadata)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
