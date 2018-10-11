@@ -11,13 +11,16 @@ from gender_novels import novel
 
 # TODO: A lot of things
 
+GUTENBERG_MIRROR_PATH = ''
+GUTENBERG_METADATA_PATH = ''
+
 def generate_corpus_gutenberg():
     """
     Generate metadata sheet of all novels we want from Gutenberg
     TODO: implement functions called here
     """
     # # go through all books in Gutenberg
-    # for (id in range(58000)): #would be nice if we could check number of books
+    # for (id in range(gutenberg_number_of_books())): #would be nice if we could check number of books
     #     # check if book is valid novel by our definition
     #     if (!is_valid_novel_gutenberg(id)):
     #         continue
@@ -38,6 +41,14 @@ def generate_corpus_gutenberg():
     #     # write to csv
     #     write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
     pass
+
+def gutenberg_number_of_books():
+    """
+    Determines how many books currently exist in our Gutenberg mirror
+    :return: int
+    """
+    # TODO: implement this function and make it return a legit count
+    return 60000
 
 def is_valid_novel_gutenberg(id):
     """
