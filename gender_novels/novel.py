@@ -12,6 +12,8 @@ class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
 
+    TODO: write __str__ for novels
+
     >>> from gender_novels import novel
     >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
     ...                   'corpus_name': 'sample_novels', 'date': '1818',
@@ -292,7 +294,6 @@ class Novel(common.FileLoaderMixin):
         text = nltk.word_tokenize(self.text)
         pos_tags = nltk.pos_tag(text)
         return pos_tags
-
 
 
 if __name__ == '__main__':
