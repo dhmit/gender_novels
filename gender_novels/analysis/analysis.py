@@ -4,20 +4,18 @@ This file is intended for individual analyses of the gender_novels project
 
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
+import nltk
+import collections
+from nltk.corpus import stopwords
+stop_words = set(stopwords.words('english'))
+
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def test_function():
-    """
-    TODO: Analysis team: please delete this function as soon as you write your own functions
-    TODO: into this file--I only set it up so you'd have a place to start.
-    :return:
-    """
-
-    corpus = Corpus('sample_novels')
-    for novel in corpus.novels:
-        count_she = novel.get_count_of_word('she')
-        count_he = novel.get_count_of_word('he')
-        print(f'{novel.author}: {novel.title}. Count she: {count_she}. Count he: {count_he}.')
+    d = {"Austin": [.5, .5], "Elliot": [.8, .2], "Sam": [.14, .22]}
+    display_gender_freq(d=d, title="he_she_freq")  # made up data that works
 
 
 def get_count_words(novel, words):
@@ -70,6 +68,91 @@ def get_comparative_word_freq(freqs):
         comp_freqs[k] = round(freq, 5)
 
     return comp_freqs
+
+def get_counts_by_pos(freqs):
+    """
+    Returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
+    and the value is a counter object of words of that part of speech and their frequencies
+    Also filters out words like "is", "the" (nltk stop words)
+
+    >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
+    {'VBN': Counter({'baked':1}), 'NN': Counter({'chair':9}), 'VBG': Counter({'swimming':16})}
+     >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
+    {'RB': Counter({'quietly': 42, 'usually': 7})}
+
+    :param freqs:
+    :return:
+    """
+
+    sorted_words = {}
+    # for each word in the counter
+    for word in freqs.keys():
+        # filter out if in nltk's list of stop words, e.g. is, the
+        if word not in stop_words:
+            # get its part of speech tag from nltk's pos_tag function
+            tag = nltk.pos_tag([word])[0][1]
+            # add that word to the counter object in the relevant dict entry
+            if tag not in sorted_words.keys():
+                sorted_words[tag] = collections.Counter({word:freqs[word]})
+            else:
+                sorted_words[tag].update({word:freqs[word]})
+    return sorted_words
+
+def display_gender_freq(d, title):
+    """
+    takes in a dictionary sorted by author and gender frequencies, and a title
+    and outputs the resulting graph to 'visualizations/title.pdf' AND 'visualizations/title.png'
+    dictionary format {"Author/Novel": [he_freq, she_freq]}
+
+    Will scale to allow inputs of larger dictionaries with non-binary values
+
+    :param d, title:
+    :return:
+    """
+    he_val = []
+    she_val = []
+    authors = []
+
+    for entry in d:
+        authors.append(entry)
+        he_val.append(d[entry][0])
+        she_val.append(d[entry][1])
+
+    fig, ax = plt.subplots()
+
+    index = np.arange(len(d.keys()))
+    bar_width = 0.35
+
+    opacity = 0.4
+    error_config = {'ecolor': '0.3'}
+
+    he_val = tuple(he_val)
+    she_val = tuple(she_val)
+    authors = tuple(authors)
+
+    rects1 = ax.bar(index, he_val, bar_width,
+                    alpha=opacity, color='b',
+                    error_kw=error_config,
+                    label='He')
+
+    rects2 = ax.bar(index + bar_width, she_val, bar_width,
+                    alpha=opacity, color='r',
+                    error_kw=error_config,
+                    label='She')
+
+    ax.set_xlabel('Authors')
+    ax.set_ylabel('Frequency')
+    ax.set_title('Gendered Pronouns by Author')
+    ax.set_xticks(index + bar_width / 2)
+    ax.set_xticklabels(authors)
+    ax.legend()
+
+    fig.tight_layout()
+    #plt.show()
+    filepng = "visualizations/" + title + ".png"
+    filepdf = "visualizations/" + title + ".pdf"
+    plt.savefig(filepng, bbox_inches='tight')
+    plt.savefig(filepdf, bbox_inches='tight')
 
 if __name__ == '__main__':
     test_function()

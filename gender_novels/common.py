@@ -36,8 +36,8 @@ class FileLoaderMixin:
         >>> corpus_metadata_path = Path('corpora', 'sample_novels',
         ...                             'sample_novels.csv')
         >>> corpus_metadata = f.load_file(corpus_metadata_path)
-        >>> type(corpus_metadata), len(corpus_metadata)
-        (<class 'list'>, 5)
+        >>> type(corpus_metadata)
+        <class 'list'>
 
         If the file is not available locally (e.g. in an ipython notebook,
         it gets loaded from Github.
@@ -104,7 +104,7 @@ class FileLoaderMixin:
         # repo so it returns the correct path. But it will change once
         # this function gets moved.
         local_base_path = Path(os.path.abspath(os.path.dirname(__file__)))
-        file = open(local_base_path.joinpath(file_path), mode='r')
+        file = open(local_base_path.joinpath(file_path), mode='r', encoding='utf8')
 
         if current_file_type == '.csv':
             result = file.readlines()
