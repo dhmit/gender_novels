@@ -113,3 +113,7 @@ venv.bak/
 
 # Scratch File
 gender_novels/scratch.py
+
+# Gutenberg module things
+gender_novels/apicache-py3/
+gender_novels/throttle.ctrl
