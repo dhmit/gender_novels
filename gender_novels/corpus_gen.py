@@ -11,7 +11,7 @@ from gender_novels import common
 # TODO: A lot of things
 
 GUTENBERG_MIRROR_PATH = ''
-GUTENBERG_METADATA_PATH = Path('corpora', 'Gutenberg', 'Gutenberg.csv')
+GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
 metadata_list = ['id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
                  'notes']
 
@@ -30,7 +30,7 @@ def generate_corpus_gutenberg():
     #     if (!is_valid_novel_gutenberg(id)):
     #         continue
     #     # begin compiling metadata.  Metadata not finalized
-    #     novel_metadata = {'id': str(id), 'corpus_name': 'Gutenberg'}
+    #     novel_metadata = {'id': id, 'corpus_name': 'gutenberg'}
     #     author = get_author_gutenberg(id)
     #     novel_metadata['author'] = author
     #     title = get_title_gutenberg(id)
@@ -323,7 +323,7 @@ def write_metadata(novel_metadata):
     Running this doctest actually generates a file
     # >>> from gender_novels import corpus_gen
     # >>> corpus_gen.write_metadata({'id': 105, 'author': 'Austen, Jane', 'title': 'Persuasion',
-    # ...                            'corpus_name': 'Gutenberg', 'date': '1818',
+    # ...                            'corpus_name': 'gutenberg', 'date': '1818',
     # ...                            'country_publication': 'England', 'subject': ['England -- Social life and customs -- 19th century -- Fiction'],
     # ...                            'author_gender': 'female'})
 
