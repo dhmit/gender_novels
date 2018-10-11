@@ -11,6 +11,7 @@ print(app.config)
 @app.route('/')
 def render_index():
     return render_template('gender_novels.html')
+<<<<<<< HEAD
 
 @app.route('/')
 def md_convert():
@@ -20,6 +21,8 @@ def md_convert():
     """
 
 
+=======
+>>>>>>> upstream/master
 
 
 
