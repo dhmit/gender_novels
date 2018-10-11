@@ -4,11 +4,15 @@ from gutenberg.cleanup import strip_headers
 import re
 from pathlib import Path
 import unittest
+import pywikibot
 
 from gender_novels import common
 from gender_novels import novel
 
 # TODO: A lot of things
+
+GUTENBERG_MIRROR_PATH = ''
+GUTENBERG_METADATA_PATH = ''
 
 def generate_corpus_gutenberg():
     """
@@ -16,7 +20,7 @@ def generate_corpus_gutenberg():
     TODO: implement functions called here
     """
     # # go through all books in Gutenberg
-    # for (id in range(58000)): #would be nice if we could check number of books
+    # for (id in range(gutenberg_number_of_books())): #would be nice if we could check number of books
     #     # check if book is valid novel by our definition
     #     if (!is_valid_novel_gutenberg(id)):
     #         continue
@@ -38,11 +42,24 @@ def generate_corpus_gutenberg():
     #     write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
     pass
 
+def gutenberg_number_of_books():
+    """
+    Determines how many books currently exist in our Gutenberg mirror
+    :return: int
+    """
+    # TODO: implement this function and make it return a legit count
+    return 60000
+
 def is_valid_novel_gutenberg(id):
     """
     Determines whether book with this Gutenberg id is actually an English
     language "novel".  Returns false if the book is not or doesn't actually
     exist.
+    Should check:
+    If book with this id exists
+    If book is under public domain
+    If book is in English
+    If book is a "novel"
     N.B. does not check if novel is in correct publication range
 
     >>> from gender_novels import corpus_gen
@@ -71,6 +88,7 @@ def get_author_gutenberg(id):
     :return: str
     """
     # TODO: should we format author names like this?
+    # TODO: possibly have this return a list of authors, rather than a single string, to handle multiple authors
     # TODO(duan): implement this function
     pass
 
@@ -135,19 +153,17 @@ def get_publication_date_wikidata(author, title):
     Function also doesn't use author parameter
 
     >>> from gender_novels import corpus_gen
-    >>> get_publication_date_wikidata("Francis Bacon", "Novum Organum")
+    >>> get_publication_date_wikidata("Bacon, Francis", "Novum Organum")
     1620
-    >>> get_publication_date_wikidata("Mingfei Duan", "How I Became a Billionaire and also the President")
+    >>> get_publication_date_wikidata("Duan, Mingfei", "How I Became a Billionaire and also the President")
 
-    >>> get_publication_date_wikidata("Jane Austen", "Persuasion")
+    >>> get_publication_date_wikidata("Austen, Jane", "Persuasion")
     1818
 
     :param author: str
     :param title: str
     :return: int
     """
-    import pywikibot
-
     try:
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, title)
@@ -197,6 +213,9 @@ def get_country_publication(author, title):
     """
     Tries to get the country of novel
     @TODO: Country of origin or residence of author?
+    USA should be written as United States
+    Separate countries of UK (England, Wales, etc.)
+    TODO: should we separate those countries?  Easier to integrate later than separate
 
     >>> from gender_novels import corpus_gen
     >>> get_country_publication("Hawthorne, Nathaniel", "The Scarlet Letter")
@@ -209,9 +228,27 @@ def get_country_publication(author, title):
     # TODO(duan): implement this function
     pass
 
+def get_country_publication_wikidata(author, title):
+    """
+    Tries to get country of origin of author from wikidata
+    Otherwise, returns None
+    # TODO: see get_country_publication
+
+    >>> from gender_novels import corpus_gen
+    >>> get_country_publication_wikidata("Trump, Donald", "Trump: The Art of the Deal")
+    'United States'
+
+    :param author: str
+    :param title: str
+    :return: str
+    """
+    # TODO: implement this function
+    pass
+
 def get_author_gender(author):
     """
-    Tries to get gender of author, 'female', 'male', or 'non-binary'.
+    Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple authors of different
+    genders)
     If it fails returns 'unknown'
 
     >>> from gender_novels import corpus_gen
@@ -221,8 +258,46 @@ def get_author_gender(author):
     :param author: str
     :return: str
     """
-    # TODO(duan): implement this function
+    # TODO: implement this function
     pass
+
+def get_author_gender_wikidata(author):
+    """
+    Tries to get gender of author, 'female', 'male', 'non-binary' from wikidata
+    If it fails returns 'unknown'
+    N.B. Wikidata's categories for transgender male and female are treated as male and female, respectively
+
+    >>> from gender_novels import corpus_gen
+    >>> get_author_gender_wikidata("Obama, Barack")
+    'male'
+    >>> get_author_gender_wikidata("Hurston, Zora Neale")
+    'female'
+
+    :param author: str
+    :return: str
+    """
+
+    match = re.match(r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
+    author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
+    try:
+        site = pywikibot.Site("en", "wikipedia")
+        page = pywikibot.Page(site, author_formatted)
+        item = pywikibot.ItemPage.fromPage(page)
+        dictionary = item.get()
+        clm_dict = dictionary["claims"]
+        clm_list = clm_dict["P21"]
+        gender_id = None
+        for clm in clm_list:
+            clm_trgt = clm.getTarget()
+            gender_id = clm_trgt.id
+        if (gender_id == 'Q6581097' or gender_id == 'Q2449503'):
+            return 'male'
+        if (gender_id == 'Q6581072'or gender_id == 'Q1052281'):
+            return 'female'
+        if (gender_id == 'Q1097630'):
+            return 'non-binary'
+    except (KeyError, pywikibot.exceptions.NoPage):
+        return None
 
 def get_subject(author, title, id = None):
     """
