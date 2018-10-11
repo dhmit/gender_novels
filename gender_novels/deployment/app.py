@@ -10,7 +10,8 @@ print(app.config)
 
 @app.route('/')
 def render_index():
-    return render_template('gender_novels.html')
+    return render_template('gender_novels.html', lead_text='hello')
+
 
 
 @app.route('/team')

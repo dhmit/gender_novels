@@ -12,3 +12,11 @@
     max-height: 60px;
     max-width: 60px;
 }
+
+.sidebar {
+    position: fixed;
+}
+
+.sidebar a span {
+    color: black;
+}
