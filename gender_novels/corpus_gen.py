@@ -1,46 +1,60 @@
 import csv
 from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
+from gutenberg.query import get_etexts
+from gutenberg.query import get_metadata
+from gutenberg.acquire import get_metadata_cache
 import re
 from pathlib import Path
 import unittest
 import pywikibot
 
 from gender_novels import common
-from gender_novels import novel
 
 # TODO: A lot of things
 
 GUTENBERG_MIRROR_PATH = ''
-GUTENBERG_METADATA_PATH = ''
+GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
+metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
+                 'notes']
 
 def generate_corpus_gutenberg():
     """
     Generate metadata sheet of all novels we want from Gutenberg
     TODO: implement functions called here
     """
-    # # go through all books in Gutenberg
-    # for (id in range(gutenberg_number_of_books())): #would be nice if we could check number of books
-    #     # check if book is valid novel by our definition
-    #     if (!is_valid_novel_gutenberg(id)):
-    #         continue
-    #     # begin compiling metadata.  Metadata not finalized
-    #     novel_metadata = {'id': str(id), 'corpus': 'Gutenberg'}
-    #     author = get_author_gutenberg(id)
-    #     novel_metadata['author'] = author
-    #     title = get_title_gutenberg(id)
-    #     novel_metadata['title']
-    #     novel_metadata['date'] = get_publication_date(author, title, id)
-    #     # if book isn't published between 1700 and 1922, skip it
-    #     if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
-    #         continue
-    #     novel_metadata['country_publication'] = get_country_publication(author,
-    #         title)
-    #     novel_metadata['author_gender'] = get_author_gender(author)
-    #     novel_metadata['subject'] = get_subject(author, title, id)
-    #     # write to csv
-    #     write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
+    # function currently will not work
     pass
+
+    # write csv header
+    with open(GUTENBERG_METADATA_PATH, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
+        writer.writeheader()
+    # check if cache is populated, if it isn't, populates it
+    cache = get_metadata_cache()
+    if (not cache.exists()):
+        cache.populate()
+    # go through all books in Gutenberg
+    for gutenberg_id in range(gutenberg_number_of_books()): # would be nice if we could check number of books
+        # check if book is valid novel by our definition
+        if (not is_valid_novel_gutenberg(gutenberg_id)):
+            continue
+        # begin compiling metadata.  Metadata not finalized
+        novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
+        author = get_author_gutenberg(id)
+        novel_metadata['author'] = author
+        title = get_title_gutenberg(gutenberg_id)
+        novel_metadata['title']
+        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
+        # if book isn't published between 1700 and 1922, skip it
+        if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
+            continue
+        novel_metadata['country_publication'] = get_country_publication(author,
+            title)
+        novel_metadata['author_gender'] = get_author_gender(author)
+        novel_metadata['subject'] = get_subject_gutenberg(id)
+        # write to csv
+        write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
 
 def gutenberg_number_of_books():
     """
@@ -50,7 +64,7 @@ def gutenberg_number_of_books():
     # TODO: implement this function and make it return a legit count
     return 60000
 
-def is_valid_novel_gutenberg(id):
+def is_valid_novel_gutenberg(gutenberg_id):
     """
     Determines whether book with this Gutenberg id is actually an English
     language "novel".  Returns false if the book is not or doesn't actually
@@ -70,29 +84,30 @@ def is_valid_novel_gutenberg(id):
     >>> is_valid_novel_gutenberg(33420)
     False
 
-    :param id: int
+    :param gutenberg_id: int
     :return: boolean
     TODO: determine what is a novel and implement this function
     """
     pass
 
-def get_author_gutenberg(id):
+def get_author_gutenberg(gutenberg_id):
     """
-    Gets author for novel with this Gutenberg id
+    Gets author or authors for novel with this Gutenberg id
 
     >>> from gender_novels import corpus_gen
     >>> get_author_gutenberg(33)
     'Hawthorne, Nathaniel'
 
-    :param id: int
-    :return: str
+    :param gutenberg_id: int
+    :return: list
     """
     # TODO: should we format author names like this?
     # TODO: possibly have this return a list of authors, rather than a single string, to handle multiple authors
-    # TODO(duan): implement this function
-    pass
+    # TODO: run doctest on computer with populated cache
 
-def get_title_gutenberg(id):
+    return list(get_metadata('author', gutenberg_id))
+
+def get_title_gutenberg(gutenberg_id):
     """
     Gets title for novel with this Gutenberg id
 
@@ -100,11 +115,12 @@ def get_title_gutenberg(id):
     >>> get_title_gutenberg(33)
     'The Scarlet Letter'
 
-    TODO(duan): implement this function
     """
-    pass
+    # TODO: run doctest on computer with populated cache
 
-def get_novel_text_gutenberg(novel_id):
+    return list(get_metadata('title', gutenberg_id))[0]
+
+def get_novel_text_gutenberg(gutenberg_id):
     """
     For a given novel id returns the full text of that novel from gutenberg as
     a string
@@ -114,16 +130,16 @@ def get_novel_text_gutenberg(novel_id):
     >>> scarlet_letter[:18]
     'THE SCARLET LETTER'
 
-    :param novel_id: int
+    :param gutenberg_id: int
     :return: str
     """
-    # TODO: implement this function
-    text = strip_headers(load_etext(novel_id)).strip()
+    # Will not work until mirror is up
+    text = strip_headers(load_etext(gutenberg_id, mirror=GUTENBERG_MIRROR_PATH)).strip()
     return text
 
-def get_publication_date(author, title, id = None):
+def get_publication_date(author, title, gutenberg_id = None):
     """
-    For a given novel with id novel_id this function attempts a variety of
+    For a given novel with id gutenberg_id this function attempts a variety of
     methods to try and find the publication date
     If it can't returns None
 
@@ -135,9 +151,9 @@ def get_publication_date(author, title, id = None):
     >>> get_publication_date("Dick, Phillip K.", "Mr. Spaceship", 32522)
     1953
 
-    :param author: str
+    :param author: list
     :param title: str
-    :param id: int
+    :param gutenberg_id: int
     :return: int
     TODO(duan): implement this function
     """
@@ -160,7 +176,7 @@ def get_publication_date_wikidata(author, title):
     >>> get_publication_date_wikidata("Austen, Jane", "Persuasion")
     1818
 
-    :param author: str
+    :param author: list
     :param title: str
     :return: int
     """
@@ -221,7 +237,7 @@ def get_country_publication(author, title):
     >>> get_country_publication("Hawthorne, Nathaniel", "The Scarlet Letter")
     'United States'
 
-    :param author: str
+    :param author: list
     :param title: str
     :return: str
     """
@@ -238,7 +254,7 @@ def get_country_publication_wikidata(author, title):
     >>> get_country_publication_wikidata("Trump, Donald", "Trump: The Art of the Deal")
     'United States'
 
-    :param author: str
+    :param author: list
     :param title: str
     :return: str
     """
@@ -255,7 +271,7 @@ def get_author_gender(author):
     >>> get_author_gender("Hawthorne, Nathaniel")
     male
 
-    :param author: str
+    :param author: list
     :return: str
     """
     # TODO: implement this function
@@ -299,24 +315,43 @@ def get_author_gender_wikidata(author):
     except (KeyError, pywikibot.exceptions.NoPage):
         return None
 
-def get_subject(author, title, id = None):
+def get_subject_gutenberg(gutenberg_id):
     """
     Tries to get subjects
-    TODO: Subject as defined by Gutenberg or LoC or what?
+
+    >>> from gender_novels import corpus_gen
+    >>> get_subject_gutenberg(38200)
+    ['Crete (Greece) -- History -- Insurrection, 1866-1868 -- Fiction']
+
     :param: author: str
     :param: title: str
     :param: id: int
     :return: list
     """
-    pass
+    # TODO: run doctest on computer with populated cache
 
-def write_metadata(novel_metadata, path):
+    return list(get_metadata('subject', gutenberg_id))
+
+def write_metadata(novel_metadata):
     """
     Writes a row of metadata for a novel into the csv at path
+    Subject to change as metadata changes
+
+    Running this doctest actually generates a file
+    # >>> from gender_novels import corpus_gen
+    # >>> corpus_gen.write_metadata({'id': 105, 'author': 'Austen, Jane', 'title': 'Persuasion',
+    # ...                            'corpus_name': 'gutenberg', 'date': '1818',
+    # ...                            'country_publication': 'England', 'subject': ['England -- Social life and customs -- 19th century -- Fiction'],
+    # ...                            'author_gender': 'female'})
+
     :param: novel_metadata: dict
     :param: path: Path
     """
-    pass
+    corpus = novel_metadata['corpus_name']
+    path = Path('corpora', corpus, f'{corpus}.csv')
+    with open(path, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
+        writer.writerow(novel_metadata)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
