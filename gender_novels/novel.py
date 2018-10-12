@@ -61,7 +61,8 @@ class Novel(common.FileLoaderMixin):
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
-        self.word_counts = None
+        self._word_counts_counter = None
+        self._word_count = None
 
         if self.author_gender not in {'female', 'male', 'non-binary', 'unknown', 'both'}:
             raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
@@ -77,6 +78,28 @@ class Novel(common.FileLoaderMixin):
                     f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
                     f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
+
+    @property
+    def word_count(self):
+        """
+        Lazy-loading for Novel.word_count attribute
+        The word_count attribute is useful for the get_word_freq function.
+        However, it is performance-wise costly, so it's only loaded when it's actually required.
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> austen.word_count
+        83305
+
+        :return: int
+        """
+
+        if self._word_count is None:
+            self._word_count = len(self.get_tokenized_text())
+        return self._word_count
 
     def __str__(self):
         """
@@ -233,10 +256,10 @@ class Novel(common.FileLoaderMixin):
         """
 
         # If word_counts were not previously initialized, do it now and store it for the future.
-        if not self.word_counts:
-            self.word_counts = Counter(self.get_tokenized_text())
+        if not self._word_counts_counter:
+            self._word_counts_counter = Counter(self.get_tokenized_text())
 
-        return self.word_counts[word]
+        return self._word_counts_counter[word]
 
     def get_wordcount_counter(self):
         """
@@ -258,9 +281,9 @@ class Novel(common.FileLoaderMixin):
         """
 
         # If word_counts were not previously initialized, do it now and store it for the future.
-        if not self.word_counts:
-            self.word_counts = Counter(self.get_tokenized_text())
-        return self.word_counts
+        if not self._word_counts_counter:
+            self._word_counts_counter = Counter(self.get_tokenized_text())
+        return self._word_counts_counter
 
     def words_associated(self, word):
         """
@@ -310,15 +333,14 @@ class Novel(common.FileLoaderMixin):
         ...                   'corpus_name': 'sample_novels', 'date': '1900',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
-        >>> f = scarlett.get_word_freq('sad')
-        >>> f
-        0.13333
+        >>> frequency = scarlett.get_word_freq('sad')
+        >>> frequency
+        0.13333333333333333
         """
-        book_length = len(self.get_tokenized_text())
-        w_count = self.get_count_of_word(word)
-        word_freq = round((w_count / book_length), 5)
 
-        return word_freq
+        word_frequency = self.get_count_of_word(word) / self.word_count
+        return word_frequency
+
 
     def get_part_of_speech_tags(self):
         """
