@@ -13,10 +13,6 @@
     max-width: 60px;
 }
 
-.sidebar {
-    position: fixed;
-}
-
-.sidebar a span {
-    color: black;
+#topic-title {
+    text-align: center;
 }

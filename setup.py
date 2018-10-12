@@ -28,7 +28,7 @@ setuptools.setup(
     description="Descriptions of Gender in Writing",
     install_requires=REQUIRED_PACKAGES,
     long_description=LONG_DESCRIPTION,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/markdowns",
     url="https://github.com/dhmit/gender_novels",
     packages=setuptools.find_packages(),
     classifiers=[
