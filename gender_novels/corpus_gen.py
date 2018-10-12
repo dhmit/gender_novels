@@ -12,7 +12,7 @@ from gender_novels import common
 
 GUTENBERG_MIRROR_PATH = ''
 GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
-metadata_list = ['id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
+metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
                  'notes']
 
 def generate_corpus_gutenberg():
@@ -27,15 +27,15 @@ def generate_corpus_gutenberg():
     # # go through all books in Gutenberg
     # for (id in range(gutenberg_number_of_books())): #would be nice if we could check number of books
     #     # check if book is valid novel by our definition
-    #     if (!is_valid_novel_gutenberg(id)):
+    #     if (!is_valid_novel_gutenberg(gutenberg_id)):
     #         continue
     #     # begin compiling metadata.  Metadata not finalized
-    #     novel_metadata = {'id': id, 'corpus_name': 'gutenberg'}
+    #     novel_metadata = {'gutenberg_id': id, 'corpus_name': 'gutenberg'}
     #     author = get_author_gutenberg(id)
     #     novel_metadata['author'] = author
-    #     title = get_title_gutenberg(id)
+    #     title = get_title_gutenberg(gutenberg_id)
     #     novel_metadata['title']
-    #     novel_metadata['date'] = get_publication_date(author, title, id)
+    #     novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
     #     # if book isn't published between 1700 and 1922, skip it
     #     if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
     #         continue
@@ -55,7 +55,7 @@ def gutenberg_number_of_books():
     # TODO: implement this function and make it return a legit count
     return 60000
 
-def is_valid_novel_gutenberg(id):
+def is_valid_novel_gutenberg(gutenberg_id):
     """
     Determines whether book with this Gutenberg id is actually an English
     language "novel".  Returns false if the book is not or doesn't actually
@@ -75,13 +75,13 @@ def is_valid_novel_gutenberg(id):
     >>> is_valid_novel_gutenberg(33420)
     False
 
-    :param id: int
+    :param gutenberg_id: int
     :return: boolean
     TODO: determine what is a novel and implement this function
     """
     pass
 
-def get_author_gutenberg(id):
+def get_author_gutenberg(gutenberg_id):
     """
     Gets author for novel with this Gutenberg id
 
@@ -89,7 +89,7 @@ def get_author_gutenberg(id):
     >>> get_author_gutenberg(33)
     'Hawthorne, Nathaniel'
 
-    :param id: int
+    :param gutenberg_id: int
     :return: str
     """
     # TODO: should we format author names like this?
@@ -97,7 +97,7 @@ def get_author_gutenberg(id):
     # TODO(duan): implement this function
     pass
 
-def get_title_gutenberg(id):
+def get_title_gutenberg(gutenberg_id):
     """
     Gets title for novel with this Gutenberg id
 
@@ -109,7 +109,7 @@ def get_title_gutenberg(id):
     """
     pass
 
-def get_novel_text_gutenberg(novel_id):
+def get_novel_text_gutenberg(gutenberg_id):
     """
     For a given novel id returns the full text of that novel from gutenberg as
     a string
@@ -119,16 +119,16 @@ def get_novel_text_gutenberg(novel_id):
     >>> scarlet_letter[:18]
     'THE SCARLET LETTER'
 
-    :param novel_id: int
+    :param gutenberg_id: int
     :return: str
     """
     # TODO: implement this function
-    text = strip_headers(load_etext(novel_id)).strip()
+    text = strip_headers(load_etext(gutenberg_id)).strip()
     return text
 
-def get_publication_date(author, title, id = None):
+def get_publication_date(author, title, gutenberg_id = None):
     """
-    For a given novel with id novel_id this function attempts a variety of
+    For a given novel with id gutenberg_id this function attempts a variety of
     methods to try and find the publication date
     If it can't returns None
 
@@ -142,7 +142,7 @@ def get_publication_date(author, title, id = None):
 
     :param author: str
     :param title: str
-    :param id: int
+    :param gutenberg_id: int
     :return: int
     TODO(duan): implement this function
     """
@@ -304,7 +304,7 @@ def get_author_gender_wikidata(author):
     except (KeyError, pywikibot.exceptions.NoPage):
         return None
 
-def get_subject(author, title, id = None):
+def get_subject_gutenberg(author, title, gutenberg_id = None):
     """
     Tries to get subjects
     TODO: Subject as defined by Gutenberg or LoC or what?
