@@ -254,7 +254,7 @@ class Novel(common.FileLoaderMixin):
         >>> scarlett.get_wordcount_counter()
         Counter({'was': 2, 'convicted': 2, 'hester': 1, 'of': 1, 'adultery': 1})
 
-        :return:
+        :return: Counter
         """
 
         # If word_counts were not previously initialized, do it now and store it for the future.
