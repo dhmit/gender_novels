@@ -4,7 +4,6 @@
 
 .header-text {
     color: white;
-    text-align: center;
 }
 
 .github-logo {
@@ -16,5 +15,6 @@
 
 /* Converted markdown styling */
 .topic-content h1 {
-    font-family: Helvetica;
+    /* Just a test */
+    color: red;
 }
