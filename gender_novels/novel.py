@@ -79,13 +79,13 @@ class Novel(common.FileLoaderMixin):
         Returns the filename without the extension - author and title word
         :return: string
 
-        >>>from gender_novels import novel
+        >>> from gender_novels import novel
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
         >>> n = str(austen)
-        >>>n
+        >>> n
         austen_persuasion
         """
         name = self.filename[0:len(self.filename)-4]
