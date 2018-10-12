@@ -4,6 +4,11 @@ from collections import Counter
 from pathlib import Path
 
 import nltk
+#nltk as part of speech tagger, requires these two packages
+#TODO: Figure out how to put these nltk packages in setup.py, not here
+nltk.download('punkt', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet= True)
+
 
 from gender_novels import common
 
@@ -11,8 +16,6 @@ from gender_novels import common
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
-
-    TODO: write __str__ for novels
 
     >>> from gender_novels import novel
     >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
@@ -74,6 +77,24 @@ class Novel(common.FileLoaderMixin):
                     f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
                     f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
+
+    def __str__(self):
+        """
+        Overrides python print method for user-defined objects for Novel class
+        Returns the filename without the extension - author and title word
+        :return: string
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> novel_string = str(austen)
+        >>> novel_string
+        'austen_persuasion'
+        """
+        name = self.filename[0:len(self.filename)-4]
+        return name
 
 
     def _load_novel_text(self):

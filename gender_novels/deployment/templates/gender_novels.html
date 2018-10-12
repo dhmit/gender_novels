@@ -3,9 +3,43 @@
 {% block title %}Gender Novels{% endblock %}
 
 {% block head %}
+    <script type="text/javascript" src="{{ url_for('static', filename='js/convertMarkdown.js')
+            }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/gender_novels.css') }}" />
 {% endblock %}
 
 {% block content %}
-    <p class="header-text">Gender Novels</p>
+    <!-- Header -->
+    <div class="container-fluid header">
+        <div class="row justify-content-center">
+            <div class="col-auto">
+                <h1 class="header-text display-2">The Gender Novels Project</h1>
+            </div>
+            <div class="col-auto align-center align-self-center">
+                <a href="https://github.com/dhmit/gender_novels" target="_blank">
+                    <img src="{{ url_for('static', filename='graphics/GitHub_light.png') }}"
+                         class="github-logo">
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Topic -->
+    <!-- Topic Title -->
+    <div class="container-fluid">
+        <div class="row justify-content-center align-self-center">
+            <div class="col-12">
+                <h2 id="topic-title" class="display-4">Overview</h2>
+            </div>
+        </div>
+        <div class="row justify-content-start">
+            <div class="col-2"></div>
+            <!-- Topic Content -->
+            <div class="col-8" align="center">
+                <p id="topic-content">
+                    <!-- Content assigned in convertMarkdown.js -->
+                </p>
+            </div>
+        </div>
+    </div>
 {% endblock %}
