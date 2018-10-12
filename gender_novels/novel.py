@@ -238,6 +238,29 @@ class Novel(common.FileLoaderMixin):
 
         return self.word_counts[word]
 
+    def get_wordcount_counter(self):
+        """
+        Returns a counter object of all of the words in the text.
+        (The counter can also be accessed as self.word_counts. However, it only gets initialized
+        when a user either runs Novel.get_count_of_word or Novel.get_wordcount_counter, hence
+        the separate method.)
+
+        >>> from gender_novels import novel
+        >>> summary = "Hester was convicted of adultery was convicted."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.get_wordcount_counter()
+
+        :return:
+        """
+
+        # If word_counts were not previously initialized, do it now and store it for the future.
+        if not self.word_counts:
+            self.word_counts = Counter(self.get_tokenized_text())
+        return self.word_counts
+
     def words_associated(self, word):
         """
         Returns a counter of the words found after given word
