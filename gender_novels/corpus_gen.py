@@ -20,9 +20,18 @@ metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication
 
 def generate_corpus_gutenberg():
     """
+    Generates folder with all UTF-8 .txt files of all valid novels.  Only works on Keith's computer.
+    """
+    # TODO (Keith): implement this function
+    pass
+
+def generate_corpus_metadata_gutenberg():
+    """
     Generate metadata sheet of all novels we want from Gutenberg
     TODO: implement functions called here
     """
+    # TODO: make this work with new system
+
     # function currently will not work
     pass
 
@@ -41,18 +50,18 @@ def generate_corpus_gutenberg():
             continue
         # begin compiling metadata.  Metadata not finalized
         novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
-        author = get_author_gutenberg(id)
+        author = get_author_gutenberg(gutenberg_id)
         novel_metadata['author'] = author
         title = get_title_gutenberg(gutenberg_id)
-        novel_metadata['title']
+        novel_metadata['title'] = title
         novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
         # if book isn't published between 1700 and 1922, skip it
-        if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
+        if (novel_metadata['date'] < 1700 or novel_metadata['date'] > 1922):
             continue
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
         novel_metadata['author_gender'] = get_author_gender(author)
-        novel_metadata['subject'] = get_subject_gutenberg(id)
+        novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
         # write to csv
         write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
 
@@ -66,13 +75,11 @@ def gutenberg_number_of_books():
 
 def is_valid_novel_gutenberg(gutenberg_id):
     """
-    Determines whether book with this Gutenberg id is actually an English
-    language "novel".  Returns false if the book is not or doesn't actually
-    exist.
+    Determines whether book with this Gutenberg id is actually a"novel".  Returns false if the book is not or doesn't
+    actually exist.
     Should check:
     If book with this id exists
     If book is under public domain
-    If book is in English
     If book is a "novel"
     N.B. does not check if novel is in correct publication range
 
@@ -96,7 +103,7 @@ def get_author_gutenberg(gutenberg_id):
 
     >>> from gender_novels import corpus_gen
     >>> get_author_gutenberg(33)
-    'Hawthorne, Nathaniel'
+    ['Hawthorne, Nathaniel']
 
     :param gutenberg_id: int
     :return: list
@@ -133,9 +140,9 @@ def get_novel_text_gutenberg(gutenberg_id):
     :param gutenberg_id: int
     :return: str
     """
-    # Will not work until mirror is up
-    text = strip_headers(load_etext(gutenberg_id, mirror=GUTENBERG_MIRROR_PATH)).strip()
-    return text
+    # TODO: make this work with new system
+    # text = strip_headers(load_etext(gutenberg_id, mirror=GUTENBERG_MIRROR_PATH)).strip()
+    # return text
 
 def get_publication_date(author, title, gutenberg_id = None):
     """
@@ -155,7 +162,7 @@ def get_publication_date(author, title, gutenberg_id = None):
     :param title: str
     :param gutenberg_id: int
     :return: int
-    TODO(duan): implement this function
+    TODO: implement this function
     """
     #This function will call other get_publication_date functions in turn until a publication date is found
     pass
@@ -320,8 +327,7 @@ def get_subject_gutenberg(gutenberg_id):
     Tries to get subjects
 
     >>> from gender_novels import corpus_gen
-    >>> get_subject_gutenberg(38200)
-    ['Crete (Greece) -- History -- Insurrection, 1866-1868 -- Fiction']
+    >>> get_subject_gutenberg(5200)
 
     :param: author: str
     :param: title: str
@@ -330,7 +336,7 @@ def get_subject_gutenberg(gutenberg_id):
     """
     # TODO: run doctest on computer with populated cache
 
-    return list(get_metadata('subject', gutenberg_id))
+    return sorted(list(get_metadata('subject', gutenberg_id)))
 
 def write_metadata(novel_metadata):
     """
