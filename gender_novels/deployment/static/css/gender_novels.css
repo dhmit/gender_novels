@@ -4,6 +4,7 @@
 
 .header-text {
     color: white;
+    text-align: center;
 }
 
 .github-logo {
@@ -13,6 +14,7 @@
     max-width: 60px;
 }
 
-#topic-title {
-    text-align: center;
+/* Converted markdown styling */
+.topic-content h1 {
+    font-family: Helvetica;
 }
