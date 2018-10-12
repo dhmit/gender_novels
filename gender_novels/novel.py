@@ -7,10 +7,10 @@ import nltk
 #nltk as part of speech tagger, requires these two packages
 #TODO: Figure out how to put these nltk packages in setup.py, not here
 nltk.download('punkt', quiet=True)
-nltk.download('averaged_perceptron_tagger', quiet= True)
-
+nltk.download('averaged_perceptron_tagger', quiet=True)
 
 from gender_novels import common
+
 
 
 class Novel(common.FileLoaderMixin):
@@ -288,7 +288,8 @@ class Novel(common.FileLoaderMixin):
     def words_associated(self, word):
         """
         Returns a counter of the words found after given word
-        In the case of double/repeated words, the counter would include the word itself and the next new word
+        In the case of double/repeated words, the counter would include the word itself and the next
+        new word
         Note: words always return lowercase
 
         >>> from gender_novels import novel
