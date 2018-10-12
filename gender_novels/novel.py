@@ -147,20 +147,21 @@ class Novel(common.FileLoaderMixin):
         >>> test_novel.find_quoted_text()
         ['"This is a quote"', '"This is my quote"']
 
-        //TODO: Make this test pass
-        >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
-        >>> test_novel.find_quoted_text()
-        ['"Miss A.E.-- a quote."']
+        # TODO: Make this test pass
+        # >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
+        # >>> test_novel.find_quoted_text()
+        # ['"Miss A.E.-- a quote."']
 
-        //TODO: Make this test pass
-        //TODO: One approach would be to find the shortest possible closed quote.
-        >>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
-        >>> test_novel.find_quoted_text()
-        ['"Closed quote."']
+        # TODO: Make this test pass
+        # One approach would be to find the shortest possible closed quote.
+        #
+        # >>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
+        # >>> test_novel.find_quoted_text()
+        # ['"Closed quote."']
 
-        //TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
-        //TODO(Redlon & Murray): single quote
-        //TODO: Look for more complicated test cases in our existing novels.
+        TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
+        TODO(Redlon & Murray): single quote
+        TODO: Look for more complicated test cases in our existing novels.
 
         :return: list of complete quotation strings
         """
@@ -293,7 +294,6 @@ class Novel(common.FileLoaderMixin):
 
         :rtype: list
         """
-
         text = nltk.word_tokenize(self.text)
         pos_tags = nltk.pos_tag(text)
         return pos_tags

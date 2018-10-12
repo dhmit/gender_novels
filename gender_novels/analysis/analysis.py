@@ -72,6 +72,7 @@ def get_comparative_word_freq(freqs):
 
     return comp_freqs
 
+
 def get_counts_by_pos(freqs):
     """
     This functions returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
