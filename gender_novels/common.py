@@ -5,6 +5,7 @@ from pathlib import Path
 
 DEBUG = False
 
+#TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
 
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
