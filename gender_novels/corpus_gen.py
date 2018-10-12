@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 import unittest
 import pywikibot
+import glob
+from shutil import copyfile
 
 from gender_novels import common
 
@@ -17,20 +19,15 @@ GUTENBERG_MIRROR_PATH = ''
 GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
 metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
                  'notes']
+INITIAL_BOOK_STORE = ''
+FINAL_BOOK_STORE = ''
 
 def generate_corpus_gutenberg():
-    """
-    Generates folder with all UTF-8 .txt files of all valid novels.  Only works on Keith's computer.
-    """
-    # TODO (Keith): implement this function
-    pass
-
-def generate_corpus_metadata_gutenberg():
     """
     Generate metadata sheet of all novels we want from Gutenberg
     TODO: implement functions called here
     """
-    # TODO: make this work with new system
+    # TODO(duan): make this work with new system
 
     # function currently will not work
     pass
@@ -43,8 +40,11 @@ def generate_corpus_metadata_gutenberg():
     cache = get_metadata_cache()
     if (not cache.exists()):
         cache.populate()
-    # go through all books in Gutenberg
-    for gutenberg_id in range(gutenberg_number_of_books()): # would be nice if we could check number of books
+    # go through all books in Keith's thing
+    books = glob.iglob(INITIAL_BOOK_STORE+r"/*.txt")
+    for book in books:
+        # get the book's id
+        gutenberg_id = get_gutenberg_id(book)
         # check if book is valid novel by our definition
         if (not is_valid_novel_gutenberg(gutenberg_id)):
             continue
@@ -64,20 +64,25 @@ def generate_corpus_metadata_gutenberg():
         novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
         # write to csv
         write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
+        # copy text file to new folder
+        copyfile(book, FINAL_BOOK_STORE + r"/" + str(gutenberg_id) + r".txt")
 
-def gutenberg_number_of_books():
+def get_gutenberg_id(filepath):
     """
-    Determines how many books currently exist in our Gutenberg mirror
-    :return: int
+    For file with filepath get the gutenberg id of that book.  Should not be hard because Gutenberg literally names
+    files by id
+    :param filepath: str
+    :return:
     """
-    # TODO: implement this function and make it return a legit count
-    return 60000
+    # TODO(duan): implement this function
+    pass
 
 def is_valid_novel_gutenberg(gutenberg_id):
     """
-    Determines whether book with this Gutenberg id is actually a"novel".  Returns false if the book is not or doesn't
+    Determines whether book with this Gutenberg id is actually a "novel".  Returns false if the book is not or doesn't
     actually exist.
     Should check:
+    If book is English
     If book with this id exists
     If book is under public domain
     If book is a "novel"
@@ -96,6 +101,8 @@ def is_valid_novel_gutenberg(gutenberg_id):
     TODO: determine what is a novel and implement this function
     """
     pass
+
+
 
 def get_author_gutenberg(gutenberg_id):
     """
@@ -140,9 +147,10 @@ def get_novel_text_gutenberg(gutenberg_id):
     :param gutenberg_id: int
     :return: str
     """
-    # TODO: make this work with new system
+    # TODO(duan): make this work with new system
     # text = strip_headers(load_etext(gutenberg_id, mirror=GUTENBERG_MIRROR_PATH)).strip()
     # return text
+    pass
 
 def get_publication_date(author, title, gutenberg_id = None):
     """
