@@ -82,7 +82,7 @@ class Novel(common.FileLoaderMixin):
     @property
     def word_count(self):
         """
-        Lazy-loading for Novel.word_count attribute
+        Lazy-loading for Novel.word_count attribute. Returns the number of words in the novel.
         The word_count attribute is useful for the get_word_freq function.
         However, it is performance-wise costly, so it's only loaded when it's actually required.
 
