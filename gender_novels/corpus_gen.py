@@ -19,8 +19,11 @@ GUTENBERG_MIRROR_PATH = ''
 GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
 metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
                  'notes']
-INITIAL_BOOK_STORE = ''
-FINAL_BOOK_STORE = ''
+INITIAL_BOOK_STORE = r''
+FINAL_BOOK_STORE = r''
+
+BAD_WORDS = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
+             "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals"]
 
 def generate_corpus_gutenberg():
     """
@@ -56,7 +59,7 @@ def generate_corpus_gutenberg():
         novel_metadata['title'] = title
         novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
         # if book isn't published between 1700 and 1922, skip it
-        if (novel_metadata['date'] < 1700 or novel_metadata['date'] > 1922):
+        if (novel_metadata['date'] < 1770 or novel_metadata['date'] > 1922):
             continue
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
@@ -77,32 +80,43 @@ def get_gutenberg_id(filepath):
     # TODO(duan): implement this function
     pass
 
-def is_valid_novel_gutenberg(gutenberg_id):
+def is_valid_novel_gutenberg(gutenberg_id, filepath):
     """
     Determines whether book with this Gutenberg id is actually a "novel".  Returns false if the book is not or doesn't
     actually exist.
     Should check:
     If book is English
-    If book with this id exists
     If book is under public domain
     If book is a "novel"
     N.B. does not check if novel is in correct publication range
 
     >>> from gender_novels import corpus_gen
-    >>> is_valid_novel_gutenberg(33)
+    >>> is_valid_novel_gutenberg(33, "")
     True
 
     >>> from gender_novels import corpus_gen
-    >>> is_valid_novel_gutenberg(33420)
+    >>> is_valid_novel_gutenberg(33420, "")
     False
 
     :param gutenberg_id: int
     :return: boolean
     TODO: determine what is a novel and implement this function
     """
-    pass
-
-
+    language = list(get_metadata('language', gutenberg_id))[0]
+    if (not language == 'en'):
+        return False
+    rights = get_metadata('rights', gutenberg_id)
+    if (not rights == frozenset({'Public domain in the USA.'})):
+        return False
+    subjects = get_subject_gutenberg(gutenberg_id)
+    for subject in subjects:
+        for word in BAD_WORDS:
+            if ((subject.lower()).find(word) != -1):
+                return False
+    title = get_title_gutenberg(gutenberg_id)
+    if (title.find("Index of the Project Gutenberg ") != -1):
+        return False
+    return True
 
 def get_author_gutenberg(gutenberg_id):
     """
@@ -134,15 +148,14 @@ def get_title_gutenberg(gutenberg_id):
 
     return list(get_metadata('title', gutenberg_id))[0]
 
-def get_novel_text_gutenberg(gutenberg_id):
+def get_novel_text_gutenberg(filepath):
     """
-    For a given novel id returns the full text of that novel from gutenberg as
-    a string
+    Extract text as as string from file
 
-    >>> from gender_novels import corpus_gen
-    >>> scarlet_letter = get_novel_text_gutenberg(33)
-    >>> scarlet_letter[:18]
-    'THE SCARLET LETTER'
+    # >>> from gender_novels import corpus_gen
+    # >>> scarlet_letter = get_novel_text_gutenberg(33)
+    # >>> scarlet_letter[:18]
+    # 'THE SCARLET LETTER'
 
     :param gutenberg_id: int
     :return: str
