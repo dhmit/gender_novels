@@ -1,5 +1,7 @@
 # Using Flask
 [Helpful Flask tutorial](http://www.tutorialspoint.com/flask)
 
-### Kate's notes: 
-[Google Doc - still a work in progress](https://goo.gl/YRrbwm)
+### Comments: 
+[Google Doc](https://goo.gl/YRrbwm)
+
+This file is still a work in progress, and I will convert to Markdown when it's finished.
