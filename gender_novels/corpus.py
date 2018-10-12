@@ -46,17 +46,17 @@ class Corpus(common.FileLoaderMixin):
         Return a copy of this Corpus
 
         >>> from gender_novels.corpus import Corpus
-        >>> c = Corpus('sample_novels')
-        >>> c_copy = c.clone()
-        >>> len(c_copy.novels) == len(c_copy.novels)
+        >>> sample_corpus = Corpus('sample_novels')
+        >>> corpus_copy = sample_corpus.clone()
+        >>> len(corpus_copy.novels) == len(sample_corpus.novels)
         True
 
         :return: Corpus
         """
-        c_copy = Corpus()
-        c_copy.corpus_name = self.corpus_name
-        c_copy.novels = self.novels[:]
-        return c_copy
+        corpus_copy = Corpus()
+        corpus_copy.corpus_name = self.corpus_name
+        corpus_copy.novels = self.novels[:]
+        return corpus_copy
 
     def _load_novels(self):
         novels = []
@@ -99,8 +99,8 @@ class Corpus(common.FileLoaderMixin):
 
         :rtype: int
         """
-        c_copy = self.filter_by_gender(gender)
-        return len(c_copy.novels)
+        filtered_corpus = self.filter_by_gender(gender)
+        return len(filtered_corpus.novels)
 
     def filter_by_gender(self, gender):
         """
@@ -134,8 +134,8 @@ class Corpus(common.FileLoaderMixin):
                 f'Gender must be {", ".join(supported_genders)} '
                 + f'but not {gender}.')
 
-        c_copy = self.clone()
-        c_copy.novels = []
+        corpus_copy = self.clone()
+        corpus_copy.novels = []
 
         for novel in self.novels:
             # check if all novels have an author_gender attribute
@@ -146,9 +146,9 @@ class Corpus(common.FileLoaderMixin):
                 err += 'the attribute "author_gender."'
                 raise AttributeError(err)
             if novel.author_gender == gender:
-                c_copy.novels.append(novel)
+                corpus_copy.novels.append(novel)
 
-        return c_copy
+        return corpus_copy
 
 
 
