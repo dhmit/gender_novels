@@ -252,6 +252,7 @@ class Novel(common.FileLoaderMixin):
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
         >>> scarlett.get_wordcount_counter()
+        Counter({'was': 2, 'convicted': 2, 'hester': 1, 'of': 1, 'adultery': 1})
 
         :return:
         """
