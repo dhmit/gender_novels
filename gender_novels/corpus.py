@@ -86,5 +86,8 @@ class Corpus(common.FileLoaderMixin):
 
 
 if __name__ == '__main__':
+
+    corpus = Corpus('sample_novels')
+
     from dh_testers.testRunner import main_test
     main_test()
