@@ -58,7 +58,7 @@ def generate_corpus_gutenberg():
         novel_metadata['author'] = author
         title = get_title_gutenberg(gutenberg_id)
         novel_metadata['title'] = title
-        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
+        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id, book)
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
         novel_metadata['author_gender'] = get_author_gender(author)
@@ -181,7 +181,7 @@ def get_novel_text_gutenberg(filepath):
     with open(filepath, 'r') as text:
         return strip_headers(text.read()).strip()
 
-def get_publication_date(author, title, gutenberg_id = None):
+def get_publication_date(author, title, gutenberg_id = None, filepath):
     """
     For a given novel with id gutenberg_id this function attempts a variety of
     methods to try and find the publication date
@@ -199,10 +199,17 @@ def get_publication_date(author, title, gutenberg_id = None):
     :param title: str
     :param gutenberg_id: int
     :return: int
-    TODO: implement this function
+    TODO: will not work without worldcat functions
     """
-    #This function will call other get_publication_date functions in turn until a publication date is found
-    pass
+    date = get_publication_date_from_copyright(get_novel_text_gutenberg(filepath))
+    if (date != None):
+        return date
+    else:
+        date = get_publication_date_worldcat(author, title)
+    if (date != None):
+        return date
+    else:
+        return get_publication_date_wikidata(author, title)
 
 def get_publication_date_wikidata(author, title):
     """
