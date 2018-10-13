@@ -6,6 +6,7 @@ from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 import nltk
 import collections
+from statistics import mean, median, mode
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
@@ -35,8 +36,8 @@ def get_count_words(novel, words):
     >>> get_count_words(scarlett, ["sad", "and"])
     {"sad":4, "and":4}
 
-    :param words: a list of words to be counted in text
-    :return: a dictionary where the key is the word and the value is the count 
+    :param:words: a list of words to be counted in text
+    :return: a dictionary where the key is the word and the value is the count
     """
     dic_word_counts = {}
     for word in words:
@@ -158,7 +159,39 @@ def display_gender_freq(d, title):
     plt.savefig(filepng, bbox_inches='tight')
     plt.savefig(filepdf, bbox_inches='tight')
 
+def instance_dist(novel, word):
+    """
+    >>> from gender_novels import novel
+    >>> summary = "Hester was her convicted of adultery. "
+    >>> summary += "which made her very sad, and then her Arthur was also sad, and her everybody was "
+    >>> summary += "sad and then Arthur her died and it was very sad. her Sadness."
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1966',
+    ...                   'filename': None, 'text': summary}
+    >>> scarlett = novel.Novel(novel_metadata)
+    >>> instance_dist(scarlett, "her")
+    [6, 5, 6, 7, 7]
+
+    :param:novel to analyze, gendered word
+    :return: list of distances between instances of gendered word
+
+    """
+    output = []
+    count = 0
+    start = False
+    text = novel.get_tokenized_text()
+
+    for e in text:
+        if not start:
+            if e == word:
+                start = True
+        else:
+            count += 1
+            if e == word:
+                output.append(count)
+                count = 0
+    return output
+
 if __name__ == '__main__':
     test_function()
-
 
