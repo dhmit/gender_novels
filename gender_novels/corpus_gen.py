@@ -281,7 +281,7 @@ def get_country_publication(author, title):
     Tries to get the country of novel
     @TODO: Country of origin or residence of author?
     USA should be written as United States
-    Separate countries of UK (England, Wales, etc.)
+    Don't separate countries of UK (England, Wales, etc.)
     TODO: should we separate those countries?  Easier to integrate later than separate
 
     >>> from gender_novels import corpus_gen
@@ -297,10 +297,8 @@ def get_country_publication(author, title):
 
 def get_country_publication_wikidata(author, title):
     """
-    Tries to get country of origin of author from wikidata
+    Tries to get country of publication from wikidata
     Otherwise, returns None
-    # TODO: see get_country_publication
-
     >>> from gender_novels import corpus_gen
     >>> get_country_publication_wikidata("Trump, Donald", "Trump: The Art of the Deal")
     'United States'
@@ -309,8 +307,43 @@ def get_country_publication_wikidata(author, title):
     :param title: str
     :return: str
     """
-    # TODO: implement this function
-    pass
+    # TODO(duan): implement this function
+    try:
+        wp = pywikibot.Site("en", "wikipedia")
+        page = pywikibot.Page(wp, title)
+        item = pywikibot.ItemPage.fromPage(page)
+        dictionary = item.get()
+        clm_dict = dictionary["claims"]
+        clm_list = clm_dict["P495"]
+        year = None
+        for clm in clm_list:
+            clm_trgt = clm.getTarget()
+            country_id = clm_trgt.id
+    except (KeyError):
+        try:
+            return get_country_publication_wikidata(author, title + " (novel)")
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except (pywikibot.exceptions.NoPage):
+        return None
+    if (country_id == "Q30"):
+        return "United States"
+    if (country_id == "Q145"):
+        return "United Kingdom"
+    country = None
+    wikidata = pywikibot.Site("wikidata", "wikidata")
+    repo = wikidata.data_repository()
+    item = pywikibot.ItemPage(repo, country_id)
+    dictionary = item.get()
+    clm_dict = dictionary["claims"]
+    clm_list = clm_dict["P1813"]
+    for clm in clm_list:
+        clm_trgt = clm.getTarget()
+        if (clm_trgt.language == 'en'):
+            country = clm_trgt.text
+    if (country == None):
+        country = dictionary['aliases']['en'][-1]
+    return country
 
 def get_author_gender(author):
     """
