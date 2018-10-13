@@ -4,6 +4,11 @@ from collections import Counter
 from pathlib import Path
 
 import nltk
+#nltk as part of speech tagger, requires these two packages
+#TODO: Figure out how to put these nltk packages in setup.py, not here
+nltk.download('punkt', quiet=True)
+nltk.download('averaged_perceptron_tagger', quiet= True)
+
 
 from gender_novels import common
 
@@ -79,14 +84,14 @@ class Novel(common.FileLoaderMixin):
         Returns the filename without the extension - author and title word
         :return: string
 
-        >>>from gender_novels import novel
+        >>> from gender_novels import novel
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
-        >>> n = str(austen)
-        >>>n
-        austen_persuasion
+        >>> novel_string = str(austen)
+        >>> novel_string
+        'austen_persuasion'
         """
         name = self.filename[0:len(self.filename)-4]
         return name
@@ -163,20 +168,21 @@ class Novel(common.FileLoaderMixin):
         >>> test_novel.find_quoted_text()
         ['"This is a quote"', '"This is my quote"']
 
-        //TODO: Make this test pass
-        >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
-        >>> test_novel.find_quoted_text()
-        ['"Miss A.E.-- a quote."']
+        # TODO: Make this test pass
+        # >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
+        # >>> test_novel.find_quoted_text()
+        # ['"Miss A.E.-- a quote."']
 
-        //TODO: Make this test pass
-        //TODO: One approach would be to find the shortest possible closed quote.
-        >>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
-        >>> test_novel.find_quoted_text()
-        ['"Closed quote."']
+        # TODO: Make this test pass
+        # One approach would be to find the shortest possible closed quote.
+        #
+        # >>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
+        # >>> test_novel.find_quoted_text()
+        # ['"Closed quote."']
 
-        //TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
-        //TODO(Redlon & Murray): single quote
-        //TODO: Look for more complicated test cases in our existing novels.
+        TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
+        TODO(Redlon & Murray): single quote
+        TODO: Look for more complicated test cases in our existing novels.
 
         :return: list of complete quotation strings
         """
@@ -231,6 +237,30 @@ class Novel(common.FileLoaderMixin):
             self.word_counts = Counter(self.get_tokenized_text())
 
         return self.word_counts[word]
+
+    def get_wordcount_counter(self):
+        """
+        Returns a counter object of all of the words in the text.
+        (The counter can also be accessed as self.word_counts. However, it only gets initialized
+        when a user either runs Novel.get_count_of_word or Novel.get_wordcount_counter, hence
+        the separate method.)
+
+        >>> from gender_novels import novel
+        >>> summary = "Hester was convicted of adultery was convicted."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.get_wordcount_counter()
+        Counter({'was': 2, 'convicted': 2, 'hester': 1, 'of': 1, 'adultery': 1})
+
+        :return: Counter
+        """
+
+        # If word_counts were not previously initialized, do it now and store it for the future.
+        if not self.word_counts:
+            self.word_counts = Counter(self.get_tokenized_text())
+        return self.word_counts
 
     def words_associated(self, word):
         """
@@ -309,7 +339,6 @@ class Novel(common.FileLoaderMixin):
 
         :rtype: list
         """
-
         text = nltk.word_tokenize(self.text)
         pos_tags = nltk.pos_tag(text)
         return pos_tags
