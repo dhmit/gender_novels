@@ -1,7 +1,6 @@
 import csv
 from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
-from gutenberg.query import get_etexts
 from gutenberg.query import get_metadata
 from gutenberg.acquire import get_metadata_cache
 import re
@@ -19,11 +18,13 @@ GUTENBERG_MIRROR_PATH = ''
 GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
 metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
                  'notes']
-INITIAL_BOOK_STORE = r''
-FINAL_BOOK_STORE = r''
+INITIAL_BOOK_STORE = r'/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_books_30'
+FINAL_BOOK_STORE = r'/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_corpus'
 
 BAD_WORDS = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
-             "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals"]
+             "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
+             "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
+             "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
 
 def generate_corpus_gutenberg():
     """
@@ -58,9 +59,6 @@ def generate_corpus_gutenberg():
         title = get_title_gutenberg(gutenberg_id)
         novel_metadata['title'] = title
         novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
-        # if book isn't published between 1700 and 1922, skip it
-        if (novel_metadata['date'] < 1770 or novel_metadata['date'] > 1922):
-            continue
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
         novel_metadata['author_gender'] = get_author_gender(author)
@@ -74,11 +72,18 @@ def get_gutenberg_id(filepath):
     """
     For file with filepath get the gutenberg id of that book.  Should not be hard because Gutenberg literally names
     files by id
+
+    >>> from gender_novels import corpus_gen
+    >>> get_gutenberg_id(r"/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_books_30/44-0.txt")
+    44
+
     :param filepath: str
-    :return:
+    :return: int
     """
     # TODO(duan): implement this function
-    pass
+    filepath = filepath.rstrip(r"-0.txt")
+    filepath = filepath.lstrip(INITIAL_BOOK_STORE + r"/")
+    return int(filepath)
 
 def is_valid_novel_gutenberg(gutenberg_id, filepath):
     """
@@ -88,19 +93,19 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     If book is English
     If book is under public domain
     If book is a "novel"
-    N.B. does not check if novel is in correct publication range
+    if novel is in correct publication range
 
     >>> from gender_novels import corpus_gen
-    >>> is_valid_novel_gutenberg(33, "")
+    >>> is_valid_novel_gutenberg(32, r"/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_books_30/32-0.txt")
     True
-
-    >>> from gender_novels import corpus_gen
-    >>> is_valid_novel_gutenberg(33420, "")
+    >>> is_valid_novel_gutenberg(11000, r"/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_books_30/11000-0.txt")
+    False
+    >>> is_valid_novel_gutenberg(1404, r"/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_books_30/1404-0.txt")
     False
 
     :param gutenberg_id: int
     :return: boolean
-    TODO: determine what is a novel and implement this function
+    TODO: increase selectivity (apparently The Federalist Papers is a novel)
     """
     language = list(get_metadata('language', gutenberg_id))[0]
     if (not language == 'en'):
@@ -114,7 +119,19 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
             if ((subject.lower()).find(word) != -1):
                 return False
     title = get_title_gutenberg(gutenberg_id)
+    try:
+        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, gutenberg_id))
+        if ((date < 1770 or date > 1922)):
+            return False
+    except TypeError:
+        pass
     if (title.find("Index of the Project Gutenberg ") != -1):
+        return False
+    if (title.find("Complete Project Gutenberg ") != -1):
+        return False
+    text_length = len(get_novel_text_gutenberg(filepath))
+    if (text_length < 140000 or text_length > 9609000 ): # Animal Farm is roughly 166700 characters including boilerplate
+        # Guiness World Records states that the longest novel is 9,609,000 characters long
         return False
     return True
 
@@ -150,20 +167,19 @@ def get_title_gutenberg(gutenberg_id):
 
 def get_novel_text_gutenberg(filepath):
     """
-    Extract text as as string from file
+    Extract text as as string from file, with boilerplate removed
 
-    # >>> from gender_novels import corpus_gen
-    # >>> scarlet_letter = get_novel_text_gutenberg(33)
-    # >>> scarlet_letter[:18]
-    # 'THE SCARLET LETTER'
+    >>> from gender_novels import corpus_gen
+    >>> book = get_novel_text_gutenberg(r"/home/fsae/mingfei_temp/gender_novels/gender_novels/corpora/test_books_30/32-0.txt")
+    >>> book[:7]
+    'HERLAND'
 
     :param gutenberg_id: int
     :return: str
     """
     # TODO(duan): make this work with new system
-    # text = strip_headers(load_etext(gutenberg_id, mirror=GUTENBERG_MIRROR_PATH)).strip()
-    # return text
-    pass
+    with open(filepath, 'r') as text:
+        return strip_headers(text.read()).strip()
 
 def get_publication_date(author, title, gutenberg_id = None):
     """
