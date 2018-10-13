@@ -43,7 +43,7 @@ example = [
 ]
 
 Multi-line comments begin on their own lines: 
-
+```
 ```python
 def hi(name):
     '''
@@ -70,7 +70,7 @@ Instead, split the code up into multiple statements so someone else can follow w
 count_he = 0
 for file_name in files:
     if file_name.startswith('austen'):
-        text = open('austen').read()
+        text = open(file_name).read()
         word_list = text.lower().split()
         count_he += word_list.count('he')
 ```
