@@ -2,6 +2,7 @@ import re
 import string
 from collections import Counter
 from pathlib import Path
+from gutenberg.cleanup import strip_headers
 
 import nltk
 #nltk as part of speech tagger, requires these two packages
@@ -97,12 +98,13 @@ class Novel(common.FileLoaderMixin):
         return name
 
 
-    def _load_novel_text(self):
-        """Loads the text of a novel and removes boilerplate at the beginning and end
+    def load_novel_text(self):
+        """Loads the text of a novel and uses the remove_boilerplate_text() and
+        remove_table_of_contents() functions on the text of the novel to remove the boilerplate
+        text and table of contents from the novel. After these actions, the novel's text should be
+        only the actual text of the novel.
 
-        Currently only supports boilerplate removal for Project Gutenberg ebooks.
-
-        :rtype: str
+        :return: string
         """
 
         file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
@@ -114,16 +116,60 @@ class Novel(common.FileLoaderMixin):
             err += "at the expected location ({file_path})."
             raise FileNotFoundError(err)
 
-        # Extract Project Gutenberg Boilerplate
-        if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-            end_intro_boilerplate = text.find(
-                '*** START OF THIS PROJECT GUTENBERG EBOOK')
-            # second set of *** indicates start
-            start_novel = text.find('***', end_intro_boilerplate + 5) + 3
-            end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
-            text = text[start_novel:end_novel]
+        # These two functions will ensure that the text becomes only the novel's own text,
+        # removing the Project Gutenberg .
+        text = self.remove_boilerplate_text(text)
+        text = self.remove_table_of_contents(text)
 
         return text
+
+
+    def remove_boilerplate_text(text):
+        """
+        Removes the boilerplate text from an input string of a novel.
+        Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
+        strip_headers() function from the gutenberg module.
+
+        :return: string
+        """
+
+        return strip_headers(text.strip())
+
+
+    def remove_table_of_contents(text):
+        """
+        Removes the Table of Contents from an input string of a novel. Written with the intent of
+        being used on Table of Contents removal for Project Gutenberg texts.
+
+        This function works from the observation that books in Project Gutenberg always have
+        chapter titles that are either
+        A) Allcaps words or phrases or
+        B) Capitalized Roman Numerals.
+        This means that the first chapter can be identified as a line which is either
+        A) entirely composed of capital letters or
+        B) entirely composed of the letters {I, V, X, L, C, D, M}
+        [operating under the assumption that no chapter will exceed 3899 chapters, the maximum
+        number that can be obtained with standard Roman Numeral conventions]
+        And that all chapter titles are followed by at least one empty line.
+
+        The function looks for a line which is composed entirely of allcaps or Roman Numerals and
+        followed only by empty lines until finding a line which is not entirely allcaps.
+
+        :return: string
+        """
+
+        # Finds all positions of line breaks in the text file
+        line_breaks = text.find("\n")
+
+        # Finds beginnings of lines which are entirely allcaps
+        allcap_lines = []
+
+        for linebreak in line_breaks:
+            if text[linebreak:line_breaks[]]
+
+
+        return text
+
 
     def get_tokenized_text(self):
         """
@@ -271,6 +317,7 @@ class Novel(common.FileLoaderMixin):
                 check = True
         return word_count
 
+
     def get_word_freq(self, word):
         """
         Returns dictionary with key as word and value as the frequency of appearance in book
@@ -294,6 +341,7 @@ class Novel(common.FileLoaderMixin):
         word_freq = round((w_count / book_length), 5)
 
         return word_freq
+
 
     def get_part_of_speech_tags(self):
         """

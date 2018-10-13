@@ -47,7 +47,7 @@ def generate_corpus_gutenberg():
         novel_metadata['title']
         novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
         # if book isn't published between 1700 and 1922, skip it
-        if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
+        if (novel_metadata['date'] < 1700 or novel_metadata['date'] > 1922):
             continue
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
@@ -104,6 +104,11 @@ def get_author_gutenberg(gutenberg_id):
     # TODO: should we format author names like this?
     # TODO: possibly have this return a list of authors, rather than a single string, to handle multiple authors
     # TODO: run doctest on computer with populated cache
+
+    from gender_novels import corpus_gen
+    print(get_author_gutenberg(33))
+    print(get_author_gutenberg(3178)) #"The Gilded Age: A Tale of Today" by Mark Twain and Charles
+    # Dudley Warner. This book is a test case for multiple authors.
 
     return list(get_metadata('author', gutenberg_id))
 
