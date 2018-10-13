@@ -13,11 +13,11 @@ class Corpus(common.FileLoaderMixin):
 
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
-    >>> type(c.novels), len(c.novels)
-    (<class 'list'>, 99)
+    >>> type(c.novels), len(c)
+    (<class 'list'>, 94)
 
     >>> c.novels[0].author
-    'Alcott, Louisa May'
+    'Aanrud, Hans'
     """
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
@@ -34,7 +34,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> len(c)
-        99
+        94
 
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
@@ -54,8 +54,11 @@ class Corpus(common.FileLoaderMixin):
         >>> c = Corpus('sample_novels')
         >>> for this_novel in c:
         ...     print(this_novel.title)
+        Lisbeth Longfrock
+        Flatland
+        The Indiscreet Letter
+        Fighting for the Right
         Little Women
-        Jo's Boys,...
         ...
         """
         for this_novel in self.novels:
@@ -135,14 +138,14 @@ class Corpus(common.FileLoaderMixin):
         >>> len(female_corpus)
         38
         >>> female_corpus.novels[0].title
-        'Little Women'
+        'The Indiscreet Letter'
 
         >>> male_corpus = c.filter_by_gender('male')
         >>> len(male_corpus)
-        60
+        55
 
         >>> male_corpus.novels[0].title
-        'Heart of Darkness'
+        'Lisbeth Longfrock'
 
         :param gender: gender name
         :return: Corpus
