@@ -340,7 +340,7 @@ def get_country_publication_wikidata(author, title):
     for clm in clm_list:
         clm_trgt = clm.getTarget()
         if (clm_trgt.language == 'en'):
-            country = clm_trgt.text
+            return clm_trgt.text
     if (country == None):
         country = dictionary['aliases']['en'][-1]
     return country
