@@ -1,94 +1,146 @@
 import csv
 from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
-from gutenberg.query import get_etexts
 from gutenberg.query import get_metadata
 from gutenberg.acquire import get_metadata_cache
 import re
 from pathlib import Path
 import unittest
 import pywikibot
+import glob
+from shutil import copyfile
+import os
 
 from gender_novels import common
 
 # TODO: A lot of things
 
-GUTENBERG_MIRROR_PATH = ''
-GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
-metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
-                 'notes']
+GUTENBERG_METADATA_PATH = common.GUTENBERG_METADATA_PATH
+metadata_list = common.metadata_list
+INITIAL_BOOK_STORE = common.INITIAL_BOOK_STORE # 30 books from Gutenberg downloaded from Dropbox folder shared with Keith,
+# plus some extras
+FINAL_BOOK_STORE = common.FINAL_BOOK_STORE
+SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
+             "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
+             "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
+             "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
 
 def generate_corpus_gutenberg():
     """
     Generate metadata sheet of all novels we want from Gutenberg
     TODO: implement functions called here
     """
-    # function currently will not work
-    pass
+    # TODO(duan): make this work with new system
 
+    # function currently will not work
+    return
+    # determine current directory
+    current_dir = os.path.abspath(os.path.dirname(__file__))
     # write csv header
-    with open(GUTENBERG_METADATA_PATH, 'w', newline='') as csvfile:
+    with open(Path(current_dir, GUTENBERG_METADATA_PATH), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
         writer.writeheader()
     # check if cache is populated, if it isn't, populates it
     cache = get_metadata_cache()
     if (not cache.exists()):
         cache.populate()
-    # go through all books in Gutenberg
-    for gutenberg_id in range(gutenberg_number_of_books()): # would be nice if we could check number of books
+    # go through all books in Keith's thing
+    books = glob.iglob(Path(current_dir, INITIAL_BOOK_STORE)+r"/*.txt")
+    for book in books:
+        # get the book's id
+        gutenberg_id = get_gutenberg_id(book)
         # check if book is valid novel by our definition
         if (not is_valid_novel_gutenberg(gutenberg_id)):
             continue
         # begin compiling metadata.  Metadata not finalized
         novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
-        author = get_author_gutenberg(id)
+        author = get_author_gutenberg(gutenberg_id)
         novel_metadata['author'] = author
         title = get_title_gutenberg(gutenberg_id)
-        novel_metadata['title']
-        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id)
-        # if book isn't published between 1700 and 1922, skip it
-        if (novel_metadata['date'] < 1700 || novel_metadata['date'] > 1922):
-            continue
+        novel_metadata['title'] = title
+        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id, book)
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
         novel_metadata['author_gender'] = get_author_gender(author)
-        novel_metadata['subject'] = get_subject_gutenberg(id)
+        novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
         # write to csv
-        write_metadata(novel_metadata, GUTENBERG_METADATA_PATH)
+        write_metadata(novel_metadata, Path(current_dir, GUTENBERG_METADATA_PATH))
+        # copy text file to new folder
+        copyfile(book, Path(current_dir, FINAL_BOOK_STORE) + r"/" + str(gutenberg_id) + r".txt")
 
-def gutenberg_number_of_books():
+def get_gutenberg_id(filepath):
     """
-    Determines how many books currently exist in our Gutenberg mirror
+    For file with filepath get the gutenberg id of that book.  Should not be hard because Gutenberg literally names
+    files by id
+
+    >>> from gender_novels import corpus_gen
+    >>> import os
+    >>> current_dir = os.path.abspath(os.path.dirname(__file__))
+    >>> get_gutenberg_id(Path(current_dir, r"corpora/test_books_30/44-0.txt"))
+    44
+
+    :param filepath: Path
     :return: int
     """
-    # TODO: implement this function and make it return a legit count
-    return 60000
+    filename = filepath.name
+    filename = filename.rstrip(r"-0.txt")
+    return int(filename)
 
-def is_valid_novel_gutenberg(gutenberg_id):
+def is_valid_novel_gutenberg(gutenberg_id, filepath):
     """
-    Determines whether book with this Gutenberg id is actually an English
-    language "novel".  Returns false if the book is not or doesn't actually
-    exist.
+    Determines whether book with this Gutenberg id is actually a "novel".  Returns false if the book is not or doesn't
+    actually exist.
     Should check:
-    If book with this id exists
+    If book is English
     If book is under public domain
-    If book is in English
     If book is a "novel"
-    N.B. does not check if novel is in correct publication range
+    if novel is in correct publication range
+    That novel is not a translation
 
     >>> from gender_novels import corpus_gen
-    >>> is_valid_novel_gutenberg(33)
+    >>> import os
+    >>> current_dir = os.path.abspath(os.path.dirname(__file__))
+    >>> is_valid_novel_gutenberg(32, Path(current_dir, r"/corpora/test_books_30/32-0.txt")
     True
-
-    >>> from gender_novels import corpus_gen
-    >>> is_valid_novel_gutenberg(33420)
+    >>> is_valid_novel_gutenberg(11000, Path(current_dir, r"corpora/test_books_30/11000-0.txt")
+    False
+    >>> is_valid_novel_gutenberg(1404, Path(current_dir, r"corpora/test_books_30/1404-0.txt")
     False
 
     :param gutenberg_id: int
     :return: boolean
-    TODO: determine what is a novel and implement this function
+    TODO: increase selectivity (apparently The Federalist Papers is a novel)
     """
-    pass
+    language = list(get_metadata('language', gutenberg_id))[0]
+    if (not language == 'en'):
+        return False
+    rights = get_metadata('rights', gutenberg_id)
+    if (not rights == frozenset({'Public domain in the USA.'})):
+        return False
+    subjects = get_subject_gutenberg(gutenberg_id)
+    for subject in subjects:
+        for word in SUBJECTS_TO_IGNORE:
+            if ((subject.lower()).find(word) != -1):
+                return False
+    title = get_title_gutenberg(gutenberg_id)
+    try:
+        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, gutenberg_id))
+        if ((date < 1770 or date > 1922)):
+            return False
+    except TypeError:
+        pass
+    if (title.find("Index of the Project Gutenberg ") != -1):
+        return False
+    if (title.find("Complete Project Gutenberg ") != -1):
+        return False
+    text = get_novel_text_gutenberg(filepath)
+    if (text.find("Translator: ", 0, 650) != -1):
+        return False
+    text_length = len(text)
+    if (text_length < 140000 or text_length > 9609000 ): # Animal Farm is roughly 166700 characters including boilerplate
+        # Guiness World Records states that the longest novel is 9,609,000 characters long
+        return False
+    return True
 
 def get_author_gutenberg(gutenberg_id):
     """
@@ -96,7 +148,7 @@ def get_author_gutenberg(gutenberg_id):
 
     >>> from gender_novels import corpus_gen
     >>> get_author_gutenberg(33)
-    'Hawthorne, Nathaniel'
+    ['Hawthorne, Nathaniel']
 
     :param gutenberg_id: int
     :return: list
@@ -120,24 +172,24 @@ def get_title_gutenberg(gutenberg_id):
 
     return list(get_metadata('title', gutenberg_id))[0]
 
-def get_novel_text_gutenberg(gutenberg_id):
+def get_novel_text_gutenberg(filepath):
     """
-    For a given novel id returns the full text of that novel from gutenberg as
-    a string
+    Extract text as as string from file, with boilerplate removed
 
     >>> from gender_novels import corpus_gen
-    >>> scarlet_letter = get_novel_text_gutenberg(33)
-    >>> scarlet_letter[:18]
-    'THE SCARLET LETTER'
+    >>> import os
+    >>> current_dir = os.path.abspath(os.path.dirname(__file__))
+    >>> book = get_novel_text_gutenberg(Path(current_dir, r"/corpora/test_books_30/32-0.txt")
+    >>> book[:7]
+    'HERLAND'
 
     :param gutenberg_id: int
     :return: str
     """
-    # Will not work until mirror is up
-    text = strip_headers(load_etext(gutenberg_id, mirror=GUTENBERG_MIRROR_PATH)).strip()
-    return text
+    with open(filepath, 'r') as text:
+        return strip_headers(text.read()).strip()
 
-def get_publication_date(author, title, gutenberg_id = None):
+def get_publication_date(author, title, filepath, gutenberg_id = None):
     """
     For a given novel with id gutenberg_id this function attempts a variety of
     methods to try and find the publication date
@@ -155,10 +207,19 @@ def get_publication_date(author, title, gutenberg_id = None):
     :param title: str
     :param gutenberg_id: int
     :return: int
-    TODO(duan): implement this function
     """
-    #This function will call other get_publication_date functions in turn until a publication date is found
-    pass
+    #TODO: will not work without worldcat functions
+    return None
+
+    date = get_publication_date_from_copyright(get_novel_text_gutenberg(filepath))
+    if (date != None):
+        return date
+    else:
+        date = get_publication_date_worldcat(author, title)
+    if (date != None):
+        return date
+    else:
+        return get_publication_date_wikidata(author, title)
 
 def get_publication_date_wikidata(author, title):
     """
@@ -230,7 +291,7 @@ def get_country_publication(author, title):
     Tries to get the country of novel
     @TODO: Country of origin or residence of author?
     USA should be written as United States
-    Separate countries of UK (England, Wales, etc.)
+    Don't separate countries of UK (England, Wales, etc.)
     TODO: should we separate those countries?  Easier to integrate later than separate
 
     >>> from gender_novels import corpus_gen
@@ -246,10 +307,8 @@ def get_country_publication(author, title):
 
 def get_country_publication_wikidata(author, title):
     """
-    Tries to get country of origin of author from wikidata
+    Tries to get country of publication from wikidata
     Otherwise, returns None
-    # TODO: see get_country_publication
-
     >>> from gender_novels import corpus_gen
     >>> get_country_publication_wikidata("Trump, Donald", "Trump: The Art of the Deal")
     'United States'
@@ -258,8 +317,55 @@ def get_country_publication_wikidata(author, title):
     :param title: str
     :return: str
     """
-    # TODO: implement this function
-    pass
+    # TODO(duan): implement this function
+    # try to get publication country from wikidata page with title of book
+    try:
+        wikipedia = pywikibot.Site("en", "wikipedia")
+        page = pywikibot.Page(wikipedia, title)
+        item = pywikibot.ItemPage.fromPage(page)
+        dictionary = item.get()
+        clm_dict = dictionary["claims"]
+        clm_list = clm_dict["P495"] # get claim "publication country", which is 495
+        year = None
+        for clm in clm_list:
+            clm_trgt = clm.getTarget()
+            country_id = clm_trgt.id
+    # in case of disambiguation
+    except (KeyError):
+        try:
+            return get_country_publication_wikidata(author, title + " (novel)")
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except (pywikibot.exceptions.NoPage):
+        return None
+
+    # try to match country_id to major English-speaking countries
+    if (country_id == "Q30"):
+        return "United States"
+    if (country_id == "Q145"):
+        return "United Kingdom"
+    if (country_id == "Q16"):
+        return "Canada"
+    if (country_id == "Q408"):
+        return "Australia"
+    if (country_id == "Q2886622"):
+        return "Narnia" # I mean, they seem to all speak English there
+
+    # if not try look up wikidata page of country with that id to try and get short name
+    wikidata = pywikibot.Site("wikidata", "wikidata")
+    repo = wikidata.data_repository()
+    item = pywikibot.ItemPage(repo, country_id)
+    dictionary = item.get()
+    clm_dict = dictionary["claims"]
+    clm_list = clm_dict["P1813"] # P1813 is short name
+    for clm in clm_list:
+        clm_trgt = clm.getTarget()
+        if (clm_trgt.language == 'en'):
+            return clm_trgt.text
+
+    #if that doesn't work just get one of the aliases. Name may be awkwardly long but should be consistent
+    country = dictionary['aliases']['en'][-1]
+    return country
 
 def get_author_gender(author):
     """
@@ -320,8 +426,7 @@ def get_subject_gutenberg(gutenberg_id):
     Tries to get subjects
 
     >>> from gender_novels import corpus_gen
-    >>> get_subject_gutenberg(38200)
-    ['Crete (Greece) -- History -- Insurrection, 1866-1868 -- Fiction']
+    >>> get_subject_gutenberg(5200)
 
     :param: author: str
     :param: title: str
@@ -330,7 +435,7 @@ def get_subject_gutenberg(gutenberg_id):
     """
     # TODO: run doctest on computer with populated cache
 
-    return list(get_metadata('subject', gutenberg_id))
+    return sorted(list(get_metadata('subject', gutenberg_id)))
 
 def write_metadata(novel_metadata):
     """
