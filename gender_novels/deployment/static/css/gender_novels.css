@@ -1,9 +1,16 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
+body {
+    font-family: "Source Sans Pro";
+}
+
 .header {
-    background-color: black;
+    background-color: #3E3E3E;
 }
 
 .header-text {
     color: white;
+    font-weight: bold;
 }
 
 .github-logo {
@@ -13,8 +20,12 @@
     max-width: 60px;
 }
 
-/* Converted markdown styling */
 .topic-content h1 {
-    /* Just a test */
-    color: red;
+}
+
+.topic-content img {
+    height: auto;
+    width: auto;
+    max-height: 75%;
+    max-width: 75%;
 }
