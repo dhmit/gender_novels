@@ -1,5 +1,4 @@
 import csv
-from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
 from gutenberg.query import get_metadata
 from gutenberg.acquire import get_metadata_cache
@@ -10,6 +9,7 @@ import pywikibot
 import glob
 from shutil import copyfile
 import os
+import gender_guesser.detector as gender_guesser
 
 from gender_novels import common
 
@@ -208,14 +208,15 @@ def get_publication_date(author, title, filepath, gutenberg_id = None):
     :param gutenberg_id: int
     :return: int
     """
-    #TODO: will not work without worldcat functions
+    #TODO: remember to uncomment worldcat function when it is done
     return None
 
     date = get_publication_date_from_copyright(get_novel_text_gutenberg(filepath))
     if (date != None):
         return date
     else:
-        date = get_publication_date_worldcat(author, title)
+        pass
+        # date = get_publication_date_worldcat(author, title)
     if (date != None):
         return date
     else:
@@ -302,8 +303,12 @@ def get_country_publication(author, title):
     :param title: str
     :return: str
     """
-    # TODO(duan): implement this function
-    pass
+    # TODO: uncomment worldcat function once it is added
+    country = None
+    # country = get_country_publication_worldcat(author, title)
+    if (country == None):
+        country = get_country_publication_wikidata(author, title)
+    return country
 
 def get_country_publication_wikidata(author, title):
     """
@@ -317,7 +322,6 @@ def get_country_publication_wikidata(author, title):
     :param title: str
     :return: str
     """
-    # TODO(duan): implement this function
     # try to get publication country from wikidata page with title of book
     try:
         wikipedia = pywikibot.Site("en", "wikipedia")
@@ -367,21 +371,45 @@ def get_country_publication_wikidata(author, title):
     country = dictionary['aliases']['en'][-1]
     return country
 
-def get_author_gender(author):
+def get_author_gender(authors):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple authors of different
     genders)
     If it fails returns 'unknown'
+    #TODO: 'both' is ambiguous; Does it mean both female and male?  female and unknown?  male and nonbinary?
 
     >>> from gender_novels import corpus_gen
     >>> get_author_gender("Hawthorne, Nathaniel")
-    male
+    'male'
+    >>> get_author_gender("Cuthbert, Michael")
+    'male'
 
     :param author: list
     :return: str
     """
-    # TODO: implement this function
-    pass
+n
+    author_gender = None
+    if len(authors) == 1:
+        author = authors[0]
+        # author_gender = get_author_gender_worldcat(author)
+        if author_gender == None:
+            author_gender = get_author_gender_wikidata(author)
+        if author_gender == None:
+            guesser = gender_guesser.Detector()
+            match = re.match(r"((\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
+            gender_guess = guesser.get_gender(match.groupdict()['first_name'])
+            if (gender_guess == 'andy' or gender_guess == 'unknown'):
+                author_gender = None
+            if (gender_guess == 'male' or gender_guess == 'mostly male'):
+                author_gender = 'male'
+            if (gender_guess == 'female' or gender_guess == 'mostly female'):
+                author_gender == 'female'
+    else:
+        author_gender = get_author_gender([authors[0]])
+        for author in authors:
+            if (get_author_gender(author) != author_gender):
+                author_gender = 'both'
+    return author_gender
 
 def get_author_gender_wikidata(author):
     """
