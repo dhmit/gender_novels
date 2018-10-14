@@ -2,15 +2,20 @@
 This file is intended for dependency parsing side tests.
 """
 
-import pprint
+import urllib
 
 from nltk.parse.stanford import StanfordDependencyParser
 
 path_to_jar = "assets/stanford-parser.jar"
 path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
 
-dependency_parser = StanfordDependencyParser(path_to_jar=path_to_jar,
-                                             path_to_models_jar=path_to_models_jar)
+# The jar files are too big to commit directly, so download them
+url_to_jar = "http://www.trecento.com/dh_lab/nltk_jar/stanford-parser.jar"
+url_to_models_jar = "http://www.trecento.com/dh_lab/nltk_jar/stanford-parser-3.9.1-models.jar"
+urllib.request.urlretrieve(url_to_jar, path_to_jar)
+urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
+
+dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
 
 """
 Parse one sentence at a time
