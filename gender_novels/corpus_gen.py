@@ -375,20 +375,30 @@ def get_author_gender(authors):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple authors of different
     genders)
-    If it fails returns 'unknown'
+    #TODO: should get functions that fail to find anything return 'unknown'
     #TODO: 'both' is ambiguous; Does it mean both female and male?  female and unknown?  male and nonbinary?
 
-    >>> from gender_novels import corpus_gen
-    >>> get_author_gender("Hawthorne, Nathaniel")
+    >>> from gender_novels.corpus_gen import get_author_gender
+    >>> get_author_gender(["Hawthorne, Nathaniel"])
     'male'
-    >>> get_author_gender("Cuthbert, Michael")
+    >>> get_author_gender(["Cuthbert, Michael"])
     'male'
+    >>> get_author_gender(["Duan, Mingfei"])
 
-    :param author: list
+    >>> get_author_gender(["Collins, Suzanne", "Riordan, Rick"])
+    'both'
+    >>> get_author_gender(["Shelley, Mary", "Austen, Jane"])
+    'female'
+    >>> get_author_gender(['Shakespeare, William', "Duan, Mingfei"])
+    'both'
+
+    :param authors: list
     :return: str
     """
-n
+
     author_gender = None
+    if type(authors) == str:
+        authors = [authors]
     if len(authors) == 1:
         author = authors[0]
         # author_gender = get_author_gender_worldcat(author)
@@ -396,7 +406,7 @@ n
             author_gender = get_author_gender_wikidata(author)
         if author_gender == None:
             guesser = gender_guesser.Detector()
-            match = re.match(r"((\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
+            match = re.match(r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
             gender_guess = guesser.get_gender(match.groupdict()['first_name'])
             if (gender_guess == 'andy' or gender_guess == 'unknown'):
                 author_gender = None
@@ -407,7 +417,7 @@ n
     else:
         author_gender = get_author_gender([authors[0]])
         for author in authors:
-            if (get_author_gender(author) != author_gender):
+            if (get_author_gender([author]) != author_gender):
                 author_gender = 'both'
     return author_gender
 
