@@ -18,17 +18,6 @@ urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
 dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
 
 """
-Parse one sentence at a time
-"""
-
-# result = dependency_parser.raw_parse('He walked by her')
-# parsed = next(result)
-# print(parsed.tree())
-# triples = list(parsed.triples())
-# for triple in triples:
-#     print(triple)
-
-"""
 Parse multiple sentences at a time
 """
 
@@ -51,6 +40,7 @@ for sentence in result2:
     print("------CONLL FORMAT------")
     print(parse.to_conll(4))
     # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
+    # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
     print("------DEPENDENCY TRIPLES------")
     triples = list(parse.triples())
     for triple in triples:
