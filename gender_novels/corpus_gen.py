@@ -133,7 +133,10 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
         return False
     if (title.find("Complete Project Gutenberg ") != -1):
         return False
-    text_length = len(get_novel_text_gutenberg(filepath))
+    text = get_novel_text_gutenberg(filepath)
+    if (text.find("Translator: ", 0, 650) != -1):
+        return False
+    text_length = len(text)
     if (text_length < 140000 or text_length > 9609000 ): # Animal Farm is roughly 166700 characters including boilerplate
         # Guiness World Records states that the longest novel is 9,609,000 characters long
         return False
