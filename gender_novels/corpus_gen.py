@@ -24,6 +24,7 @@ SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "s
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
+AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
 
 def generate_corpus_gutenberg():
     """
@@ -398,7 +399,7 @@ def get_author_gender(authors):
 
     author_gender = None
     if type(authors) == str:
-        authors = [authors]
+        authors = list().append(authors)
     if len(authors) == 1:
         author = authors[0]
         # author_gender = get_author_gender_worldcat(author)
@@ -406,7 +407,7 @@ def get_author_gender(authors):
             author_gender = get_author_gender_wikidata(author)
         if author_gender == None:
             guesser = gender_guesser.Detector()
-            match = re.match(r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
+            match = re.match(AUTHOR_NAME_REGEX, author)
             gender_guess = guesser.get_gender(match.groupdict()['first_name'])
             if (gender_guess == 'andy' or gender_guess == 'unknown'):
                 author_gender = None
@@ -427,17 +428,19 @@ def get_author_gender_wikidata(author):
     If it fails returns 'unknown'
     N.B. Wikidata's categories for transgender male and female are treated as male and female, respectively
 
-    >>> from gender_novels import corpus_gen
+    >>> from gender_novels.corpus_gen import get_author_gender_wikidata
     >>> get_author_gender_wikidata("Obama, Barack")
     'male'
     >>> get_author_gender_wikidata("Hurston, Zora Neale")
     'female'
+    >>> get_author_gender_wikidata("Bush, George W.")
+    'male'
 
     :param author: str
     :return: str
     """
 
-    match = re.match(r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
+    match = re.match(AUTHOR_NAME_REGEX, author)
     author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
     try:
         site = pywikibot.Site("en", "wikipedia")
