@@ -318,17 +318,19 @@ def get_country_publication_wikidata(author, title):
     :return: str
     """
     # TODO(duan): implement this function
+    # try to get publication country from wikidata page with title of book
     try:
-        wp = pywikibot.Site("en", "wikipedia")
-        page = pywikibot.Page(wp, title)
+        wikipedia = pywikibot.Site("en", "wikipedia")
+        page = pywikibot.Page(wikipedia, title)
         item = pywikibot.ItemPage.fromPage(page)
         dictionary = item.get()
         clm_dict = dictionary["claims"]
-        clm_list = clm_dict["P495"]
+        clm_list = clm_dict["P495"] # get claim "publication country", which is 495
         year = None
         for clm in clm_list:
             clm_trgt = clm.getTarget()
             country_id = clm_trgt.id
+    # in case of disambiguation
     except (KeyError):
         try:
             return get_country_publication_wikidata(author, title + " (novel)")
@@ -336,23 +338,33 @@ def get_country_publication_wikidata(author, title):
             return None
     except (pywikibot.exceptions.NoPage):
         return None
+
+    # try to match country_id to major English-speaking countries
     if (country_id == "Q30"):
         return "United States"
     if (country_id == "Q145"):
         return "United Kingdom"
-    country = None
+    if (country_id == "Q16"):
+        return "Canada"
+    if (country_id == "Q408"):
+        return "Australia"
+    if (country_id == "Q2886622"):
+        return "Narnia" # I mean, they seem to all speak English there
+
+    # if not try look up wikidata page of country with that id to try and get short name
     wikidata = pywikibot.Site("wikidata", "wikidata")
     repo = wikidata.data_repository()
     item = pywikibot.ItemPage(repo, country_id)
     dictionary = item.get()
     clm_dict = dictionary["claims"]
-    clm_list = clm_dict["P1813"]
+    clm_list = clm_dict["P1813"] # P1813 is short name
     for clm in clm_list:
         clm_trgt = clm.getTarget()
         if (clm_trgt.language == 'en'):
             return clm_trgt.text
-    if (country == None):
-        country = dictionary['aliases']['en'][-1]
+
+    #if that doesn't work just get one of the aliases. Name may be awkwardly long but should be consistent
+    country = dictionary['aliases']['en'][-1]
     return country
 
 def get_author_gender(author):
