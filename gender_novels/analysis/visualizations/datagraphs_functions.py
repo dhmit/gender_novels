@@ -9,51 +9,69 @@ def plt_pubyears(years):
     :param years: list
     RETURNS a pyplot histogram
     '''
-    sns.set(style='darkgrid')
+    sns.set_style('darkgrid')
     ax1=plt.subplot2grid((1,1),(0,0))
     bins=[num for num in range(min(years),max(years)+5,5)]
-    plt.hist(years,bins,histtype='bar',rwidth=.8,color='red')
-    plt.xlabel('Year')
-    plt.ylabel('Frequency')
-    plt.title('Publication Year Concentration')
-    plt.xticks([i for i in range(min(years),max(years)+10,10)])
+    plt.hist(years,bins,histtype='bar',rwidth=.8,color='plum')
+    plt.xlabel('Year', size=13,weight='bold',color='slategray')
+    plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
+    plt.title('Publication Year Concentration',size=15,weight='bold',color='slategray')
+    plt.yticks(size=11,color='slategray')
+    plt.xticks([i for i in range(min(years),max(years)+9,10)],size=11,color='slategray')
     for label in ax1.xaxis.get_ticklabels():
-        label.set_rotation(45)
+        label.set_rotation(60)
     plt.show()
 
 def plt_pubcountries(pub_country):
     '''
     Creates a bar graph displaying the frequency of books that were published in each country
     :param pub_country: list
-    :return:
+    RETURNS a pyplot bargraph
     '''
-    sns.set(style='darkgrid')
+    sns.set_style('darkgrid')
     ax1=plt.subplot2grid((1,1),(0,0))
     country_counter={}
-    x=[]
-    y=[]
     for country in pub_country:
-        if country in country_counter:
-            country_counter[country]+=1
-        else:
-            country_counter[country]=1
-    for i in country_counter:
-        x.append(i)
-        y.append(country_counter[i])
-
+        country_counter[country]=country_counter.setdefault(country,0)+1
+    x=[country for country in country_counter]
+    y=[country_counter[key] for key in country_counter]
     for label in ax1.xaxis.get_ticklabels():
-        label.set_rotation(45)
-    plt.bar(x,y,color='red')
-    plt.xlabel('Countries')
-    plt.ylabel('Frequency')
-    plt.title('Country of Publication')
+        label.set_rotation(15)
+    plt.bar(x,y,color='plum')
+    plt.xlabel('Countries',size=13,weight='bold',color='slategray')
+    plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
+    plt.title('Country of Publication',size=15,color='slategray',weight='bold')
+    plt.xticks(color='slategray',size=12)
+    plt.yticks(color='slategray',size=12)
+    plt.show()
+
+def plt_gender_breakdown(pub_gender):
+    gendercount={}
+    for i in pub_gender:
+        gendercount[i]=gendercount.setdefault(i,0)+1
+    total=0
+    for i in gendercount:
+        total+=gendercount[i]
+    slices=[gendercount[i]/total for i in gendercount]
+    genders=[i for i in gendercount]
+    labelgenders=[]
+    for i in range(len(genders)):
+        labelgenders.append(genders[i]+': ' + str(round(slices[i],2)*100)+'%')
+    colors=['darkorchid','mediumpurple','plum']
+    plt.pie(slices,colors=colors,labels=labelgenders)
+    plt.title('Gender Breakdown',size=15,color='k',weight='bold')
+    plt.legend()
     plt.show()
 
 if __name__ == '__main__':
     pub_year=[]
     pub_country=[]
+    pub_gender=[]
     corpus=Corpus('sample_novels')
     for novel in corpus.novels:
         pub_year.append(novel.date)
         pub_country.append(novel.country_publication)
-    
+        pub_gender.append(novel.author_gender)
+   # plt_pubyears(pub_year)
+   # plt_pubcountries(pub_country)
+    plt_gender_breakdown(pub_gender)
