@@ -121,11 +121,13 @@ class Novel(common.FileLoaderMixin):
         return name
 
 
-    def load_novel_text(self):
+    def _load_novel_text(self):
         """Loads the text of a novel and uses the remove_boilerplate_text() and
         remove_table_of_contents() functions on the text of the novel to remove the boilerplate
         text and table of contents from the novel. After these actions, the novel's text should be
         only the actual text of the novel.
+
+        Is a private function as it is unnecessary to access it outside the class.
 
         :return: string
         """
@@ -140,7 +142,7 @@ class Novel(common.FileLoaderMixin):
             raise FileNotFoundError(err)
 
         # These two functions will ensure that the text becomes only the novel's own text,
-        # removing the Project Gutenberg .
+        # removing the Project Gutenberg boilerplate and the table of contents.
         text = self.remove_boilerplate_text(text)
         text = self.remove_table_of_contents(text)
 
@@ -185,7 +187,7 @@ class Novel(common.FileLoaderMixin):
         # Finds all positions of line breaks in the text file for the first few lines, tuned off
         # the parameter of charactersearch characters out
         charactersearch = 8000
-        line_breaks = text[0:charactersearch].find("\n")
+        line_breaks = text[0:charactersearch].findall("\n")
         # Creates a 2D array where each entry is the [contents of line, position of the line's
         # start, position of the line's end]. The last line break is not considered because,
         # of course, there is no next line after the last line.
