@@ -156,16 +156,27 @@ class Novel(common.FileLoaderMixin):
         followed only by empty lines until finding a line which is not entirely allcaps.
 
         :return: string
+        TODO(derek): Make this fully functional
         """
 
-        # Finds all positions of line breaks in the text file
-        line_breaks = text.find("\n")
+        # Finds all positions of line breaks in the text file for the first few lines, tuned off
+        # the parameter of charactersearch characters out
+        charactersearch = 8000
+        line_breaks = text[0:charactersearch].find("\n")
+        # Creates a 2D array where each entry is the [contents of line, position of the line's
+        # start, position of the line's end]. The last line break is not considered because,
+        # of course, there is no next line after the last line.
+        lines_of_text = []
+        for linebreak in range(len(line_breaks))-1:
+            currentlinecontents = text[linebreak:linebreak+1]
+            lines_of_text.append([currentlinecontents, linebreak, linebreak+1])
 
-        # Finds beginnings of lines which are entirely allcaps
+        # Identifies lines which are comprised entirely of allcap characters and puts them in
+        # another 2D array. Determines whether a line is entirely allcaps by examining whether
+        # each of its characters are members of the set of capital letters plus
         allcap_lines = []
-
-        for linebreak in line_breaks:
-            if text[linebreak:line_breaks[]]
+        for line in lines_of_text:
+            if line[0]
 
 
         return text
