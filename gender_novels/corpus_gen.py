@@ -25,7 +25,6 @@ SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "s
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
 AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
-text_cache = ''
 
 def generate_corpus_gutenberg():
     """
@@ -50,30 +49,27 @@ def generate_corpus_gutenberg():
     books = glob.iglob(bookshelf)
     for book in books:
         print(book)
-        try:
-            # get the book's id
-            gutenberg_id = get_gutenberg_id(book)
-            # check if book is valid novel by our definition
-            if (not is_valid_novel_gutenberg(gutenberg_id, book)):
-                continue
-            # begin compiling metadata.  Metadata not finalized
-            novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
-            author = get_author_gutenberg(gutenberg_id)
-            novel_metadata['author'] = author
-            title = get_title_gutenberg(gutenberg_id)
-            novel_metadata['title'] = title
-            novel_metadata['date'] = get_publication_date(author, title, gutenberg_id, book)
-            novel_metadata['country_publication'] = get_country_publication(author,
-                title)
-            novel_metadata['author_gender'] = get_author_gender(author)
-            novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
-            # write to csv
-            write_metadata(novel_metadata, Path(current_dir, GUTENBERG_METADATA_PATH))
-            # copy text file to new folder
-            copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
-            text_cache = ''
-        except (UnicodeDecodeError):
+        # get the book's id
+        gutenberg_id = get_gutenberg_id(book)
+        # check if book is valid novel by our definition
+        if (not is_valid_novel_gutenberg(gutenberg_id, book)):
             continue
+        # begin compiling metadata.  Metadata not finalized
+        novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
+        author = get_author_gutenberg(gutenberg_id)
+        novel_metadata['author'] = author
+        title = get_title_gutenberg(gutenberg_id)
+        novel_metadata['title'] = title
+        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id, book)
+        novel_metadata['country_publication'] = get_country_publication(author,
+            title)
+        novel_metadata['author_gender'] = get_author_gender(author)
+        novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
+        # write to csv
+        write_metadata(novel_metadata, Path(current_dir, GUTENBERG_METADATA_PATH))
+        # copy text file to new folder
+        copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
+
 
 def get_gutenberg_id(filepath):
     """
@@ -193,11 +189,14 @@ def get_novel_text_gutenberg(filepath):
     :param gutenberg_id: int
     :return: str
     """
-    if text_cache == '':
-        with open(filepath, mode='r', encoding='utf8') as text:
-            text_with_headers = text.read()
-            text_cache = strip_headers(text_with_headers).strip()
-    return text_cache
+    if (common.get_encoding_type(filepath) != 'utf-8'):
+        common.convertFileWithDetection(filepath)
+        converted_filepath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
+        copyfile(converted_filepath, filepath)
+    with open(filepath, mode='r', encoding='utf8') as text:
+        text_with_headers = text.read()
+        return strip_headers(text_with_headers).strip()
+
 
 def get_publication_date(author, title, filepath, gutenberg_id = None):
     """

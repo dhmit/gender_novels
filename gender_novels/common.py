@@ -12,6 +12,11 @@ INITIAL_BOOK_STORE = r'corpora/test_books_30' # 30 books from gutenberg download
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
 AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)"
+import codecs
+from chardet.universaldetector import UniversalDetector
+targetFormat = 'utf-8'
+outputDir = 'converted'
+detector = UniversalDetector()
 
 #TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
 
@@ -147,6 +152,45 @@ class FileLoaderMixin:
             # has \r and \n -> replace with only \n
             return text.replace('\r\n', '\n')
 
+def get_encoding_type(current_file):
+    detector.reset()
+    for line in open(current_file, 'r'):
+        detector.feed(line)
+        if detector.done: break
+    detector.close()
+    return detector.result['encoding']
+
+def convertFileBestGuess(fileName):
+    sourceFormats = ['ascii', 'iso-8859-1']
+    targetPath = Path(Path(fileName).parent, r"converted", Path(fileName).name)
+    for format in sourceFormats:
+        try:
+            with codecs.open(fileName, 'rU', format) as sourceFile:
+                writeConversion(sourceFile, targetPath)
+                print('Done.')
+                return
+        except UnicodeDecodeError:
+            pass
+
+def convertFileWithDetection(fileName):
+    print("Converting '" + fileName + "'...")
+    format=get_encoding_type(fileName)
+    targetPath = Path(Path(fileName).parent, r"converted", Path(fileName).name)
+    try:
+        with codecs.open(fileName, 'rU', format) as sourceFile:
+            writeConversion(sourceFile, targetPath)
+            print('Done.')
+            return
+    except UnicodeDecodeError:
+         pass
+
+    print("Error: failed to convert '" + fileName + "'.")
+
+
+def writeConversion(file,targetPath):
+    with codecs.open(targetPath, 'w', targetFormat) as targetFile:
+        for line in file:
+            targetFile.write(line)
 
 
 if __name__ == '__main__':
