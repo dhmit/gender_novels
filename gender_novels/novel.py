@@ -106,7 +106,7 @@ class Novel(common.FileLoaderMixin):
         """
         Overrides python print method for user-defined objects for Novel class
         Returns the filename without the extension - author and title word
-        :return: string
+        :return: str
 
         >>> from gender_novels import novel
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
@@ -129,7 +129,7 @@ class Novel(common.FileLoaderMixin):
 
         Is a private function as it is unnecessary to access it outside the class.
 
-        :return: string
+        :return: str
         """
 
         file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
@@ -143,25 +143,52 @@ class Novel(common.FileLoaderMixin):
 
         # These two functions will ensure that the text becomes only the novel's own text,
         # removing the Project Gutenberg boilerplate and the table of contents.
-        text = self.remove_boilerplate_text(text)
-        text = self.remove_table_of_contents(text)
+        text = self._remove_boilerplate_text(text)
+        text = self._remove_table_of_contents(text)
 
         return text
 
 
-    def remove_boilerplate_text(text):
+    def _remove_boilerplate_text(text):
         """
         Removes the boilerplate text from an input string of a novel.
         Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
         strip_headers() function from the gutenberg module.
 
-        :return: string
+        :return: str
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> cleaned_text = austen._remove_boilerplate_text(austen._load_novel_text())
+        >>> title_line = cleaned_text[0:cleaned_text.find("\\n")]
+        >>> title_line
+        >>> 'Persuasion'
         """
+
+
+        # This old form of the function does not work. There are several books in the corpus
+        # which do not have standard headers in this format (such as james_highway.txt,
+        # book number 3780) that this function does not work on, and there are also books in the
+        # corpus that do have this header but have additional junk information inserted after the
+        # header (such as austen_persuasion.txt, where someone has entered info about the
+        # production of the ebook and the HTML version after the "*** START OF THIS ..." line.
+        #
+        # if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
+        #     end_intro_boilerplate = text.find(
+        #         '*** START OF THIS PROJECT GUTENBERG EBOOK')
+        #     # second set of *** indicates start
+        #     start_novel = text.find('***', end_intro_boilerplate + 5) + 3
+        #     end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+        #     text = text[start_novel:end_novel]
+
 
         return strip_headers(text.strip())
 
 
-    def remove_table_of_contents(text):
+    def _remove_table_of_contents(text):
         """
         Removes the Table of Contents from an input string of a novel. Written with the intent of
         being used on Table of Contents removal for Project Gutenberg texts.
@@ -180,7 +207,7 @@ class Novel(common.FileLoaderMixin):
         The function looks for a line which is composed entirely of allcaps or Roman Numerals and
         followed only by empty lines until finding a line which is not entirely allcaps.
 
-        :return: string
+        :return: str
         TODO(derek): Make this fully functional
         """
 
@@ -200,9 +227,8 @@ class Novel(common.FileLoaderMixin):
         # another 2D array. Determines whether a line is entirely allcaps by examining whether
         # each of its characters are members of the set of capital letters plus
         allcap_lines = []
-        for line in lines_of_text:
-            if line[0]
-
+        # for line in lines_of_text:
+        #    if line[0]
 
         return text
 
