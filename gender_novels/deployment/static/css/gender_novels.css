@@ -1,9 +1,23 @@
+/* External assets */
+
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+
+/* Base HTML elements */
+
+body {
+    font-family: "Source Sans Pro";
+}
+
+/* Custom classes */
+
 .header {
-    background-color: black;
+    background-color: #3E3E3E;
 }
 
 .header-text {
     color: white;
+    font-weight: bold;
+    text-align: center;
 }
 
 .github-logo {
@@ -13,6 +27,32 @@
     max-width: 60px;
 }
 
-#topic-title {
-    text-align: center;
+/* Topic Content */
+
+.topic-content img {
+    height: auto;
+    width: auto;
+    max-height: 75%;
+    max-width: 75%;
+}
+
+/* Sidebar */
+
+.sidebar {
+    position: fixed;
+    width: 12%;
+}
+
+.nav-link {
+    background-color: white;
+    color: black;
+}
+
+.nav-link.active.show {
+    background-color: darkgray;
+    color: white;
+}
+
+a:hover {
+    color: black;
 }
