@@ -1,4 +1,3 @@
-
 # Overview
 
 ## Our Goals
@@ -14,7 +13,7 @@ author gender, time period, and more.
 ![Books](http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/2v/dp/p02vdpfn.jpg 
 "Books")
 
-This quote from Steve Jobs and John Berger exemplify what we are trying to do at the DHL. By 
+This quote from Steve Jobs exemplifies what we are trying to do at the DHL. By 
 combining two fields - Humanities and Technology - that are traditionally thought to be mutually 
 exclusive, we are able to draw conclusions and find connections that would otherwise be impossible.
 
