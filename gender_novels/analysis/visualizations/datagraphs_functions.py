@@ -57,21 +57,8 @@ def plt_gender_breakdown(pub_gender):
     labelgenders=[]
     for i in range(len(genders)):
         labelgenders.append(genders[i]+': ' + str(round(slices[i],2)*100)+'%')
-    colors=['darkorchid','mediumpurple','plum']
+    colors=['slateblue','mediumpurple','plum']
     plt.pie(slices,colors=colors,labels=labelgenders)
-    plt.title('Gender Breakdown',size=15,color='k',weight='bold')
+    plt.title('Gender Breakdown',size=15,color='slategray',weight='bold')
     plt.legend()
     plt.show()
-
-if __name__ == '__main__':
-    pub_year=[]
-    pub_country=[]
-    pub_gender=[]
-    corpus=Corpus('sample_novels')
-    for novel in corpus.novels:
-        pub_year.append(novel.date)
-        pub_country.append(novel.country_publication)
-        pub_gender.append(novel.author_gender)
-   # plt_pubyears(pub_year)
-   # plt_pubcountries(pub_country)
-    plt_gender_breakdown(pub_gender)
