@@ -173,7 +173,7 @@ def get_encoding_type(filepath):
 def convertFileBestGuess(filepath):
     """
     Tries to convert file at filepath into UTF-8 by trying to convert from source formats ASCII and ISO-8859-1.
-    Returns True if successful
+    Returns True if successful.  N.B. Be sure that the 'converted' folder already exists or this will throw an error.
     :param filepath: str
     :return: bool
     """
@@ -191,6 +191,7 @@ def convertFileBestGuess(filepath):
 def convertFileWithDetection(filepath):
     """
     Tries to convert file to UTF-8 by detecting source encoding.  Returns True if successful.
+    N.B. Be sure that the 'converted' folder already exists or this will throw an error.
     :param filepath:
     :return: True
     """
