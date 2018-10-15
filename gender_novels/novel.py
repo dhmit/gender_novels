@@ -149,7 +149,7 @@ class Novel(common.FileLoaderMixin):
         return text
 
 
-    def _remove_boilerplate_text(text):
+    def _remove_boilerplate_text(self, text):
         """
         Removes the boilerplate text from an input string of a novel.
         Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
@@ -165,7 +165,7 @@ class Novel(common.FileLoaderMixin):
         >>> cleaned_text = austen._remove_boilerplate_text(austen._load_novel_text())
         >>> title_line = cleaned_text[0:cleaned_text.find("\\n")]
         >>> title_line
-        >>> 'Persuasion'
+        'Persuasion'
         """
 
 
@@ -188,7 +188,7 @@ class Novel(common.FileLoaderMixin):
         return strip_headers(text.strip())
 
 
-    def _remove_table_of_contents(text):
+    def _remove_table_of_contents(self, text):
         """
         Removes the Table of Contents from an input string of a novel. Written with the intent of
         being used on Table of Contents removal for Project Gutenberg texts.
@@ -214,7 +214,7 @@ class Novel(common.FileLoaderMixin):
         # Finds all positions of line breaks in the text file for the first few lines, tuned off
         # the parameter of charactersearch characters out
         charactersearch = 8000
-        line_breaks = text[0:charactersearch].findall("\n")
+        line_breaks = text[0:charactersearch].find("\n")
         # Creates a 2D array where each entry is the [contents of line, position of the line's
         # start, position of the line's end]. The last line break is not considered because,
         # of course, there is no next line after the last line.
