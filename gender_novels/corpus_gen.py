@@ -191,8 +191,8 @@ def get_novel_text_gutenberg(filepath):
     """
     if (common.get_encoding_type(filepath) != 'utf-8'):
         common.convertFileWithDetection(filepath)
-        converted_filepath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
-        copyfile(converted_filepath, filepath)
+        # converted_filepath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
+        # copyfile(converted_filepath, filepath)
     with open(filepath, mode='r', encoding='utf8') as text:
         text_with_headers = text.read()
         return strip_headers(text_with_headers).strip()

@@ -1,5 +1,6 @@
 import os
 import urllib.request
+from shutil import copyfile
 
 from pathlib import Path
 
@@ -154,7 +155,7 @@ class FileLoaderMixin:
 
 def get_encoding_type(current_file):
     detector.reset()
-    for line in open(current_file, 'r'):
+    for line in open(current_file, 'rb'):
         detector.feed(line)
         if detector.done: break
     detector.close()
@@ -166,7 +167,7 @@ def convertFileBestGuess(fileName):
     for format in sourceFormats:
         try:
             with codecs.open(fileName, 'rU', format) as sourceFile:
-                writeConversion(sourceFile, targetPath)
+                writeConversion(sourceFile, fileName, targetPath)
                 print('Done.')
                 return
         except UnicodeDecodeError:
@@ -178,7 +179,7 @@ def convertFileWithDetection(fileName):
     targetPath = Path(Path(fileName).parent, r"converted", Path(fileName).name)
     try:
         with codecs.open(fileName, 'rU', format) as sourceFile:
-            writeConversion(sourceFile, targetPath)
+            writeConversion(sourceFile, fileName, targetPath)
             print('Done.')
             return
     except UnicodeDecodeError:
@@ -187,11 +188,13 @@ def convertFileWithDetection(fileName):
     print("Error: failed to convert '" + fileName + "'.")
 
 
-def writeConversion(file,targetPath):
+def writeConversion(file, sourcePath, targetPath, replace=True):
     with codecs.open(targetPath, 'w', targetFormat) as targetFile:
         for line in file:
             targetFile.write(line)
-
+    if (replace):
+        copyfile(sourcePath, targetPath.as_posix())
+        os.remove(targetPath)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
