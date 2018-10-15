@@ -179,17 +179,17 @@ def get_novel_text_gutenberg(filepath):
     """
     Extract text as as string from file, with boilerplate removed
 
-    >>> from gender_novels import corpus_gen
+    >>> from gender_novels.corpus_gen import get_novel_text_gutenberg
     >>> import os
     >>> current_dir = os.path.abspath(os.path.dirname(__file__))
     >>> book = get_novel_text_gutenberg(Path(current_dir, r"corpora/test_books_30/32-0.txt"))
     >>> book[:7]
-    b'HERLAND'
+    'HERLAND'
 
     :param gutenberg_id: int
     :return: str
     """
-    if (common.get_encoding_type(filepath) != 'utf-8'):
+    if (common.get_encoding_type(filepath) != 'utf-8' or common.get_encoding_type(filepath) != 'UTF-8-SIG'):
         common.convertFileWithDetection(filepath)
         # converted_filepath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
         # copyfile(converted_filepath, filepath)

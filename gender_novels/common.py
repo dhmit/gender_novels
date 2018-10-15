@@ -153,42 +153,67 @@ class FileLoaderMixin:
             # has \r and \n -> replace with only \n
             return text.replace('\r\n', '\n')
 
-def get_encoding_type(current_file):
+def get_encoding_type(filepath):
+    """
+    For text file at filepath returns the text encoding as a string (e.g. 'utf-8')
+
+    >>> get_encoding_type(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    'UTF-8-SIG'
+
+    :param filepath: fstr
+    :return: str
+    """
     detector.reset()
-    for line in open(current_file, 'rb'):
+    for line in open(filepath, 'rb'):
         detector.feed(line)
         if detector.done: break
     detector.close()
     return detector.result['encoding']
 
-def convertFileBestGuess(fileName):
+def convertFileBestGuess(filepath):
+    """
+    Tries to convert file at filepath into UTF-8 by trying to convert from source formats ASCII and ISO-8859-1.
+    Returns True if successful
+    :param filepath: str
+    :return: bool
+    """
     sourceFormats = ['ascii', 'iso-8859-1']
-    targetPath = Path(Path(fileName).parent, r"converted", Path(fileName).name)
+    targetPath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
     for format in sourceFormats:
         try:
-            with codecs.open(fileName, 'rU', format) as sourceFile:
-                writeConversion(sourceFile, fileName, targetPath)
-                print('Done.')
-                return
+            with codecs.open(filepath, 'rU', format) as sourceFile:
+                writeConversion(sourceFile, filepath, targetPath)
+                return True
         except UnicodeDecodeError:
             pass
+    return False
 
-def convertFileWithDetection(fileName):
-    print("Converting '" + fileName + "'...")
-    format=get_encoding_type(fileName)
-    targetPath = Path(Path(fileName).parent, r"converted", Path(fileName).name)
+def convertFileWithDetection(filepath):
+    """
+    Tries to convert file to UTF-8 by detecting source encoding.  Returns True if successful.
+    :param filepath:
+    :return: True
+    """
+    format = get_encoding_type(filepath)
+    targetPath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
     try:
-        with codecs.open(fileName, 'rU', format) as sourceFile:
-            writeConversion(sourceFile, fileName, targetPath)
-            print('Done.')
-            return
+        with codecs.open(filepath, 'rU', format) as sourceFile:
+            writeConversion(sourceFile, filepath, targetPath)
+            return True
     except UnicodeDecodeError:
-         pass
-
-    print("Error: failed to convert '" + fileName + "'.")
+        pass
+    return False
 
 
 def writeConversion(file, sourcePath, targetPath, replace=True):
+    """
+    Writes contents of file at sourcePath into targetPath.  If replace=True, the new file will be moved to sourcePath,
+    overwritting the old one.
+    :param file: File
+    :param sourcePath: str
+    :param targetPath: str
+    :param replace: bool
+    """
     with codecs.open(targetPath, 'w', targetFormat) as targetFile:
         for line in file:
             targetFile.write(line)
