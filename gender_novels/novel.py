@@ -123,7 +123,7 @@ class Novel(common.FileLoaderMixin):
     def _load_novel_text(self):
         """Loads the text of a novel and removes boilerplate at the beginning and end
 
-        Currently only supports boilerplate removal for Project Gutenberg ebooks.
+        Currently only supports boilerplate removal for Project gutenberg ebooks.
 
         :rtype: str
         """
@@ -137,7 +137,7 @@ class Novel(common.FileLoaderMixin):
             err += "at the expected location ({file_path})."
             raise FileNotFoundError(err)
 
-        # Extract Project Gutenberg Boilerplate
+        # Extract Project gutenberg Boilerplate
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
             end_intro_boilerplate = text.find(
                 '*** START OF THIS PROJECT GUTENBERG EBOOK')
