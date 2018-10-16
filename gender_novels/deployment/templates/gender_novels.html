@@ -12,10 +12,10 @@
     <!-- Header -->
     <div class="container-fluid header">
         <div class="row justify-content-center">
-            <div class="col-auto">
+            <div class="col-10">
                 <h1 class="header-text display-2">The Gender Novels Project</h1>
             </div>
-            <div class="col-auto align-center align-self-center">
+            <div class="col-2 align-self-center" align="right">
                 <a href="https://github.com/dhmit/gender_novels" target="_blank">
                     <img src="{{ url_for('static', filename='graphics/GitHub_light.png') }}"
                          class="github-logo">
@@ -25,20 +25,24 @@
     </div>
 
     <!-- Topic -->
-    <!-- Topic Title -->
     <div class="container-fluid">
-        <div class="row justify-content-center align-self-center">
-            <div class="col-12">
-                <h2 id="topic-title" class="display-4">Overview</h2>
-            </div>
-        </div>
         <div class="row justify-content-start">
-            <div class="col-2"></div>
+            <div class="col-2">
+                <!-- Vertical sidebar (for topic navigation) -->
+                <div class="nav flex-column nav-pills sidebar" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active show" id="overview-tab" data-toggle="pill" href="#overview" role="tab" aria-selected="true">Overview</a>
+                    <a class="nav-link" id="topic-one-tab" data-toggle="pill" href="#topic-one" role="tab" aria-selected="false">Topic One</a>
+                </div>
+            </div>
             <!-- Topic Content -->
             <div class="col-8" align="center">
-                <p id="topic-content">
+                <div class="topic-content">
                     <!-- Content assigned in convertMarkdown.js -->
-                </p>
+                    <div class="tab-content" id="v-pills-tabContent">
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab"></div>
+                        <div class="tab-pane fade" id="topic-one" role="tabpanel" aria-labelledby="topic-one-tab">Test for Topic One</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
