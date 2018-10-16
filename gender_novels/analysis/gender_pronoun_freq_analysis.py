@@ -62,6 +62,17 @@ def subject_vs_object_pronoun_freqs(corp):
 
     return result_tuple
 
+def sub_pronouns_gender_comp(corp):
+    relative_freq_female_sub = {}
+
+    for book in corp.novels:
+        he = book.get_word_freq('he')
+        she = book.get_word_freq('she')
+
+        relative_freq_female_sub[book] = (she)/(he+she)
+
+    return relative_freq_female_sub
+
 def dict_to_list(d):
     '''
     Takes in a dictionary and returns a list of the values in the dictionary
@@ -335,4 +346,17 @@ if __name__ == "__main__":
     #print(get_mean(male_date_sub_v_ob))
     #print('By location: ')
     #print(get_mean(male_loc_sub_v_ob))
+
+    #sub_comp_gender = sub_pronouns_gender_comp(Corpus('sample_novels'))
+    #sub_comp_gender_list = dict_to_list(sub_comp_gender)
+
+    #print('Overall comparative female freq:')
+    #print(np.mean(sub_comp_gender_list))
+    #print('By author gender:')
+    #print(get_mean(freq_by_author_gender(sub_comp_gender)))
+    #print('By date: ')
+    #print(get_mean(freq_by_date(sub_comp_gender)))
+    #print('By location: ')
+    #print(get_mean(freq_by_location(sub_comp_gender)))
+
 
