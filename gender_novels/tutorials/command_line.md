@@ -252,3 +252,9 @@ The IP address will be a series of numbers that will direct you to the correct s
 If you do not have an SSH key, you'll be prompted for a password. When you type the password in, you won't have any visual feedback of your keystrokes. When you are done typing your password, press the `ENTER` key.
 
 To disconnect from the remote server, type `exit` into the command line.
+
+## Further Reading
+
+To become more competent at using the command line, you can play the game [Bandit](http://overthewire.org/wargames/bandit/) from [OverTheWire](http://overthewire.org/wargames/), which are games to help you learn and practice security concepts.
+
+For fun, you can look into [cowsay](https://en.wikipedia.org/wiki/Cowsay) and [ponysay](https://github.com/erkin/ponysay).
