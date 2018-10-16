@@ -2,6 +2,7 @@ import urllib
 from nltk.parse.stanford import StanfordDependencyParser
 from gender_novels.corpus import Corpus
 from nltk.tokenize import sent_tokenize
+import os.path
 
 if __name__ == "__main__":
 
@@ -11,8 +12,10 @@ if __name__ == "__main__":
     # The jar files are too big to commit directly, so download them
     url_to_jar = "http://www.trecento.com/dh_lab/nltk_jar/stanford-parser.jar"
     url_to_models_jar = "http://www.trecento.com/dh_lab/nltk_jar/stanford-parser-3.9.1-models.jar"
-    urllib.request.urlretrieve(url_to_jar, path_to_jar)
-    urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
+    if not os.path.isfile(path_to_jar):
+        urllib.request.urlretrieve(url_to_jar, path_to_jar)
+    if not os.path.isfile(path_to_models_jar):
+        urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
 
     dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
 
