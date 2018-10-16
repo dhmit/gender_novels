@@ -145,7 +145,6 @@ class Novel(common.FileLoaderMixin):
             start_novel = text.find('***', end_intro_boilerplate + 5) + 3
             end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
             text = text[start_novel:end_novel]
-            text = text.replace('\n', ' ')
 
         return text
 

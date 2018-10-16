@@ -22,7 +22,7 @@ if __name__ == "__main__":
     novels = Corpus('sample_novels').novels
 
     novel = novels[0]
-    sentences = sent_tokenize(novel.text)
+    sentences = sent_tokenize(novel.text.replace('\n', ' '))
     print(sentences)
 
     result = dependency_parser.raw_parse_sents(sentences)
