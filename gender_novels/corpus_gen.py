@@ -10,8 +10,8 @@ import glob
 from shutil import copyfile
 import os
 import gender_guesser.detector as gender_guesser
-
 from gender_novels import common
+import time
 
 # TODO: A lot of things
 
@@ -25,6 +25,7 @@ SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "s
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
 AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
+separators = ["\r","\n",r"; Or, "]
 
 def generate_corpus_gutenberg():
     """
@@ -34,42 +35,61 @@ def generate_corpus_gutenberg():
 
     # determine current directory
     current_dir = os.path.abspath(os.path.dirname(__file__))
-    print(current_dir)
+    print("Current directory:",current_dir)
     # write csv header
     with open(Path(current_dir, GUTENBERG_METADATA_PATH), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
         writer.writeheader()
+        print("Wrote metadata header")
     # check if cache is populated, if it isn't, populates it
     cache = get_metadata_cache()
     if (not cache.exists):
+        print("Populating cache...")
         cache.populate()
+        print("Done populating cache")
     # go through all books in Keith's thing
     bookshelf = str(Path(current_dir, INITIAL_BOOK_STORE, r"*.txt"))
-    print(bookshelf)
+    print("Searching folder", bookshelf)
     books = glob.iglob(bookshelf)
+    start_time = time.time()
     for book in books:
-        print(book)
+        start_book = time.time()
+        print("Filepath:",book)
         # get the book's id
         gutenberg_id = get_gutenberg_id(book)
+        print("ID:",gutenberg_id)
         # check if book is valid novel by our definition
         if (not is_valid_novel_gutenberg(gutenberg_id, book)):
+            print("Not a novel")
+            print("Time for this book:", time.time() - start_book, "seconds")
             continue
         # begin compiling metadata.  Metadata not finalized
         novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
         author = get_author_gutenberg(gutenberg_id)
+        print("Author:",author)
         novel_metadata['author'] = author
         title = get_title_gutenberg(gutenberg_id)
+        print("Title:",title)
         novel_metadata['title'] = title
-        novel_metadata['date'] = get_publication_date(author, title, gutenberg_id, book)
+        novel_metadata['date'] = get_publication_date(author, title, book, gutenberg_id)
+        print("Date:",novel_metadata['date'])
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
+        print("Country:",novel_metadata['country_publication'])
         novel_metadata['author_gender'] = get_author_gender(author)
+        print("Author Gender:",novel_metadata['author_gender'])
         novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
+        print("Subjects:",novel_metadata['subject'])
         # write to csv
-        write_metadata(novel_metadata, Path(current_dir, GUTENBERG_METADATA_PATH))
+        write_metadata(novel_metadata)
+        print("wrote metadata")
         # copy text file to new folder
         copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
-
+        print("Copied book")
+        print("Time for this book:",time.time()-start_book, "seconds")
+    end_time = time.time()
+    print("Done!")
+    print("Total Time:",end_time-start_time,"seconds")
 
 def get_gutenberg_id(filepath):
     """
@@ -81,12 +101,14 @@ def get_gutenberg_id(filepath):
     >>> current_dir = os.path.abspath(os.path.dirname(__file__))
     >>> get_gutenberg_id(Path(current_dir, r"corpora/test_books_30/44-0.txt"))
     44
+    >>> get_gutenberg_id(Path(current_dir, r"corpora/test_books_30/11000-0.txt"))
+    11000
 
     :param filepath: Path
     :return: int
     """
     filename = Path(filepath).name
-    filename = filename.rstrip(r"-0.txt")
+    filename = filename.replace(r"-0.txt",'')
     return int(filename)
 
 def is_valid_novel_gutenberg(gutenberg_id, filepath):
@@ -103,11 +125,11 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     >>> from gender_novels import corpus_gen
     >>> import os
     >>> current_dir = os.path.abspath(os.path.dirname(__file__))
-    >>> is_valid_novel_gutenberg(32, Path(current_dir, r"/corpora/test_books_30/32-0.txt")
+    >>> is_valid_novel_gutenberg(32, Path(current_dir, r"/corpora/test_books_30/32-0.txt"))
     True
-    >>> is_valid_novel_gutenberg(11000, Path(current_dir, r"corpora/test_books_30/11000-0.txt")
+    >>> is_valid_novel_gutenberg(11000, Path(current_dir, r"corpora/test_books_30/11000-0.txt"))
     False
-    >>> is_valid_novel_gutenberg(1404, Path(current_dir, r"corpora/test_books_30/1404-0.txt")
+    >>> is_valid_novel_gutenberg(1404, Path(current_dir, r"corpora/test_books_30/1404-0.txt"))
     False
 
     :param gutenberg_id: int
@@ -127,7 +149,7 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
                 return False
     title = get_title_gutenberg(gutenberg_id)
     try:
-        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, gutenberg_id))
+        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, filepath, gutenberg_id))
         if ((date < 1770 or date > 1922)):
             return False
     except TypeError:
@@ -135,6 +157,8 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     if (title.find("Index of the Project gutenberg ") != -1):
         return False
     if (title.find("Complete Project gutenberg ") != -1):
+        return False
+    if (title.find("Translated by ") != -1):
         return False
     text = get_novel_text_gutenberg(filepath)
     if (text.find("Translator: ", 0, 650) != -1):
@@ -186,7 +210,7 @@ def get_novel_text_gutenberg(filepath):
     >>> book[:7]
     'HERLAND'
 
-    :param gutenberg_id: int
+    :param filepath: str
     :return: str
     """
     if (common.get_encoding_type(filepath) != 'utf-8' or common.get_encoding_type(filepath) != 'UTF-8-SIG'):
@@ -205,16 +229,17 @@ def get_publication_date(author, title, filepath, gutenberg_id = None):
     If it can't returns None
 
     >>> from gender_novels import corpus_gen
-    >>> get_publication_date("Hawthorne, Nathaniel", "The Scarlet Letter", 33)
+    >>> get_publication_date("Hawthorne, Nathaniel", "The Scarlet Letter", r"corpora/sample_novels/texts/hawthorne_scarlet.txt", 33)
     1850
 
-    >>> from gender_novels import corpus_gen
-    >>> get_publication_date("Dick, Phillip K.", "Mr. Spaceship", 32522)
-    1953
+    # >>> from gender_novels import corpus_gen
+    # >>> get_publication_date("Dick, Phillip K.", "Mr. Spaceship", 32522)
+    # 1953
 
     :param author: list
     :param title: str
     :param gutenberg_id: int
+    :param filepath: str
     :return: int
     """
     #TODO: remember to uncomment worldcat function when it is done
@@ -245,12 +270,16 @@ def get_publication_date_wikidata(author, title):
 
     >>> get_publication_date_wikidata("Austen, Jane", "Persuasion")
     1818
+    >>> get_publication_date_wikidata("Scott, Walter", "Ivanhoe: A Romance")
+    1820
 
     :param author: list
     :param title: str
     :return: int
     """
     try:
+        for sep in separators:
+            title = title.split(sep,1)[0]
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, title)
         item = pywikibot.ItemPage.fromPage(page)
@@ -267,6 +296,14 @@ def get_publication_date_wikidata(author, title):
         except (pywikibot.exceptions.NoPage):
             return None
     except (pywikibot.exceptions.NoPage):
+        try:
+            if (title == title.split(":", 1)[0]):
+                return None
+            else:
+                return get_publication_date_wikidata(author, title.split(":", 1)[0])
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except(pywikibot.exceptions.InvalidTitle):
         return None
     return year
 
@@ -349,6 +386,14 @@ def get_country_publication_wikidata(author, title):
         except (pywikibot.exceptions.NoPage):
             return None
     except (pywikibot.exceptions.NoPage):
+        try:
+            if (title == title.split(":", 1)[0]):
+                return None
+            else:
+                return get_country_publication_wikidata(author, title.split(":", 1)[0])
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except(pywikibot.exceptions.InvalidTitle):
         return None
 
     # try to match country_id to major English-speaking countries
@@ -446,9 +491,13 @@ def get_author_gender_wikidata(author):
     :param author: str
     :return: str
     """
-
-    match = re.match(AUTHOR_NAME_REGEX, author)
-    author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
+    try:
+        match = re.match(AUTHOR_NAME_REGEX, author)
+        author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
+        if (match.groupdict()['suffix'] != None):
+            author_formatted += match.groupdict()['suffix']
+    except (TypeError, AttributeError):
+        author_formatted = author
     try:
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, author_formatted)
@@ -475,6 +524,7 @@ def get_subject_gutenberg(gutenberg_id):
 
     >>> from gender_novels import corpus_gen
     >>> get_subject_gutenberg(5200)
+    ['Metamorphosis -- Fiction', 'PT', 'Psychological fiction']
 
     :param: author: str
     :param: title: str
@@ -500,12 +550,14 @@ def write_metadata(novel_metadata):
     :param: novel_metadata: dict
     :param: path: Path
     """
+    current_dir = os.path.abspath(os.path.dirname(__file__))
     corpus = novel_metadata['corpus_name']
-    path = Path('corpora', corpus, f'{corpus}.csv')
-    with open(path, 'w', newline='') as csvfile:
+    path = Path(current_dir, 'corpora', corpus, f'{corpus}.csv')
+    with open(path, 'a', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
         writer.writerow(novel_metadata)
 
 if __name__ == '__main__':
-    from dh_testers.testRunner import main_test
-    main_test()
+    # from dh_testers.testRunner import main_test
+    # main_test()
+    generate_corpus_gutenberg()
