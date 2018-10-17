@@ -1,10 +1,15 @@
 # Overview
 
 ## Our Goals
-The use of gender has changed over the centuries in the use of our literature. Using 
-novels from 1924 and earlier, we are able to study the prevalence of the various ways
-that we gender language and analyze the differences in these based on region, 
-author gender, time period, and more.
+
+As the first project of the lab, we are very excited to begin our research in the 
+field of gender studies. The use of gender has changed over the centuries in the use of our 
+literature.  We are directing our research at novels written by authors as famous as Jane Austen
+and others that are much more obscure. We have been 
+
+
+
+## The Lab
 
 >"Technology alone is not enough. It’s technology married with the liberal arts, married with the humanities, that yields us the results that make our hearts sing.” 
 >
