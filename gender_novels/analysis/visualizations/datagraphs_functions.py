@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from gender_novels.corpus import Corpus
 
-def plt_pubyears(years):
+def plt_pubyears(years,name_of_data):
     '''
     Creates a histogram displaying the frequency of books that were published within a 20 year 
     period
@@ -15,14 +15,16 @@ def plt_pubyears(years):
     plt.hist(years,bins,histtype='bar',rwidth=.8,color='plum')
     plt.xlabel('Year', size=13,weight='bold',color='slategray')
     plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
-    plt.title('Publication Year Concentration',size=15,weight='bold',color='slategray')
+    plt.title('Publication Year Concentration for '+name_of_data,size=15,weight='bold',
+              color='slategray')
     plt.yticks(size=11,color='slategray')
     plt.xticks([i for i in range(min(years),max(years)+9,10)],size=11,color='slategray')
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(60)
-    plt.show()
+    plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
+    plt.savefig('date_of_pub_for_'+name_of_data+'.png')
 
-def plt_pubcountries(pub_country):
+def plt_pubcountries(pub_country,name_of_data):
     '''
     Creates a bar graph displaying the frequency of books that were published in each country
     :param pub_country: list
@@ -40,12 +42,19 @@ def plt_pubcountries(pub_country):
     plt.bar(x,y,color='plum')
     plt.xlabel('Countries',size=13,weight='bold',color='slategray')
     plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
-    plt.title('Country of Publication',size=15,color='slategray',weight='bold')
+    plt.title('Country of Publication for '+name_of_data,size=15,color='slategray',weight='bold')
     plt.xticks(color='slategray',size=12)
     plt.yticks(color='slategray',size=12)
-    plt.show()
+    plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
+    plt.savefig('country_of_pub_for_'+name_of_data+'.png')
 
-def plt_gender_breakdown(pub_gender):
+def plt_gender_breakdown(pub_gender,name_of_data):
+    '''
+    Creates a pie chart displaying the composition of male and female writers in the data
+    :param pub_gender: list
+    :param name_of_data: str
+    RETURNS a pie chart
+    '''
     gendercount={}
     for i in pub_gender:
         gendercount[i]=gendercount.setdefault(i,0)+1
@@ -59,6 +68,21 @@ def plt_gender_breakdown(pub_gender):
         labelgenders.append(genders[i]+': ' + str(round(slices[i],2)*100)+'%')
     colors=['slateblue','mediumpurple','plum']
     plt.pie(slices,colors=colors,labels=labelgenders)
-    plt.title('Gender Breakdown',size=15,color='slategray',weight='bold')
+    plt.title('Gender Breakdown for '+name_of_data,size=15,color='slategray',weight='bold')
     plt.legend()
-    plt.show()
+    plt.subplots_adjust(left=.1,bottom=.1,right=.9,top=.9)
+    plt.savefig('gender_breakdown_for_'+name_of_data+'.png')
+
+if __name__=='__main__':
+    pubyears=[]
+    pubgender=[]
+    pubcountry=[]
+    c = Corpus('sample_novels')
+    for novel in c.novels:
+        pubyears.append(novel.date)
+        pubgender.append(novel.author_gender)
+        pubcountry.append(novel.country_publication)
+    plt_gender_breakdown(pubgender, 'sample novels')
+    plt_pubyears(pubyears,'sample novels')
+    plt_pubcountries(pubcountry,'sample novels')
+
