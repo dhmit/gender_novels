@@ -1,23 +1,22 @@
 import os
 import urllib.request
-from shutil import copyfile
 
 from pathlib import Path
 
 DEBUG = False
 
+BASE_PATH = Path(os.path.abspath(os.path.dirname(__file__)))
 GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
-metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
-                 'notes']
-INITIAL_BOOK_STORE = r'corpora/test_books_30' # 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
+METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
+                 'subject', 'corpus_name', 'notes']
+
+# 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
+INITIAL_BOOK_STORE = r'corpora/test_books_30'
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
-AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*"
+AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)"
 import codecs
-from chardet.universaldetector import UniversalDetector
-targetFormat = 'utf-8'
 outputDir = 'converted'
-detector = UniversalDetector()
 
 #TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
 
@@ -153,17 +152,30 @@ class FileLoaderMixin:
             # has \r and \n -> replace with only \n
             return text.replace('\r\n', '\n')
 
-def get_encoding_type(filepath):
+def get_text_file_encoding(filepath):
     """
     For text file at filepath returns the text encoding as a string (e.g. 'utf-8')
 
-    >>> get_encoding_type(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    >>> get_text_file_encoding(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
     'UTF-8-SIG'
+
+    Note: For files containing only ascii characters, this function will return 'ascii' even if
+    the file was encoded with utf-8
+    >>> text = 'here is an ascii text'
+    >>> file_path = Path(BASE_PATH, 'example_file.txt')
+    >>> with codecs.open(file_path, 'w', 'utf-8') as source: source.write(text)
+    >>> get_text_file_encoding(file_path)
+    'ascii'
+    >>> import os
+    >>> os.remove(file_path)
 
     :param filepath: fstr
     :return: str
     """
-    detector.reset()
+
+    from chardet.universaldetector import UniversalDetector
+    detector = UniversalDetector()
+
     with open(filepath, 'rb') as file:
         for line in file:
             detector.feed(line)
@@ -171,57 +183,58 @@ def get_encoding_type(filepath):
         detector.close()
     return detector.result['encoding']
 
-def convertFileBestGuess(filepath):
-    """
-    Tries to convert file at filepath into UTF-8 by trying to convert from source formats ASCII and ISO-8859-1.
-    Returns True if successful.  N.B. Be sure that the 'converted' folder already exists or this will throw an error.
-    :param filepath: str
-    :return: bool
-    """
-    sourceFormats = ['ascii', 'iso-8859-1']
-    targetPath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
-    for format in sourceFormats:
-        try:
-            with codecs.open(filepath, 'rU', format) as sourceFile:
-                writeConversion(sourceFile, filepath, targetPath)
-                return True
-        except UnicodeDecodeError:
-            pass
-    return False
 
-def convertFileWithDetection(filepath):
+def convert_text_file_to_new_encoding(source_path, target_path, target_encoding):
     """
-    Tries to convert file to UTF-8 by detecting source encoding.  Returns True if successful.
-    N.B. Be sure that the 'converted' folder already exists or this will throw an error.
-    :param filepath:
-    :return: True
-    """
-    format = get_encoding_type(filepath)
-    targetPath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
-    try:
-        with codecs.open(filepath, 'rU', format) as sourceFile:
-            writeConversion(sourceFile, filepath, targetPath)
-            return True
-    except UnicodeDecodeError:
-        pass
-    return False
+    Converts a text file in source_path to the specified encoding in target_encoding
+    Note: Currentyl only supports encodings utf-8, ascii and iso-8859-1
 
+    :param source_path: str or Path
+    :param target_path: str or Path
+    :param target_encoding: str
 
-def writeConversion(file, sourcePath, targetPath, replace=True):
+    >>> text = ' ¶¶¶¶ here is a test file'
+    >>> source_path = Path(BASE_PATH, 'source_file.txt')
+    >>> target_path = Path(BASE_PATH, 'target_file.txt')
+    >>> with codecs.open(source_path, 'w', 'iso-8859-1') as source: source.write(text)
+    >>> get_text_file_encoding(source_path)
+    'ISO-8859-1'
+    >>> convert_text_file_to_new_encoding(source_path, target_path, target_encoding='utf-8')
+    >>> get_text_file_encoding(target_path)
+    'utf-8'
+    >>> import os
+    >>> os.remove(source_path)
+    >>> os.remove(target_path)
+
+    :return:
     """
-    Writes contents of file at sourcePath into targetPath.  If replace=True, the new file will be moved to sourcePath,
-    overwritting the old one.
-    :param file: File
-    :param sourcePath: str
-    :param targetPath: str
-    :param replace: bool
-    """
-    with codecs.open(targetPath, 'w', targetFormat) as targetFile:
-        for line in file:
-            targetFile.write(line)
-    if (replace):
-        copyfile(sourcePath, targetPath.as_posix())
-        os.remove(targetPath)
+
+    valid_encodings = ['utf-8', 'utf8', 'UTF-8-SIG', 'ascii', 'iso-8859-1', 'ISO-8859-1']
+
+    # if the source_path or target_path is a string, turn to Path object.
+    if isinstance(source_path, str):
+        source_path = Path(source_path)
+    if isinstance(target_path, str):
+        target_path = Path(target_path)
+
+    # check if source and target encodings are valid
+    source_encoding = get_text_file_encoding(source_path)
+    if source_encoding not in valid_encodings:
+        raise ValueError('convert_text_file_to_new_encoding() only supports the following source '
+                         f'encodings: {valid_encodings} but not {source_encoding}.')
+    if target_encoding not in valid_encodings:
+        raise ValueError('convert_text_file_to_new_encoding() only supports the following target '
+                         f'encodings: {valid_encodings} but not {target_encoding}.')
+
+    # print warning if filenames don't end in .txt
+    if not source_path.parts[-1].endswith('.txt') or not target_path.parts[-1].endswith('.txt'):
+        print(f"WARNING: Changing encoding to {target_encoding} on a file that does not end with "
+              f".txt. Source: {source_path}. Target: {target_path}")
+
+    with codecs.open(source_path, 'rU', encoding=source_encoding) as source_file:
+        text = source_file.read()
+    with codecs.open(target_path, 'w', encoding=target_encoding) as target_file:
+        target_file.write(text)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test

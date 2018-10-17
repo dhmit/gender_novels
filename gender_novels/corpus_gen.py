@@ -1,30 +1,27 @@
 import csv
+import glob
+import os
+import re
+import time
+from pathlib import Path
+from shutil import copyfile
+
+import gender_guesser.detector as gender_guesser
+import pywikibot
+from gutenberg.acquire import get_metadata_cache
 from gutenberg.cleanup import strip_headers
 from gutenberg.query import get_metadata
-from gutenberg.acquire import get_metadata_cache
-import re
-from pathlib import Path
-import unittest
-import pywikibot
-import glob
-from shutil import copyfile
-import os
-import gender_guesser.detector as gender_guesser
+
 from gender_novels import common
-import time
+from gender_novels.common import GUTENBERG_METADATA_PATH, INITIAL_BOOK_STORE, FINAL_BOOK_STORE, \
+    AUTHOR_NAME_REGEX, METADATA_LIST
 
 # TODO: A lot of things
 
-GUTENBERG_METADATA_PATH = common.GUTENBERG_METADATA_PATH
-metadata_list = common.metadata_list
-INITIAL_BOOK_STORE = common.INITIAL_BOOK_STORE # 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
-# plus some extras
-FINAL_BOOK_STORE = common.FINAL_BOOK_STORE
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
-AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
 separators = ["\r","\n",r"; Or, "]
 
 def generate_corpus_gutenberg():
@@ -38,7 +35,7 @@ def generate_corpus_gutenberg():
     print("Current directory:",current_dir)
     # write csv header
     with open(Path(current_dir, GUTENBERG_METADATA_PATH), 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
+        writer = csv.DictWriter(csvfile, fieldnames=METADATA_LIST)
         writer.writeheader()
         print("Wrote metadata header")
     # check if cache is populated, if it isn't, populates it
@@ -91,10 +88,11 @@ def generate_corpus_gutenberg():
     print("Done!")
     print("Total Time:",end_time-start_time,"seconds")
 
+
 def get_gutenberg_id(filepath):
     """
-    For file with filepath get the gutenberg id of that book.  Should not be hard because gutenberg literally names
-    files by id
+    For file with filepath get the gutenberg id of that book.  Should not be hard because gutenberg
+    literally names files by id
 
     >>> from gender_novels import corpus_gen
     >>> import os
@@ -111,10 +109,11 @@ def get_gutenberg_id(filepath):
     filename = filename.replace(r"-0.txt",'')
     return int(filename)
 
+
 def is_valid_novel_gutenberg(gutenberg_id, filepath):
     """
-    Determines whether book with this gutenberg id is actually a "novel".  Returns false if the book is not or doesn't
-    actually exist.
+    Determines whether book with this gutenberg id is actually a "novel".  Returns false if the book
+    is not or doesn't actually exist.
     Should check:
     If book is English
     If book is under public domain
@@ -149,7 +148,8 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
                 return False
     title = get_title_gutenberg(gutenberg_id)
     try:
-        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, filepath, gutenberg_id))
+        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, filepath,
+                                        gutenberg_id))
         if ((date < 1770 or date > 1922)):
             return False
     except TypeError:
@@ -164,10 +164,12 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     if (text.find("Translator: ", 0, 650) != -1):
         return False
     text_length = len(text)
-    if (text_length < 140000 or text_length > 9609000 ): # Animal Farm is roughly 166700 characters including boilerplate
-        # Guiness World Records states that the longest novel is 9,609,000 characters long
+    # Animal Farm is roughly 166700 characters including boilerplate
+    # Guiness World Records states that the longest novel is 9,609,000 characters long
+    if (text_length < 140000 or text_length > 9609000 ):
         return False
     return True
+
 
 def get_author_gutenberg(gutenberg_id):
     """
@@ -186,6 +188,7 @@ def get_author_gutenberg(gutenberg_id):
 
     return list(get_metadata('author', gutenberg_id))
 
+
 def get_title_gutenberg(gutenberg_id):
     """
     Gets title for novel with this gutenberg id
@@ -198,6 +201,7 @@ def get_title_gutenberg(gutenberg_id):
     # TODO: run doctest on computer with populated cache
 
     return list(get_metadata('title', gutenberg_id))[0]
+
 
 def get_novel_text_gutenberg(filepath):
     """
@@ -213,10 +217,11 @@ def get_novel_text_gutenberg(filepath):
     :param filepath: str
     :return: str
     """
-    if (common.get_encoding_type(filepath) != 'utf-8' or common.get_encoding_type(filepath) != 'UTF-8-SIG'):
-        common.convertFileWithDetection(filepath)
-        # converted_filepath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
-        # copyfile(converted_filepath, filepath)
+    if common.get_text_file_encoding(filepath) not in {'utf-8', 'UTF-8-SIG'}:
+        target_path = Path(Path(filepath).parent, r"converted", Path(filepath).name)
+        common.convert_text_file_to_new_encoding(source_path=filepath,
+                                                 target_path=target_path,
+                                                 target_encoding='utf-8')
     with open(filepath, mode='r', encoding='utf8') as text:
         text_with_headers = text.read()
         return strip_headers(text_with_headers).strip()
@@ -229,7 +234,8 @@ def get_publication_date(author, title, filepath, gutenberg_id = None):
     If it can't returns None
 
     >>> from gender_novels import corpus_gen
-    >>> get_publication_date("Hawthorne, Nathaniel", "The Scarlet Letter", r"corpora/sample_novels/texts/hawthorne_scarlet.txt", 33)
+    >>> get_publication_date("Hawthorne, Nathaniel", "The Scarlet Letter",
+    ... r"corpora/sample_novels/texts/hawthorne_scarlet.txt", 33)
     1850
 
     # >>> from gender_novels import corpus_gen
@@ -257,10 +263,10 @@ def get_publication_date(author, title, filepath, gutenberg_id = None):
 
 def get_publication_date_wikidata(author, title):
     """
-    For a given novel with this author and title this function attempts to pull the publication year from Wikidata
-    Otherwise returns None
-    N.B.: This fails if the title is even slightly wrong (e.g. The Adventures of Huckleberry Finn vs Adventures of
-    Huckleberry Finn).  Should it be tried to fix that?
+    For a given novel with this author and title this function attempts to pull the publication
+    year from Wikidata Otherwise returns None
+    N.B.: This fails if the title is even slightly wrong (e.g. The Adventures of Huckleberry Finn vs
+    Adventures of Huckleberry Finn).  Should it be tried to fix that?
     Function also doesn't use author parameter
 
     >>> from gender_novels import corpus_gen
@@ -426,10 +432,11 @@ def get_country_publication_wikidata(author, title):
 
 def get_author_gender(authors):
     """
-    Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple authors of different
-    genders)
+    Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple
+    authors of different genders)
     #TODO: should get functions that fail to find anything return 'unknown'
-    #TODO: 'both' is ambiguous; Does it mean both female and male?  female and unknown?  male and nonbinary?
+    #TODO: 'both' is ambiguous; Does it mean both female and male?  female and unknown?
+    #TODO: male and nonbinary?
 
     >>> from gender_novels.corpus_gen import get_author_gender
     >>> get_author_gender(["Hawthorne, Nathaniel"])
@@ -554,7 +561,7 @@ def write_metadata(novel_metadata):
     corpus = novel_metadata['corpus_name']
     path = Path(current_dir, 'corpora', corpus, f'{corpus}.csv')
     with open(path, 'a', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
+        writer = csv.DictWriter(csvfile, fieldnames=METADATA_LIST)
         writer.writerow(novel_metadata)
 
 if __name__ == '__main__':
