@@ -9,7 +9,7 @@ def plt_pubyears(years,name_of_data):
     :param years: list
     RETURNS a pyplot histogram
     '''
-    sns.set_style('darkgrid')
+    sns.set_style('ticks')
     ax1=plt.subplot2grid((1,1),(0,0))
     bins=[num for num in range(min(years),max(years)+5,5)]
     plt.hist(years,bins,histtype='bar',rwidth=.8,color='plum')
@@ -17,8 +17,8 @@ def plt_pubyears(years,name_of_data):
     plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
     plt.title('Publication Year Concentration for '+name_of_data,size=15,weight='bold',
               color='slategray')
-    plt.yticks(size=11,color='slategray')
-    plt.xticks([i for i in range(min(years),max(years)+9,10)],size=11,color='slategray')
+    plt.yticks(size=13,color='slategray')
+    plt.xticks([i for i in range(min(years),max(years)+9,10)],size=13,color='slategray')
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(60)
     plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
@@ -30,7 +30,7 @@ def plt_pubcountries(pub_country,name_of_data):
     :param pub_country: list
     RETURNS a pyplot bargraph
     '''
-    sns.set_style('darkgrid')
+    sns.set_style('ticks')
     ax1=plt.subplot2grid((1,1),(0,0))
     country_counter={}
     for country in pub_country:
@@ -43,8 +43,8 @@ def plt_pubcountries(pub_country,name_of_data):
     plt.xlabel('Countries',size=13,weight='bold',color='slategray')
     plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
     plt.title('Country of Publication for '+name_of_data,size=15,color='slategray',weight='bold')
-    plt.xticks(color='slategray',size=12)
-    plt.yticks(color='slategray',size=12)
+    plt.xticks(color='slategray',size=13)
+    plt.yticks(color='slategray',size=13)
     plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
     plt.savefig('country_of_pub_for_'+name_of_data+'.png')
 
@@ -67,7 +67,7 @@ def plt_gender_breakdown(pub_gender,name_of_data):
     for i in range(len(genders)):
         labelgenders.append(genders[i]+': ' + str(round(slices[i],2)*100)+'%')
     colors=['slateblue','mediumpurple','plum']
-    plt.pie(slices,colors=colors,labels=labelgenders)
+    plt.pie(slices,colors=colors,labels=labelgenders,textprops={'fontsize':15})
     plt.title('Gender Breakdown for '+name_of_data,size=15,color='slategray',weight='bold')
     plt.legend()
     plt.subplots_adjust(left=.1,bottom=.1,right=.9,top=.9)
