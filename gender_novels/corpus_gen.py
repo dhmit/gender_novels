@@ -527,7 +527,7 @@ def get_author_gender(authors):
             gender_guess = guesser.get_gender(first_name)
             if (gender_guess == 'andy' or gender_guess == 'unknown'):
                 author_gender = None
-            if (gender_guess == 'male' or gender_guess == 'mostly male'):
+            if (gender_guess == 'male' or gender_guess == 'mostly_male'):
                 author_gender = 'male'
             if (gender_guess == 'female' or gender_guess == 'mostly_female'):
                 author_gender = 'female'
