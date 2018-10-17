@@ -1,21 +1,24 @@
 /* External assets */
 
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+@import url('https://fonts.googleapis.com/css?family=Palanquin');
+@import url('https://fonts.googleapis.com/css?family=Overpass');
 
 /* Base HTML elements */
 
 body {
-    font-family: "Source Sans Pro";
+    font-family: "Palanquin";
+    font-size: large;
 }
 
 /* Custom classes */
 
 .header {
-    background-color: #3E3E3E;
+    background-color: #FEFDFB;
 }
 
 .header-text {
-    color: white;
+    color: black;
+    font-family: "Overpass";
     font-weight: bold;
     text-align: center;
 }
@@ -27,7 +30,11 @@ body {
     max-width: 60px;
 }
 
-/* Topic Content */
+.content {
+    background-color: #EFEFEF;
+}
+
+/* Topic content */
 
 .topic-content img {
     height: auto;
@@ -40,17 +47,17 @@ body {
 
 .sidebar {
     position: fixed;
-    width: 12%;
+    width: 15%;
 }
 
 .nav-link {
-    background-color: white;
+    background-color: #EFEFEF;
     color: black;
 }
 
 .nav-link.active.show {
-    background-color: darkgray;
-    color: white;
+    background-color: #CAEBF2;
+    color: black;
 }
 
 a:hover {
