@@ -530,7 +530,7 @@ def get_author_gender(authors):
             if (gender_guess == 'male' or gender_guess == 'mostly male'):
                 author_gender = 'male'
             if (gender_guess == 'female' or gender_guess == 'mostly_female'):
-                author_gender == 'female'
+                author_gender = 'female'
     else:
         author_gender = get_author_gender([authors[0]])
         for author in authors:
