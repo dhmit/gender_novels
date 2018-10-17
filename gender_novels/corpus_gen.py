@@ -10,8 +10,8 @@ import glob
 from shutil import copyfile
 import os
 import gender_guesser.detector as gender_guesser
-
 from gender_novels import common
+import time
 
 # TODO: A lot of things
 
@@ -25,6 +25,7 @@ SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "s
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
 AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
+separators = ["\r","\n",";"]
 
 def generate_corpus_gutenberg():
     """
@@ -34,24 +35,28 @@ def generate_corpus_gutenberg():
 
     # determine current directory
     current_dir = os.path.abspath(os.path.dirname(__file__))
-    print(current_dir)
+    print("Current directory:",current_dir)
     # write csv header
     with open(Path(current_dir, GUTENBERG_METADATA_PATH), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
         writer.writeheader()
+        print("Wrote metadata header")
     # check if cache is populated, if it isn't, populates it
     cache = get_metadata_cache()
     if (not cache.exists):
+        print("Populating cache...")
         cache.populate()
+        print("Done populating cache")
     # go through all books in Keith's thing
     bookshelf = str(Path(current_dir, INITIAL_BOOK_STORE, r"*.txt"))
-    print(bookshelf)
+    print("Searching folder", bookshelf)
     books = glob.iglob(bookshelf)
+    start_time = time.time()
     for book in books:
-        print(book)
+        print("Filepath:",book)
         # get the book's id
         gutenberg_id = get_gutenberg_id(book)
-        print(gutenberg_id)
+        print("ID:",gutenberg_id)
         # check if book is valid novel by our definition
         if (not is_valid_novel_gutenberg(gutenberg_id, book)):
             print("Not a novel")
@@ -59,27 +64,29 @@ def generate_corpus_gutenberg():
         # begin compiling metadata.  Metadata not finalized
         novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
         author = get_author_gutenberg(gutenberg_id)
-        print(author)
+        print("Author:",author)
         novel_metadata['author'] = author
         title = get_title_gutenberg(gutenberg_id)
-        print(title)
+        print("Title:",title)
         novel_metadata['title'] = title
         novel_metadata['date'] = get_publication_date(author, title, book, gutenberg_id)
-        print(novel_metadata['date'])
+        print("Date:",novel_metadata['date'])
         novel_metadata['country_publication'] = get_country_publication(author,
             title)
-        print(novel_metadata['country_publication'])
+        print("Country:",novel_metadata['country_publication'])
         novel_metadata['author_gender'] = get_author_gender(author)
-        print(novel_metadata['author_gender'])
+        print("Author Gender:",novel_metadata['author_gender'])
         novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
-        print(novel_metadata['subject'])
+        print("Subjects:",novel_metadata['subject'])
         # write to csv
         write_metadata(novel_metadata)
         print("wrote metadata")
         # copy text file to new folder
         copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
         print("Copied book")
-
+    end_time = time.time()
+    print("Done!")
+    print("Time:",end_time-start_time,"seconds")
 
 def get_gutenberg_id(filepath):
     """
@@ -264,6 +271,8 @@ def get_publication_date_wikidata(author, title):
     :return: int
     """
     try:
+        for sep in separators:
+            title = title.split(sep,1)[0]
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, title)
         item = pywikibot.ItemPage.fromPage(page)
@@ -279,7 +288,7 @@ def get_publication_date_wikidata(author, title):
             return get_publication_date_wikidata(author, title + " (novel)")
         except (pywikibot.exceptions.NoPage):
             return None
-    except (pywikibot.exceptions.NoPage):
+    except (pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle, pywikibot.InvalidTitle):
         return None
     return year
 
@@ -361,7 +370,7 @@ def get_country_publication_wikidata(author, title):
             return get_country_publication_wikidata(author, title + " (novel)")
         except (pywikibot.exceptions.NoPage):
             return None
-    except (pywikibot.exceptions.NoPage):
+    except (pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle):
         return None
 
     # try to match country_id to major English-speaking countries
@@ -459,9 +468,13 @@ def get_author_gender_wikidata(author):
     :param author: str
     :return: str
     """
-
-    match = re.match(AUTHOR_NAME_REGEX, author)
-    author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
+    try:
+        match = re.match(AUTHOR_NAME_REGEX, author)
+        author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
+        if (match.groupdict()['suffix'] != None):
+            author_formatted += match.groupdict()['suffix']
+    except (TypeError, AttributeError):
+        author_formatted = author
     try:
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, author_formatted)

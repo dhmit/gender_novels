@@ -12,7 +12,7 @@ metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication
 INITIAL_BOOK_STORE = r'corpora/test_books_30' # 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
-AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)"
+AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*"
 import codecs
 from chardet.universaldetector import UniversalDetector
 targetFormat = 'utf-8'
