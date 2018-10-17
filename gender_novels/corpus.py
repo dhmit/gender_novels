@@ -2,7 +2,8 @@ import csv
 from pathlib import Path
 
 from gender_novels import common
-from gender_novels import novel
+from gender_novels.novel import Novel
+
 
 class Corpus(common.FileLoaderMixin):
     """The corpus class is used to load the metadata and full
@@ -17,7 +18,9 @@ class Corpus(common.FileLoaderMixin):
 
     >>> c.novels[0].author
     'Aanrud, Hans'
+
     """
+
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
         self.novels = []
@@ -32,14 +35,87 @@ class Corpus(common.FileLoaderMixin):
 
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
+        >>> titles = []
         >>> for this_novel in c:
-        ...     print(this_novel.title)
-        Little Women
-        Jo's Boys,...
-        ...
+        ...    titles.append(this_novel.title)
+        >>> titles #doctest: +ELLIPSIS
+        ['Lisbeth Longfrock', 'Flatland', ... 'The Heir of Redclyffe']
+
         """
         for this_novel in self.novels:
             yield this_novel
+
+    def __len__(self):
+        """
+        For corpus length, return number of novels
+
+        :return: int
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> len(c)
+        93
+        """
+        return len(self.novels)
+
+    def __eq__(self, other):
+        """
+        Returns true if both corpora contain the same novels
+        Note: ignores differences in the corpus name as that attribute is not used apart from
+        initializing a corpus.
+        Presumes the novels to be sorted. (They get sorted by the initializer)
+
+        >>> from gender_novels.corpus import Corpus
+        >>> sample_corpus = Corpus('sample_novels')
+        >>> sample_corpus.novels = sample_corpus.novels[:20]
+        >>> male_corpus = sample_corpus.filter_by_gender('male')
+        >>> female_corpus = sample_corpus.filter_by_gender('female')
+        >>> merged_corpus = male_corpus + female_corpus
+        >>> merged_corpus == sample_corpus
+        True
+        >>> sample_corpus == merged_corpus + male_corpus
+        False
+
+        :return: bool
+        """
+
+        if not isinstance(other, Corpus):
+            raise NotImplementedError("Only a Corpus can be added to another Corpus.")
+
+        if len(self) != len(other):
+            return False
+
+        for i in range(len(self)):
+            if self.novels[i] != other.novels[i]:
+                return False
+
+        return True
+
+    def __add__(self, other):
+        """
+        Adds two corpora together and returns a copy of the result
+        Note: retains the name of the first corpus
+
+        >>> from gender_novels.corpus import Corpus
+        >>> sample_corpus = Corpus('sample_novels')
+        >>> sample_corpus.novels = sample_corpus.novels[:20]
+        >>> male_corpus = sample_corpus.filter_by_gender('male')
+        >>> female_corpus = sample_corpus.filter_by_gender('female')
+        >>> merged_corpus = male_corpus + female_corpus
+        >>> merged_corpus == sample_corpus
+        True
+
+        :return: Corpus
+        """
+        if not isinstance(other, Corpus):
+            raise NotImplementedError("Only a Corpus can be added to another Corpus.")
+
+        output_corpus = self.clone()
+        for novel in other:
+            output_corpus.novels.append(novel)
+        output_corpus.novels = sorted(output_corpus.novels)
+
+        return output_corpus
 
     def clone(self):
         """
@@ -75,10 +151,10 @@ class Corpus(common.FileLoaderMixin):
 
         for novel_metadata in csv_reader:
             novel_metadata['corpus_name'] = self.corpus_name
-            this_novel = novel.Novel(novel_metadata_dict=novel_metadata)
+            this_novel = Novel(novel_metadata_dict=novel_metadata)
             novels.append(this_novel)
 
-        return novels
+        return sorted(novels)
 
     def count_authors_by_gender(self, gender):
         """
@@ -120,7 +196,7 @@ class Corpus(common.FileLoaderMixin):
 
         >>> male_corpus = c.filter_by_gender('male')
         >>> len(male_corpus.novels)
-        56
+        55
 
         >>> male_corpus.novels[0].title
         'Lisbeth Longfrock'
@@ -151,10 +227,6 @@ class Corpus(common.FileLoaderMixin):
         return corpus_copy
 
 
-
 if __name__ == '__main__':
-
-    corpus = Corpus('sample_novels')
-
     from dh_testers.testRunner import main_test
     main_test()
