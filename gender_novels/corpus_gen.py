@@ -51,45 +51,56 @@ def generate_corpus_gutenberg():
     bookshelf = str(Path(current_dir, INITIAL_BOOK_STORE, r"*.txt"))
     print("Searching folder", bookshelf)
     books = glob.iglob(bookshelf)
+    number_books = 0
+    print('')
     start_time = time.time()
     for book in books:
-        start_book = time.time()
-        print("Filepath:",book)
-        # get the book's id
-        gutenberg_id = get_gutenberg_id(book)
-        print("ID:",gutenberg_id)
-        # check if book is valid novel by our definition
-        if (not is_valid_novel_gutenberg(gutenberg_id, book)):
-            print("Not a novel")
-            print("Time for this book:", time.time() - start_book, "seconds")
+        try:
+            number_books += 1
+            start_book = time.time()
+            print("Filepath:",book)
+            # get the book's id
+            gutenberg_id = get_gutenberg_id(book)
+            print("ID:",gutenberg_id)
+            # check if book is valid novel by our definition
+            if (not is_valid_novel_gutenberg(gutenberg_id, book)):
+                print("Not a novel")
+                print("Time for this book:", time.time() - start_book, "seconds")
+                print('')
+                continue
+            # begin compiling metadata.  Metadata not finalized
+            novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
+            author = get_author_gutenberg(gutenberg_id)
+            print("Author:",author)
+            novel_metadata['author'] = author
+            title = get_title_gutenberg(gutenberg_id)
+            print("Title:",title)
+            novel_metadata['title'] = title
+            novel_metadata['date'] = get_publication_date(author, title, book, gutenberg_id)
+            print("Date:",novel_metadata['date'])
+            novel_metadata['country_publication'] = get_country_publication(author,
+                title)
+            print("Country:",novel_metadata['country_publication'])
+            novel_metadata['author_gender'] = get_author_gender(author)
+            print("Author Gender:",novel_metadata['author_gender'])
+            novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
+            print("Subjects:",novel_metadata['subject'])
+            # write to csv
+            write_metadata(novel_metadata)
+            print("wrote metadata")
+            # copy text file to new folder
+            copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
+            print("Copied book")
+            print("Time for this book:",time.time()-start_book, "seconds")
+            print('')
+        except Exception as exception:
+            print("Ran into exception:", exception)
             continue
-        # begin compiling metadata.  Metadata not finalized
-        novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
-        author = get_author_gutenberg(gutenberg_id)
-        print("Author:",author)
-        novel_metadata['author'] = author
-        title = get_title_gutenberg(gutenberg_id)
-        print("Title:",title)
-        novel_metadata['title'] = title
-        novel_metadata['date'] = get_publication_date(author, title, book, gutenberg_id)
-        print("Date:",novel_metadata['date'])
-        novel_metadata['country_publication'] = get_country_publication(author,
-            title)
-        print("Country:",novel_metadata['country_publication'])
-        novel_metadata['author_gender'] = get_author_gender(author)
-        print("Author Gender:",novel_metadata['author_gender'])
-        novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
-        print("Subjects:",novel_metadata['subject'])
-        # write to csv
-        write_metadata(novel_metadata)
-        print("wrote metadata")
-        # copy text file to new folder
-        copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
-        print("Copied book")
-        print("Time for this book:",time.time()-start_book, "seconds")
     end_time = time.time()
     print("Done!")
+    print("No. Books:", number_books)
     print("Total Time:",end_time-start_time,"seconds")
+    print("Average Time per Book",(end_time-start_time)/number_books)
 
 def get_gutenberg_id(filepath):
     """
@@ -136,36 +147,47 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     :return: boolean
     TODO: increase selectivity (apparently The Federalist Papers is a novel)
     """
+    title = get_title_gutenberg(gutenberg_id)
+    print(title)
     language = list(get_metadata('language', gutenberg_id))[0]
     if (not language == 'en'):
+        print("Not in English")
         return False
     rights = get_metadata('rights', gutenberg_id)
     if (not rights == frozenset({'Public domain in the USA.'})):
+        print(rights)
         return False
     subjects = get_subject_gutenberg(gutenberg_id)
     for subject in subjects:
         for word in SUBJECTS_TO_IGNORE:
             if ((subject.lower()).find(word) != -1):
+                print("Bad subject")
                 return False
-    title = get_title_gutenberg(gutenberg_id)
+    # title = get_title_gutenberg(gutenberg_id)
     try:
         date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, filepath, gutenberg_id))
         if ((date < 1770 or date > 1922)):
+            print("Not in date range")
             return False
     except TypeError:
         pass
     if (title.find("Index of the Project gutenberg ") != -1):
+        print("Was an index")
         return False
     if (title.find("Complete Project gutenberg ") != -1):
+        print("Was a compilation thing")
         return False
     if (title.find("Translated by ") != -1):
+        print("Was a translation")
         return False
     text = get_novel_text_gutenberg(filepath)
     if (text.find("Translator: ", 0, 650) != -1):
+        print("Was a translation")
         return False
     text_length = len(text)
     if (text_length < 140000 or text_length > 9609000 ): # Animal Farm is roughly 166700 characters including boilerplate
         # Guiness World Records states that the longest novel is 9,609,000 characters long
+        print("Was wrong length")
         return False
     return True
 
@@ -181,8 +203,6 @@ def get_author_gutenberg(gutenberg_id):
     :return: list
     """
     # TODO: should we format author names like this?
-    # TODO: possibly have this return a list of authors, rather than a single string, to handle multiple authors
-    # TODO: run doctest on computer with populated cache
 
     return list(get_metadata('author', gutenberg_id))
 
@@ -193,11 +213,12 @@ def get_title_gutenberg(gutenberg_id):
     >>> from gender_novels import corpus_gen
     >>> get_title_gutenberg(33)
     'The Scarlet Letter'
-
     """
-    # TODO: run doctest on computer with populated cache
 
-    return list(get_metadata('title', gutenberg_id))[0]
+    title = list(get_metadata('title', gutenberg_id))[0]
+    for sep in separators:
+        title = title.split(sep,1)[0]
+    return title
 
 def get_novel_text_gutenberg(filepath):
     """
@@ -278,8 +299,6 @@ def get_publication_date_wikidata(author, title):
     :return: int
     """
     try:
-        for sep in separators:
-            title = title.split(sep,1)[0]
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, title)
         item = pywikibot.ItemPage.fromPage(page)
