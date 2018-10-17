@@ -158,6 +158,8 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
         return False
     if (title.find("Complete Project gutenberg ") != -1):
         return False
+    if (title.find("Translated by ") != -1):
+        return False
     text = get_novel_text_gutenberg(filepath)
     if (text.find("Translator: ", 0, 650) != -1):
         return False
