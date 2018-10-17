@@ -288,7 +288,7 @@ def get_mean(data_dict):
     return mean_dict
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     #all_data = books_pronoun_freq(Corpus('sample_novels'))
 
     #gender = freq_by_author_gender(all_data)
