@@ -379,7 +379,7 @@ def get_publication_date_from_copyright(novel_text):
         match = re.search(r"\d{4}", novel_text[:3000])
         if (match != None):
             year = int(match.group(0))
-            if (year < 2000):
+            if (year < 2000 and year > 1492):
                 return year
             else:
                 return None
@@ -454,7 +454,7 @@ def get_country_publication_wikidata(author, title):
     # try to match country_id to major English-speaking countries
     if (country_id == "Q30"):
         return "United States"
-    if (country_id == "Q145"):
+    if (country_id == "Q145" or country_id == "Q21"):
         return "United Kingdom"
     if (country_id == "Q16"):
         return "Canada"
@@ -464,20 +464,21 @@ def get_country_publication_wikidata(author, title):
         return "Narnia" # I mean, they seem to all speak English there
 
     # if not try look up wikidata page of country with that id to try and get short name
-    wikidata = pywikibot.Site("wikidata", "wikidata")
-    repo = wikidata.data_repository()
-    item = pywikibot.ItemPage(repo, country_id)
-    dictionary = item.get()
-    clm_dict = dictionary["claims"]
-    clm_list = clm_dict["P1813"] # P1813 is short name
-    for clm in clm_list:
-        clm_trgt = clm.getTarget()
-        if (clm_trgt.language == 'en'):
-            return clm_trgt.text
-
-    #if that doesn't work just get one of the aliases. Name may be awkwardly long but should be consistent
-    country = dictionary['aliases']['en'][-1]
-    return country
+    try:
+        wikidata = pywikibot.Site("wikidata", "wikidata")
+        repo = wikidata.data_repository()
+        item = pywikibot.ItemPage(repo, country_id)
+        dictionary = item.get()
+        clm_dict = dictionary["claims"]
+        clm_list = clm_dict["P1813"] # P1813 is short name
+        for clm in clm_list:
+            clm_trgt = clm.getTarget()
+            if (clm_trgt.language == 'en'):
+                return clm_trgt.text
+    except (KeyError, pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle):
+        #if that doesn't work just get one of the aliases. Name may be awkwardly long but should be consistent
+        country = dictionary['aliases']['en'][-1]
+        return country
 
 def get_author_gender(authors):
     """
@@ -501,6 +502,8 @@ def get_author_gender(authors):
     >>> get_author_gender(['Shakespeare, William', "Duan, Mingfei"])
     'both'
     >>> get_author_gender(["Montgomery, L. M. (Lucy Maud)"])
+    'female'
+    >>> get_author_gender(['Shelley, Mary Wollstonecraft'])
     'female'
 
     :param authors: list
@@ -526,7 +529,7 @@ def get_author_gender(authors):
                 author_gender = None
             if (gender_guess == 'male' or gender_guess == 'mostly male'):
                 author_gender = 'male'
-            if (gender_guess == 'female' or gender_guess == 'mostly female'):
+            if (gender_guess == 'female' or gender_guess == 'mostly_female'):
                 author_gender == 'female'
     else:
         author_gender = get_author_gender([authors[0]])
