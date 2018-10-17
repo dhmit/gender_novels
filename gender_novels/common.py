@@ -164,10 +164,11 @@ def get_encoding_type(filepath):
     :return: str
     """
     detector.reset()
-    for line in open(filepath, 'rb'):
-        detector.feed(line)
-        if detector.done: break
-    detector.close()
+    with open(filepath, 'rb') as file:
+        for line in file:
+            detector.feed(line)
+            if detector.done: break
+        detector.close()
     return detector.result['encoding']
 
 def convertFileBestGuess(filepath):
