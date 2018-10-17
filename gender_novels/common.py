@@ -12,7 +12,7 @@ metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication
 INITIAL_BOOK_STORE = r'corpora/test_books_30' # 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
-AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)"
+AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*"
 import codecs
 from chardet.universaldetector import UniversalDetector
 targetFormat = 'utf-8'
@@ -164,10 +164,11 @@ def get_encoding_type(filepath):
     :return: str
     """
     detector.reset()
-    for line in open(filepath, 'rb'):
-        detector.feed(line)
-        if detector.done: break
-    detector.close()
+    with open(filepath, 'rb') as file:
+        for line in file:
+            detector.feed(line)
+            if detector.done: break
+        detector.close()
     return detector.result['encoding']
 
 def convertFileBestGuess(filepath):
