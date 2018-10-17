@@ -1,5 +1,4 @@
 import csv
-from gutenberg.acquire import load_etext
 from gutenberg.cleanup import strip_headers
 from gutenberg.query import get_metadata
 from gutenberg.acquire import get_metadata_cache
@@ -10,6 +9,7 @@ import pywikibot
 import glob
 from shutil import copyfile
 import os
+import gender_guesser.detector as gender_guesser
 
 from gender_novels import common
 
@@ -17,40 +17,42 @@ from gender_novels import common
 
 GUTENBERG_METADATA_PATH = common.GUTENBERG_METADATA_PATH
 metadata_list = common.metadata_list
-INITIAL_BOOK_STORE = common.INITIAL_BOOK_STORE # 30 books from Gutenberg downloaded from Dropbox folder shared with Keith,
+INITIAL_BOOK_STORE = common.INITIAL_BOOK_STORE # 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
 # plus some extras
 FINAL_BOOK_STORE = common.FINAL_BOOK_STORE
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
+AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
 
 def generate_corpus_gutenberg():
     """
-    Generate metadata sheet of all novels we want from Gutenberg
-    TODO: implement functions called here
+    Generate metadata sheet of all novels we want from gutenberg
+    >>> generate_corpus_gutenberg()
     """
-    # TODO(duan): make this work with new system
 
-    # function currently will not work
-    return
     # determine current directory
     current_dir = os.path.abspath(os.path.dirname(__file__))
+    print(current_dir)
     # write csv header
     with open(Path(current_dir, GUTENBERG_METADATA_PATH), 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=metadata_list)
         writer.writeheader()
     # check if cache is populated, if it isn't, populates it
     cache = get_metadata_cache()
-    if (not cache.exists()):
+    if (not cache.exists):
         cache.populate()
     # go through all books in Keith's thing
-    books = glob.iglob(Path(current_dir, INITIAL_BOOK_STORE)+r"/*.txt")
+    bookshelf = str(Path(current_dir, INITIAL_BOOK_STORE, r"*.txt"))
+    print(bookshelf)
+    books = glob.iglob(bookshelf)
     for book in books:
+        print(book)
         # get the book's id
         gutenberg_id = get_gutenberg_id(book)
         # check if book is valid novel by our definition
-        if (not is_valid_novel_gutenberg(gutenberg_id)):
+        if (not is_valid_novel_gutenberg(gutenberg_id, book)):
             continue
         # begin compiling metadata.  Metadata not finalized
         novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
@@ -66,11 +68,12 @@ def generate_corpus_gutenberg():
         # write to csv
         write_metadata(novel_metadata, Path(current_dir, GUTENBERG_METADATA_PATH))
         # copy text file to new folder
-        copyfile(book, Path(current_dir, FINAL_BOOK_STORE) + r"/" + str(gutenberg_id) + r".txt")
+        copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
+
 
 def get_gutenberg_id(filepath):
     """
-    For file with filepath get the gutenberg id of that book.  Should not be hard because Gutenberg literally names
+    For file with filepath get the gutenberg id of that book.  Should not be hard because gutenberg literally names
     files by id
 
     >>> from gender_novels import corpus_gen
@@ -82,13 +85,13 @@ def get_gutenberg_id(filepath):
     :param filepath: Path
     :return: int
     """
-    filename = filepath.name
+    filename = Path(filepath).name
     filename = filename.rstrip(r"-0.txt")
     return int(filename)
 
 def is_valid_novel_gutenberg(gutenberg_id, filepath):
     """
-    Determines whether book with this Gutenberg id is actually a "novel".  Returns false if the book is not or doesn't
+    Determines whether book with this gutenberg id is actually a "novel".  Returns false if the book is not or doesn't
     actually exist.
     Should check:
     If book is English
@@ -129,9 +132,9 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
             return False
     except TypeError:
         pass
-    if (title.find("Index of the Project Gutenberg ") != -1):
+    if (title.find("Index of the Project gutenberg ") != -1):
         return False
-    if (title.find("Complete Project Gutenberg ") != -1):
+    if (title.find("Complete Project gutenberg ") != -1):
         return False
     text = get_novel_text_gutenberg(filepath)
     if (text.find("Translator: ", 0, 650) != -1):
@@ -144,7 +147,7 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
 
 def get_author_gutenberg(gutenberg_id):
     """
-    Gets author or authors for novel with this Gutenberg id
+    Gets author or authors for novel with this gutenberg id
 
     >>> from gender_novels import corpus_gen
     >>> get_author_gutenberg(33)
@@ -161,7 +164,7 @@ def get_author_gutenberg(gutenberg_id):
 
 def get_title_gutenberg(gutenberg_id):
     """
-    Gets title for novel with this Gutenberg id
+    Gets title for novel with this gutenberg id
 
     >>> from gender_novels import corpus_gen
     >>> get_title_gutenberg(33)
@@ -176,18 +179,24 @@ def get_novel_text_gutenberg(filepath):
     """
     Extract text as as string from file, with boilerplate removed
 
-    >>> from gender_novels import corpus_gen
+    >>> from gender_novels.corpus_gen import get_novel_text_gutenberg
     >>> import os
     >>> current_dir = os.path.abspath(os.path.dirname(__file__))
-    >>> book = get_novel_text_gutenberg(Path(current_dir, r"/corpora/test_books_30/32-0.txt")
+    >>> book = get_novel_text_gutenberg(Path(current_dir, r"corpora/test_books_30/32-0.txt"))
     >>> book[:7]
     'HERLAND'
 
     :param gutenberg_id: int
     :return: str
     """
-    with open(filepath, 'r') as text:
-        return strip_headers(text.read()).strip()
+    if (common.get_encoding_type(filepath) != 'utf-8' or common.get_encoding_type(filepath) != 'UTF-8-SIG'):
+        common.convertFileWithDetection(filepath)
+        # converted_filepath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
+        # copyfile(converted_filepath, filepath)
+    with open(filepath, mode='r', encoding='utf8') as text:
+        text_with_headers = text.read()
+        return strip_headers(text_with_headers).strip()
+
 
 def get_publication_date(author, title, filepath, gutenberg_id = None):
     """
@@ -208,14 +217,14 @@ def get_publication_date(author, title, filepath, gutenberg_id = None):
     :param gutenberg_id: int
     :return: int
     """
-    #TODO: will not work without worldcat functions
-    return None
+    #TODO: remember to uncomment worldcat function when it is done
 
     date = get_publication_date_from_copyright(get_novel_text_gutenberg(filepath))
     if (date != None):
         return date
     else:
-        date = get_publication_date_worldcat(author, title)
+        pass
+        # date = get_publication_date_worldcat(author, title)
     if (date != None):
         return date
     else:
@@ -302,8 +311,12 @@ def get_country_publication(author, title):
     :param title: str
     :return: str
     """
-    # TODO(duan): implement this function
-    pass
+    # TODO: uncomment worldcat function once it is added
+    country = None
+    # country = get_country_publication_worldcat(author, title)
+    if (country == None):
+        country = get_country_publication_wikidata(author, title)
+    return country
 
 def get_country_publication_wikidata(author, title):
     """
@@ -317,7 +330,6 @@ def get_country_publication_wikidata(author, title):
     :param title: str
     :return: str
     """
-    # TODO(duan): implement this function
     # try to get publication country from wikidata page with title of book
     try:
         wikipedia = pywikibot.Site("en", "wikipedia")
@@ -367,21 +379,55 @@ def get_country_publication_wikidata(author, title):
     country = dictionary['aliases']['en'][-1]
     return country
 
-def get_author_gender(author):
+def get_author_gender(authors):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple authors of different
     genders)
-    If it fails returns 'unknown'
+    #TODO: should get functions that fail to find anything return 'unknown'
+    #TODO: 'both' is ambiguous; Does it mean both female and male?  female and unknown?  male and nonbinary?
 
-    >>> from gender_novels import corpus_gen
-    >>> get_author_gender("Hawthorne, Nathaniel")
-    male
+    >>> from gender_novels.corpus_gen import get_author_gender
+    >>> get_author_gender(["Hawthorne, Nathaniel"])
+    'male'
+    >>> get_author_gender(["Cuthbert, Michael"])
+    'male'
+    >>> get_author_gender(["Duan, Mingfei"])
 
-    :param author: list
+    >>> get_author_gender(["Collins, Suzanne", "Riordan, Rick"])
+    'both'
+    >>> get_author_gender(["Shelley, Mary", "Austen, Jane"])
+    'female'
+    >>> get_author_gender(['Shakespeare, William', "Duan, Mingfei"])
+    'both'
+
+    :param authors: list
     :return: str
     """
-    # TODO: implement this function
-    pass
+
+    author_gender = None
+    if type(authors) == str:
+        authors = list().append(authors)
+    if len(authors) == 1:
+        author = authors[0]
+        # author_gender = get_author_gender_worldcat(author)
+        if author_gender == None:
+            author_gender = get_author_gender_wikidata(author)
+        if author_gender == None:
+            guesser = gender_guesser.Detector()
+            match = re.match(AUTHOR_NAME_REGEX, author)
+            gender_guess = guesser.get_gender(match.groupdict()['first_name'])
+            if (gender_guess == 'andy' or gender_guess == 'unknown'):
+                author_gender = None
+            if (gender_guess == 'male' or gender_guess == 'mostly male'):
+                author_gender = 'male'
+            if (gender_guess == 'female' or gender_guess == 'mostly female'):
+                author_gender == 'female'
+    else:
+        author_gender = get_author_gender([authors[0]])
+        for author in authors:
+            if (get_author_gender([author]) != author_gender):
+                author_gender = 'both'
+    return author_gender
 
 def get_author_gender_wikidata(author):
     """
@@ -389,17 +435,19 @@ def get_author_gender_wikidata(author):
     If it fails returns 'unknown'
     N.B. Wikidata's categories for transgender male and female are treated as male and female, respectively
 
-    >>> from gender_novels import corpus_gen
+    >>> from gender_novels.corpus_gen import get_author_gender_wikidata
     >>> get_author_gender_wikidata("Obama, Barack")
     'male'
     >>> get_author_gender_wikidata("Hurston, Zora Neale")
     'female'
+    >>> get_author_gender_wikidata("Bush, George W.")
+    'male'
 
     :param author: str
     :return: str
     """
 
-    match = re.match(r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+ )*\w*)", author)
+    match = re.match(AUTHOR_NAME_REGEX, author)
     author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
     try:
         site = pywikibot.Site("en", "wikipedia")
