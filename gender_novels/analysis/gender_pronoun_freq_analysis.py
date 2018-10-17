@@ -331,7 +331,44 @@ def get_mean(data_dict):
         mean_dict[k] = np.mean(v)
     return mean_dict
 
- 
+def sort_every_year(frequency_dict):
+    '''
+    Takes in a dictionary of novels mapped to pronoun frequencies and returns a dictionay of
+        years mapped to lists of pronoun frequencies
+
+    >>> from gender_novels import novel
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    ...                   'corpus_name': 'sample_novels', 'date': '1818',
+    ...                   'filename': 'austen_persuasion.txt'}
+    >>> austen = novel.Novel(novel_metadata)
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1900',
+    ...                   'filename': 'hawthorne_scarlet.txt'}
+    >>> scarlet = novel.Novel(novel_metadata)
+    >>> d = {}
+    >>> d[scarlet] = 0.5
+    >>> d[austen] = 0.3
+    >>> sorted_years = sort_every_year(d)
+    >>> print(sorted_years)
+    {1900: [0.5], 1818: [0.3]}
+
+
+    :param frequency_dict: dictionary of novels mapped to pronoun frequencies
+    :return: dictionary of years mapped to lists of pronoun frequencies
+    '''
+    every_year_dict = {}
+    for key,value in frequency_dict.items():
+        frequency_list = [frequency_dict[key]]
+
+        if key.date not in every_year_dict.keys():
+            every_year_dict[key.date] = frequency_list
+
+        elif key.date in every_year_dict.keys():
+            every_year_dict[key.date].append(frequency_dict[key])
+
+    return every_year_dict
+
+  
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
