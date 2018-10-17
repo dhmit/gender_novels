@@ -122,8 +122,9 @@ class Novel(common.FileLoaderMixin):
     def __repr__(self):
         '''
         Overrides the built-in __repr__ method
-        Returns the filename without the extension as the formal representation
-        
+        Returns the object type (Novel) and then the filename without the extension
+            in <>.
+
         :return: string
 
         >>> from gender_novels import novel
@@ -131,17 +132,12 @@ class Novel(common.FileLoaderMixin):
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
-        >>> novel_metadata2 = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
-        ...                   'corpus_name': 'sample_novels', 'date': '1900',
-        ...                   'filename': 'hawthorne_scarlet.txt'}
-        >>> scarlet = novel.Novel(novel_metadata2)
-        >>> d = {austen:'first novel', scarlet:'second novel'}
-        >>> d
-        {austen_persuasion: 'first novel', hawthorne_scarlet: 'second novel'}
+        >>> repr(austen)
+        '<Novel (austen_persuasion)>'
         '''
 
         name = self.filename[0:len(self.filename) - 4]
-        return name
+        return f'<Novel ({name})>'
 
 
     def _load_novel_text(self):
