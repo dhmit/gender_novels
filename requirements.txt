@@ -10,3 +10,4 @@ wordcloud
 nltk
 gutenberg
 pywikibot
+chardet

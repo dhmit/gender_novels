@@ -7,10 +7,10 @@ import nltk
 #nltk as part of speech tagger, requires these two packages
 #TODO: Figure out how to put these nltk packages in setup.py, not here
 nltk.download('punkt', quiet=True)
-nltk.download('averaged_perceptron_tagger', quiet= True)
-
+nltk.download('averaged_perceptron_tagger', quiet=True)
 
 from gender_novels import common
+
 
 
 class Novel(common.FileLoaderMixin):
@@ -61,7 +61,8 @@ class Novel(common.FileLoaderMixin):
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
-        self.word_counts = None
+        self._word_counts_counter = None
+        self._word_count = None
 
         if self.author_gender not in {'female', 'male', 'non-binary', 'unknown', 'both'}:
             raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
@@ -77,6 +78,28 @@ class Novel(common.FileLoaderMixin):
                     f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
                     f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
+
+    @property
+    def word_count(self):
+        """
+        Lazy-loading for Novel.word_count attribute. Returns the number of words in the novel.
+        The word_count attribute is useful for the get_word_freq function.
+        However, it is performance-wise costly, so it's only loaded when it's actually required.
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> austen.word_count
+        83305
+
+        :return: int
+        """
+
+        if self._word_count is None:
+            self._word_count = len(self.get_tokenized_text())
+        return self._word_count
 
     def __str__(self):
         """
@@ -100,7 +123,7 @@ class Novel(common.FileLoaderMixin):
     def _load_novel_text(self):
         """Loads the text of a novel and removes boilerplate at the beginning and end
 
-        Currently only supports boilerplate removal for Project Gutenberg ebooks.
+        Currently only supports boilerplate removal for Project gutenberg ebooks.
 
         :rtype: str
         """
@@ -114,7 +137,7 @@ class Novel(common.FileLoaderMixin):
             err += "at the expected location ({file_path})."
             raise FileNotFoundError(err)
 
-        # Extract Project Gutenberg Boilerplate
+        # Extract Project gutenberg Boilerplate
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
             end_intro_boilerplate = text.find(
                 '*** START OF THIS PROJECT GUTENBERG EBOOK')
@@ -168,20 +191,21 @@ class Novel(common.FileLoaderMixin):
         >>> test_novel.find_quoted_text()
         ['"This is a quote"', '"This is my quote"']
 
-        //TODO: Make this test pass
-        #>>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
-        #>>> test_novel.find_quoted_text()
-        #['"Miss A.E.-- a quote."']
+        # TODO: Make this test pass
+        # >>> test_novel.text = 'Test case: "Miss A.E.--," [...] "a quote."'
+        # >>> test_novel.find_quoted_text()
+        # ['"Miss A.E.-- a quote."']
 
-        //TODO: Make this test pass
-        //TODO: One approach would be to find the shortest possible closed quote.
-        #>>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
-        #>>> test_novel.find_quoted_text()
-        #['"Closed quote."']
+        # TODO: Make this test pass
+        # One approach would be to find the shortest possible closed quote.
+        #
+        # >>> test_novel.text = 'Test case: "Open quote. [...] "Closed quote."'
+        # >>> test_novel.find_quoted_text()
+        # ['"Closed quote."']
 
-        //TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
-        //TODO(Redlon & Murray): single quote
-        //TODO: Look for more complicated test cases in our existing novels.
+        TODO(Redlon & Murray): Add and statements so that a broken up quote is treated as a
+        TODO(Redlon & Murray): single quote
+        TODO: Look for more complicated test cases in our existing novels.
 
         :return: list of complete quotation strings
         """
@@ -232,15 +256,40 @@ class Novel(common.FileLoaderMixin):
         """
 
         # If word_counts were not previously initialized, do it now and store it for the future.
-        if not self.word_counts:
-            self.word_counts = Counter(self.get_tokenized_text())
+        if not self._word_counts_counter:
+            self._word_counts_counter = Counter(self.get_tokenized_text())
 
-        return self.word_counts[word]
+        return self._word_counts_counter[word]
+
+    def get_wordcount_counter(self):
+        """
+        Returns a counter object of all of the words in the text.
+        (The counter can also be accessed as self.word_counts. However, it only gets initialized
+        when a user either runs Novel.get_count_of_word or Novel.get_wordcount_counter, hence
+        the separate method.)
+
+        >>> from gender_novels import novel
+        >>> summary = "Hester was convicted of adultery was convicted."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> scarlett.get_wordcount_counter()
+        Counter({'was': 2, 'convicted': 2, 'hester': 1, 'of': 1, 'adultery': 1})
+
+        :return: Counter
+        """
+
+        # If word_counts were not previously initialized, do it now and store it for the future.
+        if not self._word_counts_counter:
+            self._word_counts_counter = Counter(self.get_tokenized_text())
+        return self._word_counts_counter
 
     def words_associated(self, word):
         """
         Returns a counter of the words found after given word
-        In the case of double/repeated words, the counter would include the word itself and the next new word
+        In the case of double/repeated words, the counter would include the word itself and the next
+        new word
         Note: words always return lowercase
 
         >>> from gender_novels import novel
@@ -285,15 +334,14 @@ class Novel(common.FileLoaderMixin):
         ...                   'corpus_name': 'sample_novels', 'date': '1900',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
-        >>> f = scarlett.get_word_freq('sad')
-        >>> f
-        0.13333
+        >>> frequency = scarlett.get_word_freq('sad')
+        >>> frequency
+        0.13333333333333333
         """
-        book_length = len(self.get_tokenized_text())
-        w_count = self.get_count_of_word(word)
-        word_freq = round((w_count / book_length), 5)
 
-        return word_freq
+        word_frequency = self.get_count_of_word(word) / self.word_count
+        return word_frequency
+
 
     def get_part_of_speech_tags(self):
         """
@@ -314,7 +362,6 @@ class Novel(common.FileLoaderMixin):
 
         :rtype: list
         """
-
         text = nltk.word_tokenize(self.text)
         pos_tags = nltk.pos_tag(text)
         return pos_tags
