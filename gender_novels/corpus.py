@@ -13,10 +13,10 @@ class Corpus(common.FileLoaderMixin):
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
     >>> type(c.novels), len(c.novels)
-    (<class 'list'>, 99)
+    (<class 'list'>, 93)
 
     >>> c.novels[0].author
-    'Alcott, Louisa May'
+    'Aanrud, Hans'
     """
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
@@ -88,7 +88,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
-        38
+        37
 
         Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
         but no abbreviations.
@@ -114,16 +114,16 @@ class Corpus(common.FileLoaderMixin):
         >>> c = Corpus('sample_novels')
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus.novels)
-        38
+        37
         >>> female_corpus.novels[0].title
-        'Little Women'
+        'The Indiscreet Letter'
 
         >>> male_corpus = c.filter_by_gender('male')
         >>> len(male_corpus.novels)
-        60
+        56
 
         >>> male_corpus.novels[0].title
-        'Heart of Darkness'
+        'Lisbeth Longfrock'
 
         :param gender: gender name
         :return: Corpus
