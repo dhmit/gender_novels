@@ -4,6 +4,7 @@ import numpy as np
 
 
 def books_pronoun_freq(corp):
+    #TODO: add doctests
     '''
     Counts male and female pronouns for every book and finds their relative frequencies per book
     Outputs dictionary mapping novel object to the relative frequency
@@ -36,6 +37,7 @@ def books_pronoun_freq(corp):
     return (relative_freq_female)
 
 def subject_vs_object_pronoun_freqs(corp):
+    #TODO: add doctests
     relative_freq_male_subject = {}
     relative_freq_female_subject = {}
     relative_freq_male_object = {}
@@ -280,13 +282,11 @@ def get_mean(data_dict):
     >>> d['nothing'] = [0]
     >>> get_mean(d)
     {'fives': 5.0, 'halfway': 0.5, 'nothing': 0.0}
-
     '''
     mean_dict = {}
     for k, v in data_dict.items():
         mean_dict[k] = np.mean(v)
     return mean_dict
-
 
 #if __name__ == "__main__":
     #all_data = books_pronoun_freq(Corpus('sample_novels'))
