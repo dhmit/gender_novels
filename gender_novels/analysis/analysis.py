@@ -5,6 +5,8 @@ This file is intended for individual analyses of the gender_novels project
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 import nltk
+nltk.download('stopwords', quiet=True)
+#TODO: add prior two lines to setup, necessary to run
 import collections
 from statistics import mean, median, mode
 from nltk.corpus import stopwords
@@ -30,11 +32,11 @@ def get_count_words(novel, words):
     >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
     >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
     >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
-    ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+    ...                   'corpus_name': 'sample_novels', 'date': '1850',
     ...                   'filename': None, 'text': summary}
     >>> scarlett = novel.Novel(novel_metadata)
     >>> get_count_words(scarlett, ["sad", "and"])
-    {"sad":4, "and":4}
+    {'sad': 4, 'and': 4}
 
     :param:words: a list of words to be counted in text
     :return: a dictionary where the key is the word and the value is the count
@@ -60,10 +62,10 @@ def get_comparative_word_freq(freqs):
     >>> scarlet = novel.Novel(novel_metadata)
     >>> d = {'he':scarlet.get_word_freq('he'), 'she':scarlet.get_word_freq('she')}
     >>> d
-    {'he': 0.00733, 'she': 0.00589}
+    {'he': 0.007329554965683813, 'she': 0.005894731807638042}
     >>> x = get_comparative_word_freq(d)
     >>> x
-    {'he': 0.5544629349470499, 'she': 0.4455370650529501}
+    {'he': 0.554249547920434, 'she': 0.445750452079566}
     >>> d2 = {'he': 0, 'she': 0}
     >>> d2
     {'he': 0, 'she': 0}
@@ -89,8 +91,8 @@ def get_counts_by_pos(freqs):
     It also filters out words like "is", "the". We used `nltk`'s stop words function for filtering.
     
     >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
-    {'VBN': Counter({'baked':1}), 'NN': Counter({'chair':9}), 'VBG': Counter({'swimming':16})}
-     >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
+    {'VBN': Counter({'baked': 1}), 'NN': Counter({'chair': 3}), 'VBG': Counter({'swimming': 4})}
+    >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
     {'RB': Counter({'quietly': 42, 'usually': 7})}
 
     :param freqs:
