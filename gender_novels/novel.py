@@ -153,7 +153,13 @@ class Novel(common.FileLoaderMixin):
         """
         Removes the boilerplate text from an input string of a novel.
         Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
-        strip_headers() function from the gutenberg module.
+        strip_headers() function from the gutenberg module, which can remove even nonstandard
+        headers.
+
+        (see book number 3780 for one example of a nonstandard header — james_highway.txt in our
+        sample corpus; or book number 105, austen_persuasion.txt, which uses the standard Gutenberg
+        header but has had some info about the ebook's production inserted after the standard
+        boilerplate).
 
         :return: str
 
@@ -167,23 +173,6 @@ class Novel(common.FileLoaderMixin):
         >>> title_line
         'Persuasion'
         """
-
-
-        # This old form of the function does not work. There are several books in the corpus
-        # which do not have standard headers in this format (such as james_highway.txt,
-        # book number 3780) that this function does not work on, and there are also books in the
-        # corpus that do have this header but have additional junk information inserted after the
-        # header (such as austen_persuasion.txt, where someone has entered info about the
-        # production of the ebook and the HTML version after the "*** START OF THIS ..." line.
-        #
-        # if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-        #     end_intro_boilerplate = text.find(
-        #         '*** START OF THIS PROJECT GUTENBERG EBOOK')
-        #     # second set of *** indicates start
-        #     start_novel = text.find('***', end_intro_boilerplate + 5) + 3
-        #     end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
-        #     text = text[start_novel:end_novel]
-
 
         return strip_headers(text.strip())
 
@@ -214,11 +203,12 @@ class Novel(common.FileLoaderMixin):
         # Finds all positions of line breaks in the text file for the first few lines, tuned off
         # the parameter of charactersearch characters out
         charactersearch = 8000
+
+        lines_of_text = text.split("\n")
         line_breaks = text[0:charactersearch].find("\n")
         # Creates a 2D array where each entry is the [contents of line, position of the line's
         # start, position of the line's end]. The last line break is not considered because,
         # of course, there is no next line after the last line.
-        lines_of_text = []
         for linebreak in range(len(line_breaks))-1:
             currentlinecontents = text[linebreak:linebreak+1]
             lines_of_text.append([currentlinecontents, linebreak, linebreak+1])
