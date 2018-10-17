@@ -6,6 +6,7 @@ from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 import nltk
 import collections
+from statistics import mean, median, mode
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
@@ -35,18 +36,20 @@ def get_count_words(novel, words):
     >>> get_count_words(scarlett, ["sad", "and"])
     {"sad":4, "and":4}
 
-    :param words: a list of words to be counted in text
-    :return: a dictionary where the key is the word and the value is the count 
+    :param:words: a list of words to be counted in text
+    :return: a dictionary where the key is the word and the value is the count
     """
     dic_word_counts = {}
     for word in words:
         dic_word_counts[word] = novel.get_count_of_word(word)
     return dic_word_counts
 
+
 def get_comparative_word_freq(freqs):
     """
     Returns a dictionary of the frequency of words counted relative to each other.
-    
+    If frequency passed in is zero, returns zero
+
     :param freqs: dictionary
     :return: dictionary
 
@@ -60,15 +63,21 @@ def get_comparative_word_freq(freqs):
     {'he': 0.00733, 'she': 0.00589}
     >>> x = get_comparative_word_freq(d)
     >>> x
-    {'he': 0.55446, 'she': 0.44554}
+    {'he': 0.5544629349470499, 'she': 0.4455370650529501}
+    >>> d2 = {'he': 0, 'she': 0}
+    >>> d2
+    {'he': 0, 'she': 0}
     """
 
     total_freq = sum(freqs.values())
     comp_freqs = {}
 
     for k, v in freqs.items():
-        freq = v / total_freq
-        comp_freqs[k] = round(freq, 5)
+        try:
+            freq = v / total_freq
+        except ZeroDivisionError:
+            freq = 0
+        comp_freqs[k] = freq
 
     return comp_freqs
 
@@ -158,7 +167,39 @@ def display_gender_freq(d, title):
     plt.savefig(filepng, bbox_inches='tight')
     plt.savefig(filepdf, bbox_inches='tight')
 
+def instance_dist(novel, word):
+    """
+    >>> from gender_novels import novel
+    >>> summary = "Hester was her convicted of adultery. "
+    >>> summary += "which made her very sad, and then her Arthur was also sad, and her everybody was "
+    >>> summary += "sad and then Arthur her died and it was very sad. her Sadness."
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1966',
+    ...                   'filename': None, 'text': summary}
+    >>> scarlett = novel.Novel(novel_metadata)
+    >>> instance_dist(scarlett, "her")
+    [6, 5, 6, 7, 7]
+
+    :param:novel to analyze, gendered word
+    :return: list of distances between instances of gendered word
+
+    """
+    output = []
+    count = 0
+    start = False
+    text = novel.get_tokenized_text()
+
+    for e in text:
+        if not start:
+            if e == word:
+                start = True
+        else:
+            count += 1
+            if e == word:
+                output.append(count)
+                count = 0
+    return output
+
 if __name__ == '__main__':
     test_function()
-
 
