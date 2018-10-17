@@ -21,7 +21,7 @@ from gender_novels.common import GUTENBERG_METADATA_PATH, INITIAL_BOOK_STORE, FI
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
-             "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
+             "songbooks", "hymns", "correspondence", "drama", "reviews", "translations into english"] #is the Bible a novel?
 TRUNCATORS = ["\r","\n",r"; Or, "]
 
 def generate_corpus_gutenberg():
@@ -91,7 +91,9 @@ def generate_corpus_gutenberg():
             print("Time for this book:",time.time()-start_book, "seconds")
             print('')
         except Exception as exception:
-            print("Ran into exception:", exception)
+            print("Ran into exception:", type(exception))
+            print(exception)
+            print("")
             continue
     end_time = time.time()
     print("Done!")
@@ -173,16 +175,19 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     if (title.find("Index of the Project gutenberg ") != -1):
         print("Was an index")
         return False
+    if (title.find("Index of The Project gutenberg ") != -1):
+        print("Was an index")
     if (title.find("Complete Project gutenberg ") != -1):
         print("Was a compilation thing")
         return False
     if (title.find("Translated by ") != -1):
         print("Was a translation")
         return False
-    text = get_novel_text_gutenberg(filepath)
+    text = get_novel_text_gutenberg_with_boilerplate(filepath)
     if (text.find("Translator: ", 0, 650) != -1):
         print("Was a translation")
         return False
+    text = strip_headers(text)
     text_length = len(text)
     # Animal Farm is roughly 166700 characters including boilerplate
     # Guiness World Records states that the longest novel is 9,609,000 characters long
@@ -238,6 +243,24 @@ def get_novel_text_gutenberg(filepath):
     :param filepath: str
     :return: str
     """
+    return strip_headers(get_novel_text_gutenberg_with_boilerplate(filepath)).strip()
+
+def get_novel_text_gutenberg_with_boilerplate(filepath):
+    """
+    Extract text as as string from file
+
+    >>> from gender_novels.corpus_gen import get_novel_text_gutenberg
+    >>> import os
+    >>> current_dir = os.path.abspath(os.path.dirname(__file__))
+    >>> book = get_novel_text_gutenberg(Path(current_dir, r"corpora/test_books_30/32-0.txt"))
+    >>> book[:3]
+    'The'
+
+    TODO: wait, why is is it still removing boilerplate
+
+    :param filepath: str
+    :return: str
+    """
     if common.get_text_file_encoding(filepath) not in {'utf-8', 'UTF-8-SIG'}:
         # target_path = Path(Path(filepath).parent, r"converted", Path(filepath).name)
         common.convert_text_file_to_new_encoding(source_path=filepath,
@@ -245,7 +268,7 @@ def get_novel_text_gutenberg(filepath):
                                                  target_encoding='utf-8')
     with open(filepath, mode='r', encoding='utf8') as text:
         text_with_headers = text.read()
-        return strip_headers(text_with_headers).strip()
+    return text_with_headers
 
 
 def get_publication_date(author, title, filepath, gutenberg_id = None):
@@ -322,10 +345,10 @@ def get_publication_date_wikidata(author, title):
             return None
     except (pywikibot.exceptions.NoPage):
         try:
-            if (title == title.split(":", 1)[0]):
+            if (title == title.split(":", 1)[0].split(";,1")[0]):
                 return None
             else:
-                return get_publication_date_wikidata(author, title.split(":", 1)[0])
+                return get_publication_date_wikidata(author, title.split(":", 1)[0].split(";,1")[0])
         except (pywikibot.exceptions.NoPage):
             return None
     except(pywikibot.exceptions.InvalidTitle):
@@ -353,7 +376,14 @@ def get_publication_date_from_copyright(novel_text):
     """
     match = re.search(r"(COPYRIGHT\,*\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
     if (match == None):
-        return None
+        match = re.search(r"\d{4}", novel_text[:3000])
+        if (match != None):
+            year = int(match.group(0))
+            if (year < 2000):
+                return year
+            else:
+                return None
+        else: return None
     else:
         return int(match.group(2))
 
@@ -412,10 +442,10 @@ def get_country_publication_wikidata(author, title):
             return None
     except (pywikibot.exceptions.NoPage):
         try:
-            if (title == title.split(":", 1)[0]):
+            if (title == title.split(":", 1)[0].split(";,1")[0]):
                 return None
             else:
-                return get_country_publication_wikidata(author, title.split(":", 1)[0])
+                return get_country_publication_wikidata(author, title.split(":", 1)[0].split(";,1")[0])
         except (pywikibot.exceptions.NoPage):
             return None
     except(pywikibot.exceptions.InvalidTitle):
@@ -470,6 +500,8 @@ def get_author_gender(authors):
     'female'
     >>> get_author_gender(['Shakespeare, William', "Duan, Mingfei"])
     'both'
+    >>> get_author_gender(["Montgomery, L. M. (Lucy Maud)"])
+    'female'
 
     :param authors: list
     :return: str
@@ -486,7 +518,10 @@ def get_author_gender(authors):
         if author_gender == None:
             guesser = gender_guesser.Detector()
             match = re.match(AUTHOR_NAME_REGEX, author)
-            gender_guess = guesser.get_gender(match.groupdict()['first_name'])
+            first_name = match.groupdict()['first_name'].split()[0]
+            if (match.groupdict()['real_name'] != None):
+                first_name = match.groupdict()['real_name'].split()[0]
+            gender_guess = guesser.get_gender(first_name)
             if (gender_guess == 'andy' or gender_guess == 'unknown'):
                 author_gender = None
             if (gender_guess == 'male' or gender_guess == 'mostly male'):
@@ -519,7 +554,10 @@ def get_author_gender_wikidata(author):
     """
     try:
         match = re.match(AUTHOR_NAME_REGEX, author)
-        author_formatted = match.groupdict()['first_name'] + " " + match.groupdict()['last_name']
+        first_name = match.groupdict()['first_name']
+        if (match.groupdict()['real_name'] != None):
+            first_name = match.groupdict()['real_name']
+        author_formatted = first_name + " " + match.groupdict()['last_name']
         if (match.groupdict()['suffix'] != None):
             author_formatted += match.groupdict()['suffix']
     except (TypeError, AttributeError):
