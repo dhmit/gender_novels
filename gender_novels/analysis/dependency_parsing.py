@@ -67,6 +67,9 @@ def parse_novel(novel):
         t_male_obj_count += male_obj_count
         t_female_subj_count += female_subj_count
         t_female_obj_count += female_obj_count
+        # print(sentence)
+        # print cumulative counts
+        print(t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
     return (t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
 
 
