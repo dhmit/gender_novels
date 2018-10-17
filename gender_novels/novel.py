@@ -129,6 +129,8 @@ class Novel(common.FileLoaderMixin):
 
         Is a private function as it is unnecessary to access it outside the class.
 
+        Currently only supports boilerplate removal for Project gutenberg ebooks.
+
         :return: str
         """
 
