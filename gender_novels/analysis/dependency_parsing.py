@@ -1,6 +1,10 @@
 import urllib
 from nltk.parse.stanford import StanfordDependencyParser
+from nltk.tokenize import sent_tokenize
+from gender_novels.corpus import Corpus
 import os.path
+
+dependency_parser = None
 
 def load_jars(path_to_jar, path_to_models_jar):
     """
@@ -30,6 +34,10 @@ def create_tree(triples):
         tree.append(triple)
     return tree
 
+def print_tree(tree):
+    for triple in tree:
+        print(triple)
+
 
 def count_gender_subj_obj(tree):
     male_subj_count = count_tag("he", "nsubj", tree)
@@ -40,6 +48,28 @@ def count_gender_subj_obj(tree):
     return (male_subj_count, male_obj_count, female_subj_count, female_obj_count)
 
 
+def parse_sentence(sentence):
+    result = dependency_parser.raw_parse(sentence.lower())
+    parse = next(result)
+    # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
+    # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
+    triples = list(parse.triples())
+    tree = create_tree(triples)
+    return count_gender_subj_obj(tree)
+
+
+def parse_novel(novel):
+    sentences = sent_tokenize(novel.text.replace("\n", " "))
+    t_male_subj_count = t_male_obj_count = t_female_subj_count = t_female_obj_count = 0
+    for sentence in sentences:
+        (male_subj_count, male_obj_count, female_subj_count, female_obj_count) = parse_sentence(sentence)
+        t_male_subj_count += male_subj_count
+        t_male_obj_count += male_obj_count
+        t_female_subj_count += female_subj_count
+        t_female_obj_count += female_obj_count
+    return (t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
+
+
 if __name__ == "__main__":
 
     # create dependency parser
@@ -48,17 +78,31 @@ if __name__ == "__main__":
     load_jars(path_to_jar, path_to_models_jar)
     dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
 
+    novels = Corpus('sample_novels').novels
+    novel = novels[0]
+    print(parse_novel(novel))
 
-    sentences = {"She told him to pass the ball", "He told her words"}
-
-    for sentence in sentences:
-        result = dependency_parser.raw_parse(sentence.lower())
-        parse = next(result)
-        # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
-        # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
-        triples = list(parse.triples())
-        tree = create_tree(triples)
-
-        # print(count_tag("she", "nsubj", tree))
-
-        print(count_gender_subj_obj(tree))
+    # sentences = {"She told him to pass the ball",
+    #              "He told something to her",
+    #              "He gave her a gift",
+    #              "The red dog sang a purple song for the blue cat",
+    #              "The girl said that the man believes that the woman walked"}
+    #
+    # for sentence in sentences:
+    #     result = dependency_parser.raw_parse(sentence.lower())
+    #     parse = next(result)
+    #     # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
+    #     # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
+    #     triples = list(parse.triples())
+    #     tree = create_tree(triples)
+    #
+    #     # print(count_tag("she", "nsubj", tree))
+    #
+    #     print(sentence)
+    #     print("--")
+    #     print(parse.tree())
+    #     print("--")
+    #     print_tree(tree)
+    #     print("--")
+    #     print(count_gender_subj_obj(tree))
+    #     print()
