@@ -25,7 +25,7 @@ SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "s
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews"] #is the Bible a novel?
 AUTHOR_NAME_REGEX = common.AUTHOR_NAME_REGEX
-separators = ["\r","\n",";"]
+separators = ["\r","\n",r"; Or, "]
 
 def generate_corpus_gutenberg():
     """
@@ -53,6 +53,7 @@ def generate_corpus_gutenberg():
     books = glob.iglob(bookshelf)
     start_time = time.time()
     for book in books:
+        start_book = time.time()
         print("Filepath:",book)
         # get the book's id
         gutenberg_id = get_gutenberg_id(book)
@@ -60,6 +61,7 @@ def generate_corpus_gutenberg():
         # check if book is valid novel by our definition
         if (not is_valid_novel_gutenberg(gutenberg_id, book)):
             print("Not a novel")
+            print("Time for this book:", time.time() - start_book, "seconds")
             continue
         # begin compiling metadata.  Metadata not finalized
         novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
@@ -84,9 +86,10 @@ def generate_corpus_gutenberg():
         # copy text file to new folder
         copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
         print("Copied book")
+        print("Time for this book:",time.time()-start_book, "seconds")
     end_time = time.time()
     print("Done!")
-    print("Time:",end_time-start_time,"seconds")
+    print("Total Time:",end_time-start_time,"seconds")
 
 def get_gutenberg_id(filepath):
     """
@@ -265,6 +268,8 @@ def get_publication_date_wikidata(author, title):
 
     >>> get_publication_date_wikidata("Austen, Jane", "Persuasion")
     1818
+    >>> get_publication_date_wikidata("Scott, Walter", "Ivanhoe: A Romance")
+    1820
 
     :param author: list
     :param title: str
@@ -288,7 +293,15 @@ def get_publication_date_wikidata(author, title):
             return get_publication_date_wikidata(author, title + " (novel)")
         except (pywikibot.exceptions.NoPage):
             return None
-    except (pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle, pywikibot.InvalidTitle):
+    except (pywikibot.exceptions.NoPage):
+        try:
+            if (title == title.split(":", 1)[0]):
+                return None
+            else:
+                return get_publication_date_wikidata(author, title.split(":", 1)[0])
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except(pywikibot.exceptions.InvalidTitle):
         return None
     return year
 
@@ -370,7 +383,15 @@ def get_country_publication_wikidata(author, title):
             return get_country_publication_wikidata(author, title + " (novel)")
         except (pywikibot.exceptions.NoPage):
             return None
-    except (pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle):
+    except (pywikibot.exceptions.NoPage):
+        try:
+            if (title == title.split(":", 1)[0]):
+                return None
+            else:
+                return get_country_publication_wikidata(author, title.split(":", 1)[0])
+        except (pywikibot.exceptions.NoPage):
+            return None
+    except(pywikibot.exceptions.InvalidTitle):
         return None
 
     # try to match country_id to major English-speaking countries
