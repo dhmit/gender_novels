@@ -118,6 +118,26 @@ class Novel(common.FileLoaderMixin):
         name = self.filename[0:len(self.filename)-4]
         return name
 
+    def __repr__(self):
+        '''
+        Overrides the built-in __repr__ method
+        Returns the object type (Novel) and then the filename without the extension
+            in <>.
+
+        :return: string
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> repr(austen)
+        '<Novel (austen_persuasion)>'
+        '''
+
+        name = self.filename[0:len(self.filename) - 4]
+        return f'<Novel ({name})>'
+
     def __eq__(self, other):
         """
         Overload the equality operator to enable comparing and sorting novels.

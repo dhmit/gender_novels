@@ -37,7 +37,18 @@ def books_pronoun_freq(corp):
     return (relative_freq_female)
 
 def subject_vs_object_pronoun_freqs(corp):
+    '''
+    Takes in a Corpus of novels
+    Returns a tuple of two dictionaries, one male and female
+    Each dictionary maps each Novel in the corpus to the proportion of the pronouns
+        of the specified gender in that novel that are subject pronouns
+
     #TODO: add doctests
+
+    :param corp: Corpus
+    :return: tuple of two dictionaries (male, female)
+    '''
+
     relative_freq_male_subject = {}
     relative_freq_female_subject = {}
     relative_freq_male_object = {}
@@ -63,6 +74,38 @@ def subject_vs_object_pronoun_freqs(corp):
         result_tuple = (relative_freq_male_subject, relative_freq_female_subject)
 
     return result_tuple
+
+def subject_pronouns_gender_comparison(corp, subject_gender):
+    '''
+    Takes in a Corpus of novels and a gender.
+    The gender determines whether the male frequency or female frequency will
+        be returned
+    Returns a dictionary of each novel in the Corpus mapped to the portion of
+        the subject pronouns in the book that are of the specified gender
+    :param corp: Corpus
+    :param subject_gender: string 'male' or string 'female'
+    :return: dictionary
+    '''
+
+    if not(subject_gender == 'male' or subject_gender == 'female'):
+        raise ValueError('subject_gender must be \'male\' or \'female\'')
+
+    relative_freq_female_sub = {}
+    relative_freq_male_sub = {}
+
+    for book in corp.novels:
+        he = book.get_word_freq('he')
+        she = book.get_word_freq('she')
+
+        relative_freq_female_sub[book] = (she)/(he+she)
+        relative_freq_male_sub[book] = (he)/(he+she)
+
+    if subject_gender == 'male':
+        return relative_freq_male_sub
+    elif subject_gender == 'female':
+        return relative_freq_female_sub
+    else:
+        raise ValueError('subject_gender must be \'male\' or \'female\'')
 
 def dict_to_list(d):
     '''
@@ -288,6 +331,7 @@ def get_mean(data_dict):
         mean_dict[k] = np.mean(v)
     return mean_dict
 
+ 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
