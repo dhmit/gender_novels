@@ -13,7 +13,7 @@ body {
 /* Custom classes */
 
 .header {
-    background-color: #FEFDFB;
+    background-color: #EFEFEF;
 }
 
 .header-text {
@@ -30,10 +30,6 @@ body {
     max-width: 60px;
 }
 
-.content {
-    background-color: #EFEFEF;
-}
-
 /* Topic content */
 
 .topic-content img {
@@ -47,17 +43,16 @@ body {
 
 .sidebar {
     position: fixed;
-    width: 15%;
 }
 
 .nav-link {
-    background-color: #EFEFEF;
+    background-color: white;
     color: black;
 }
 
 .nav-link.active.show {
-    background-color: #CAEBF2;
-    color: black;
+    background-color: darkgray;
+    color: white;
 }
 
 a:hover {
