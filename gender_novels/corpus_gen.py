@@ -498,11 +498,11 @@ def get_publication_date_from_copyright(novel_text):
     :return: int
     """
     match = re.search(r"(COPYRIGHT\,*\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
-    if (match == None):
+    if not match:
         match = re.search(r"\d{4}", novel_text[:3000])
-        if (match != None):
+        if match:
             year = int(match.group(0))
-            if (year < 2000 and year > 1492):
+            if (year < 2038 and year > 1492):
                 return year
             else:
                 return None
