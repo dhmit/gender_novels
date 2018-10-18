@@ -1,11 +1,25 @@
 import os
 import urllib.request
+from shutil import copyfile
 
 from pathlib import Path
 
 DEBUG = False
 
-#TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
+GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
+metadata_list = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name',
+                 'notes']
+INITIAL_BOOK_STORE = r'corpora/test_books_30' # 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
+# plus some extras
+FINAL_BOOK_STORE = r'test_corpus'
+AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*"
+import codecs
+from chardet.universaldetector import UniversalDetector
+targetFormat = 'utf-8'
+outputDir = 'converted'
+detector = UniversalDetector()
+
+# TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
 
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
@@ -140,7 +154,88 @@ class FileLoaderMixin:
             return text.replace('\r\n', '\n')
 
 
+def get_encoding_type(filepath):
+    """
+    For text file at filepath returns the text encoding as a string (e.g. 'utf-8')
+
+    >>> from gender_novels import common
+    >>> common.get_encoding_type(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    'UTF-8-SIG'
+
+    :param filepath: fstr
+    :return: str
+    """
+    detector.reset()
+    with open(filepath, 'rb') as file:
+        for line in file:
+            detector.feed(line)
+            if detector.done: break
+        detector.close()
+    return detector.result['encoding']
+
+def convertFileBestGuess(filepath):
+    """
+    Tries to convert file at filepath into UTF-8 by trying to convert from source formats ASCII and ISO-8859-1.
+    Returns True if successful.  N.B. Be sure that the 'converted' folder already exists or this will throw an error.
+    :param filepath: str
+    :return: bool
+    """
+    sourceFormats = ['ascii', 'iso-8859-1']
+    targetPath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
+    for format in sourceFormats:
+        try:
+            with codecs.open(filepath, 'rU', format) as sourceFile:
+                writeConversion(sourceFile, filepath, targetPath)
+                return True
+        except UnicodeDecodeError:
+            pass
+    return False
+
+def convertFileWithDetection(filepath):
+    """
+    Tries to convert file to UTF-8 by detecting source encoding.  Returns True if successful.
+    N.B. Be sure that the 'converted' folder already exists or this will throw an error.
+    :param filepath:
+    :return: True
+    """
+    format = get_encoding_type(filepath)
+    targetPath = Path(Path(filepath).parent, r"converted", Path(filepath).name)
+    try:
+        with codecs.open(filepath, 'rU', format) as sourceFile:
+            writeConversion(sourceFile, filepath, targetPath)
+            return True
+    except UnicodeDecodeError:
+        pass
+    return False
+
+
+def writeConversion(file, sourcePath, targetPath, replace=True):
+    """
+    Writes contents of file at sourcePath into targetPath.  If replace=True, the new file will be moved to sourcePath,
+    overwritting the old one.
+    :param file: File
+    :param sourcePath: str
+    :param targetPath: str
+    :param replace: bool
+    """
+    with codecs.open(targetPath, 'w', targetFormat) as targetFile:
+        for line in file:
+            targetFile.write(line)
+    if (replace):
+        copyfile(sourcePath, targetPath.as_posix())
+        os.remove(targetPath)
+
+import unittest
+
+
+class Test(unittest.TestCase):
+    def test_detector(self):
+        x = 5 + 7
+        x = get_encoding_type(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+        self.assertEqual(x, "UTF-8")
+
 
 if __name__ == '__main__':
-    from dh_testers.testRunner import main_test
-    main_test()
+    unittest.main()
+    # from dh_testers.testRunner import main_test
+    # main_test()

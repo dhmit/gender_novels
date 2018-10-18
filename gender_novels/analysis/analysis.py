@@ -44,10 +44,12 @@ def get_count_words(novel, words):
         dic_word_counts[word] = novel.get_count_of_word(word)
     return dic_word_counts
 
+
 def get_comparative_word_freq(freqs):
     """
     Returns a dictionary of the frequency of words counted relative to each other.
-    
+    If frequency passed in is zero, returns zero
+
     :param freqs: dictionary
     :return: dictionary
 
@@ -61,15 +63,21 @@ def get_comparative_word_freq(freqs):
     {'he': 0.00733, 'she': 0.00589}
     >>> x = get_comparative_word_freq(d)
     >>> x
-    {'he': 0.55446, 'she': 0.44554}
+    {'he': 0.5544629349470499, 'she': 0.4455370650529501}
+    >>> d2 = {'he': 0, 'she': 0}
+    >>> d2
+    {'he': 0, 'she': 0}
     """
 
     total_freq = sum(freqs.values())
     comp_freqs = {}
 
     for k, v in freqs.items():
-        freq = v / total_freq
-        comp_freqs[k] = round(freq, 5)
+        try:
+            freq = v / total_freq
+        except ZeroDivisionError:
+            freq = 0
+        comp_freqs[k] = freq
 
     return comp_freqs
 
