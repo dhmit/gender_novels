@@ -29,7 +29,7 @@ COUNTRY_ID_TO_NAME = {"Q30":  "United States", "Q145": "United Kingdom", "Q21": 
 def generate_corpus_gutenberg():
     """
     Generate metadata sheet of all novels we want from gutenberg
-    >>> generate_corpus_gutenberg()
+    To test this run main
     """
 
     # determine current directory
@@ -57,10 +57,10 @@ def generate_corpus_gutenberg():
         try:
             number_books += 1
             start_book = time.time()
-            print("Filepath:",book)
+            print("Filepath:", book)
             # get the book's id
             gutenberg_id = get_gutenberg_id(book)
-            print("ID:",gutenberg_id)
+            print("ID:", gutenberg_id)
             # check if book is valid novel by our definition
             if (not is_valid_novel_gutenberg(gutenberg_id, book)):
                 print("Not a novel")
@@ -70,7 +70,7 @@ def generate_corpus_gutenberg():
             # begin compiling metadata.  Metadata not finalized
             novel_metadata = {'gutenberg_id': gutenberg_id, 'corpus_name': 'gutenberg'}
             author = get_author_gutenberg(gutenberg_id)
-            print("Author:",author)
+            print("Author:", author)
             novel_metadata['author'] = author
             title = get_title_gutenberg(gutenberg_id)
             print("Title:",title)
@@ -497,7 +497,7 @@ def get_publication_date_from_copyright(novel_text):
     :param novel_text: string
     :return: int
     """
-    match = re.search(r"(COPYRIGHT\,*\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
+    match = re.search(r"(COPYRIGHT,?\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
     if not match:
         match = re.search(r"\d{4}", novel_text[:3000])
         if match:
@@ -506,7 +506,8 @@ def get_publication_date_from_copyright(novel_text):
                 return year
             else:
                 return None
-        else: return None
+        else:
+            return None
     else:
         return int(match.group(2))
 
