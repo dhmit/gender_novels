@@ -73,17 +73,17 @@ def generate_corpus_gutenberg():
             print("Author:", author)
             novel_metadata['author'] = author
             title = get_title_gutenberg(gutenberg_id)
-            print("Title:",title)
+            print("Title:", title)
             novel_metadata['title'] = title
             novel_metadata['date'] = get_publication_date(author, title, book, gutenberg_id)
-            print("Date:",novel_metadata['date'])
+            print("Date:", novel_metadata['date'])
             novel_metadata['country_publication'] = get_country_publication(author,
                 title)
-            print("Country:",novel_metadata['country_publication'])
+            print("Country:", novel_metadata['country_publication'])
             novel_metadata['author_gender'] = get_author_gender(author)
-            print("Author Gender:",novel_metadata['author_gender'])
+            print("Author Gender:", novel_metadata['author_gender'])
             novel_metadata['subject'] = get_subject_gutenberg(gutenberg_id)
-            print("Subjects:",novel_metadata['subject'])
+            print("Subjects:", novel_metadata['subject'])
             # write to csv
             write_metadata(novel_metadata)
             print("wrote metadata")
