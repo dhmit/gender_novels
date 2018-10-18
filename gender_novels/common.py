@@ -153,12 +153,12 @@ class FileLoaderMixin:
             return text.replace('\r\n', '\n')
 
 
-def get_encoding_type(filepath):
+def get_text_file_encoding(filepath):
     """
     For text file at filepath returns the text encoding as a string (e.g. 'utf-8')
 
     >>> from gender_novels import common
-    >>> common.get_encoding_type(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    >>> common.get_text_file_encoding(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
     'UTF-8-SIG'
 
     Note: For files containing only ascii characters, this function will return 'ascii' even if

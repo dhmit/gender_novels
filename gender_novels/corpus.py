@@ -64,19 +64,6 @@ class Corpus(common.FileLoaderMixin):
         for this_novel in self.novels:
             yield this_novel
 
-    def __len__(self):
-        """
-        For corpus length, return number of novels
-
-        :return: int
-
-        >>> from gender_novels.corpus import Corpus
-        >>> c = Corpus('sample_novels')
-        >>> len(c)
-        94
-        """
-        return len(self.novels)
-
     def __eq__(self, other):
         """
         Returns true if both corpora contain the same novels
