@@ -21,8 +21,10 @@ from gender_novels.common import GUTENBERG_METADATA_PATH, INITIAL_BOOK_STORE, FI
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
-             "songbooks", "hymns", "correspondence", "drama", "reviews", "translations into english"] #is the Bible a novel?
-TRUNCATORS = ["\r","\n",r"; Or, "]
+             "songbooks", "hymns", "correspondence", "drama", "reviews", "translations into english", 'religion']
+TRUNCATORS = ["\r", "\n", r"; Or, "]
+COUNTRY_ID_TO_NAME = {"Q30":  "United States", "Q145": "United Kingdom", "Q21": "United Kingdom", "Q16": "Canada",
+                      "Q408": "Australia", "Q2886622": "Narnia"}
 
 def generate_corpus_gutenberg():
     """
@@ -98,8 +100,8 @@ def generate_corpus_gutenberg():
     end_time = time.time()
     print("Done!")
     print("No. Books:", number_books)
-    print("Total Time:",end_time-start_time,"seconds")
-    print("Average Time per Book",(end_time-start_time)/number_books)
+    print("Total Time:", end_time-start_time, "seconds")
+    print("Average Time per Book", (end_time-start_time)/number_books)
 
 
 def get_gutenberg_id(filepath):
@@ -134,67 +136,188 @@ def is_valid_novel_gutenberg(gutenberg_id, filepath):
     if novel is in correct publication range
     That novel is not a translation
 
-    >>> from gender_novels import corpus_gen
+    >>> from gender_novels.corpus_gen import is_valid_novel_gutenberg
     >>> import os
     >>> current_dir = os.path.abspath(os.path.dirname(__file__))
-    >>> is_valid_novel_gutenberg(32, Path(current_dir, r"/corpora/test_books_30/32-0.txt"))
+    >>> is_valid_novel_gutenberg(32, Path(current_dir, r"corpora/test_books_30/32-0.txt"))
+    Herland
     True
     >>> is_valid_novel_gutenberg(11000, Path(current_dir, r"corpora/test_books_30/11000-0.txt"))
+    An Old Babylonian Version of the Gilgamesh Epic
+    Bad subject
     False
     >>> is_valid_novel_gutenberg(1404, Path(current_dir, r"corpora/test_books_30/1404-0.txt"))
+    The Federalist Papers
     False
 
     :param gutenberg_id: int
     :return: boolean
-    TODO: increase selectivity (apparently The Federalist Papers is a novel)
+    TODO: increase selectivity (Federalist Papers still failing doctest)
     """
     title = get_title_gutenberg(gutenberg_id)
     print(title)
-    language = list(get_metadata('language', gutenberg_id))[0]
-    if (not language == 'en'):
+    if language_invalidates_entry(gutenberg_id):
         print("Not in English")
         return False
-    rights = get_metadata('rights', gutenberg_id)
-    if (not rights == frozenset({'Public domain in the USA.'})):
-        print(rights)
+    if rights_invalidate_entry(gutenberg_id):
+        print("Not public domain")
         return False
+    if subject_invalidates_entry(gutenberg_id):
+        print("Bad subject")
+        return False
+    if date_invalidates_entry(gutenberg_id, filepath):
+        print("Not in date range")
+        return False
+    # title = get_title_gutenberg(gutenberg_id)
+    if title_invalidates_entry(title):
+        print("Invalid title")
+        return False
+    text = get_novel_text_gutenberg_with_boilerplate(filepath)
+    if text_invalidates_entry(text):
+        print("Something wrong with text")
+        return False
+    return True
+
+
+def language_invalidates_entry(gutenberg_id):
+    """
+    Returns False if book with gutenberg id is in English, True otherwise
+
+    >>> from gender_novels.corpus_gen import language_invalidates_entry
+    >>> language_invalidates_entry(46) # A Christmas Carol
+    False
+    >>> language_invalidates_entry(27217) # Some Chinese thing
+    True
+
+    :param gutenberg_id: int
+    :return: boolean
+    """
+    language = list(get_metadata('language', gutenberg_id))[0]
+    if (language != 'en'):
+        return True
+    else:
+        return False
+
+
+def rights_invalidate_entry(gutenberg_id):
+    """
+    Returns False if book with gutenberg id is in public domain in US, True otherwise
+
+    >>> from gender_novels.corpus_gen import rights_invalidate_entry
+    >>> rights_invalidate_entry(5200) # Metamorphosis by Franz Kafka
+    True
+    >>> rights_invalidate_entry(8066) # The Bible, King James version, Book 66: Revelation
+    False
+
+    :param gutenberg_id: int
+    :return: boolean
+    """
+    rights = get_metadata('rights', gutenberg_id)
+    if ('Public domain in the USA.' in rights):
+        return False
+    else:
+        return True
+
+
+def subject_invalidates_entry(gutenberg_id):
+    """
+    Checks if the Gutenberg subject indicates that the book is not a novel
+
+    >>> from gender_novels.corpus_gen import subject_invalidates_entry
+    >>> subject_invalidates_entry(2240) # Much Ado About Nothing
+    True
+    >>> subject_invalidates_entry(33) # The Scarlet Letter
+    False
+
+    :param gutenberg_id: int
+    :return: boolean
+    """
+
     subjects = get_subject_gutenberg(gutenberg_id)
     for subject in subjects:
         for word in SUBJECTS_TO_IGNORE:
             if ((subject.lower()).find(word) != -1):
-                print("Bad subject")
-                return False
-    # title = get_title_gutenberg(gutenberg_id)
+                return True
+    return False
+
+
+def date_invalidates_entry(gutenberg_id, filepath):
+    """
+    Checks if book with gutenberg id is in correct date range.  If it can't get the date, simply returns False
+    >>> from gender_novels.corpus_gen import date_invalidates_entry
+    >>> date_invalidates_entry(33, r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    False
+
+    :param gutenberg_id: int
+    :param filepath: str
+    :return: boolean
+    """
+
+    author = get_author_gutenberg(gutenberg_id)
+    title = get_title_gutenberg(gutenberg_id)
     try:
-        date = int(get_publication_date(get_author_gutenberg(gutenberg_id), title, filepath, gutenberg_id))
+        date = int(get_publication_date(author, title, filepath, gutenberg_id))
         if ((date < 1770 or date > 1922)):
-            print("Not in date range")
+            return True
+        else:
             return False
     except TypeError:
-        pass
-    if (title.find("Index of the Project gutenberg ") != -1):
-        print("Was an index")
         return False
-    if (title.find("Index of The Project gutenberg ") != -1):
-        print("Was an index")
-    if (title.find("Complete Project gutenberg ") != -1):
-        print("Was a compilation thing")
-        return False
-    if (title.find("Translated by ") != -1):
-        print("Was a translation")
-        return False
-    text = get_novel_text_gutenberg_with_boilerplate(filepath)
+
+
+def title_invalidates_entry(title):
+    """
+    Determines if the title contains phrases that indicate that the book is invalid
+
+    >>> from gender_novels.corpus_gen import title_invalidates_entry
+    >>> title_invalidates_entry("Index of the Project Gutenberg Works of Michael Cuthbert")
+    True
+    >>> title_invalidates_entry("Pride and Prejudice")
+    False
+
+    :param title: str
+    :return: boolean
+    """
+    title = title.lower()
+    if (title.find("index of the project gutenberg ") != -1):
+        # print("Was an index")
+        return True
+    if (title.find("complete project gutenberg") != -1):
+        # print("Was a compilation thing")
+        return True
+    if (title.find("translated by ") != -1):
+        # print("Was a translation")
+        return True
+    return False
+
+
+def text_invalidates_entry(text):
+    """
+    Determine if there is anything obvious in the text that would invalidate it as a valid novel
+
+    >>> from gender_novels.corpus_gen import text_invalidates_entry
+    >>> text_invalidates_entry("Translator: George Fyler Townsend")
+    True
+    >>> from gender_novels.corpus_gen import get_novel_text_gutenberg
+    >>> import os
+    >>> current_dir = os.path.abspath(os.path.dirname(__file__))
+    >>> filepath = Path(current_dir, r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    >>> scarlet_letter = get_novel_text_gutenberg(filepath)
+    >>> text_invalidates_entry(scarlet_letter)
+    False
+
+    :param text: str
+    :return: boolean
+    """
     if (text.find("Translator: ", 0, 650) != -1):
-        print("Was a translation")
-        return False
+        return True
     text = strip_headers(text)
     text_length = len(text)
     # Animal Farm is roughly 166700 characters including boilerplate
     # Guiness World Records states that the longest novel is 9,609,000 characters long
     if (text_length < 140000 or text_length > 9609000 ):
-        print("Was wrong length")
-        return False
-    return True
+        return True
+    return False
 
 
 def get_author_gutenberg(gutenberg_id):
@@ -452,16 +575,8 @@ def get_country_publication_wikidata(author, title):
         return None
 
     # try to match country_id to major English-speaking countries
-    if (country_id == "Q30"):
-        return "United States"
-    if (country_id == "Q145" or country_id == "Q21"):
-        return "United Kingdom"
-    if (country_id == "Q16"):
-        return "Canada"
-    if (country_id == "Q408"):
-        return "Australia"
-    if (country_id == "Q2886622"):
-        return "Narnia" # I mean, they seem to all speak English there
+    if country_id in COUNTRY_ID_TO_NAME:
+        return COUNTRY_ID_TO_NAME[country_id]
 
     # if not try look up wikidata page of country with that id to try and get short name
     try:
@@ -480,10 +595,49 @@ def get_country_publication_wikidata(author, title):
         country = dictionary['aliases']['en'][-1]
         return country
 
+
+def format_author(author):
+    """
+    Formats a string in the form "Lastname, Firstname" into "Firstname Lastname"
+    and a string in the form "Lastname, Firstname Middle" into "Firstname Middle Lastname"
+    and a string in the form "Lastname, F. M. (First Middle)" into "First Middle Lastname"
+    and a string in the form "Lastname, Firstname, Sfx." into "Firstname Lastname, Sfx."
+    If string is not in any of the above forms just returns the string.
+
+    >>> from gender_novels.corpus_gen import format_author
+    >>> format_author("Washington, George")
+    'George Washington'
+    >>> format_author("Hurston, Zora Neale")
+    'Zora Neale Hurston'
+    >>> format_author('King, Martin Luther, Jr.')
+    'Martin Luther King, Jr.'
+    >>> format_author("Montgomery, L. M. (Lucy Maud)")
+    'Lucy Maud Montgomery'
+    >>> format_author("Socrates")
+    'Socrates'
+
+    :param author: str
+    :return: str
+    """
+
+    author_formatted = ''
+    try:
+        match = re.match(AUTHOR_NAME_REGEX, author)
+        first_name = match.groupdict()['first_name']
+        if (match.groupdict()['real_name'] != None):
+            first_name = match.groupdict()['real_name']
+        author_formatted = first_name + " " + match.groupdict()['last_name']
+        if (match.groupdict()['suffix'] != None):
+            author_formatted += match.groupdict()['suffix']
+    except (TypeError, AttributeError):
+        author_formatted = author
+    return author_formatted
+
 def get_author_gender(authors):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple
     authors of different genders)
+    Returns 'unknown' if it fails
     #TODO: should get functions that fail to find anything return 'unknown'
     #TODO: 'both' is ambiguous; Does it mean both female and male?  female and unknown?
     #TODO: male and nonbinary?
@@ -494,11 +648,14 @@ def get_author_gender(authors):
     >>> get_author_gender(["Cuthbert, Michael"])
     'male'
     >>> get_author_gender(["Duan, Mingfei"])
-
+    'unknown'
     >>> get_author_gender(["Collins, Suzanne", "Riordan, Rick"])
     'both'
     >>> get_author_gender(["Shelley, Mary", "Austen, Jane"])
     'female'
+
+    # should return 'both' because it doesn't recognize my name
+
     >>> get_author_gender(['Shakespeare, William', "Duan, Mingfei"])
     'both'
     >>> get_author_gender(["Montgomery, L. M. (Lucy Maud)"])
@@ -519,18 +676,9 @@ def get_author_gender(authors):
         if author_gender == None:
             author_gender = get_author_gender_wikidata(author)
         if author_gender == None:
-            guesser = gender_guesser.Detector()
-            match = re.match(AUTHOR_NAME_REGEX, author)
-            first_name = match.groupdict()['first_name'].split()[0]
-            if (match.groupdict()['real_name'] != None):
-                first_name = match.groupdict()['real_name'].split()[0]
-            gender_guess = guesser.get_gender(first_name)
-            if (gender_guess == 'andy' or gender_guess == 'unknown'):
-                author_gender = None
-            if (gender_guess == 'male' or gender_guess == 'mostly_male'):
-                author_gender = 'male'
-            if (gender_guess == 'female' or gender_guess == 'mostly_female'):
-                author_gender = 'female'
+            author_gender = get_author_gender_guesser(author)
+        if author_gender == None:
+            return 'unknown'
     else:
         author_gender = get_author_gender([authors[0]])
         for author in authors:
@@ -541,7 +689,7 @@ def get_author_gender(authors):
 def get_author_gender_wikidata(author):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary' from wikidata
-    If it fails returns 'unknown'
+    If it fails returns None
     N.B. Wikidata's categories for transgender male and female are treated as male and female, respectively
 
     >>> from gender_novels.corpus_gen import get_author_gender_wikidata
@@ -555,22 +703,36 @@ def get_author_gender_wikidata(author):
     :param author: str
     :return: str
     """
-    try:
-        match = re.match(AUTHOR_NAME_REGEX, author)
-        first_name = match.groupdict()['first_name']
-        if (match.groupdict()['real_name'] != None):
-            first_name = match.groupdict()['real_name']
-        author_formatted = first_name + " " + match.groupdict()['last_name']
-        if (match.groupdict()['suffix'] != None):
-            author_formatted += match.groupdict()['suffix']
-    except (TypeError, AttributeError):
-        author_formatted = author
+    author_formatted = format_author(author)
     try:
         site = pywikibot.Site("en", "wikipedia")
         page = pywikibot.Page(site, author_formatted)
         item = pywikibot.ItemPage.fromPage(page)
         dictionary = item.get()
         clm_dict = dictionary["claims"]
+        return get_gender_from_wiki_claims(clm_dict)
+    except (pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle):
+        return None
+
+def get_gender_from_wiki_claims(clm_dict):
+    """
+    From clim_dict produced by pywikibot from a page, tries to extract the gender of the object of the page
+    If it fails returns None
+    N.B. Wikidata's categories for transgender male and female are treated as male and female, respectively
+
+    >>> from gender_novels.corpus_gen import get_gender_from_wiki_claims
+    >>> site = pywikibot.Site("en", "wikipedia")
+    >>> page = pywikibot.Page(site, 'Zeus')
+    >>> item = pywikibot.ItemPage.fromPage(page)
+    >>> dictionary = item.get()
+    >>> clm_dict = dictionary["claims"]
+    >>> get_gender_from_wiki_claims(clm_dict)
+    'male'
+
+    :param clm_dict: dict
+    :return: str
+    """
+    try:
         clm_list = clm_dict["P21"]
         gender_id = None
         for clm in clm_list:
@@ -578,12 +740,39 @@ def get_author_gender_wikidata(author):
             gender_id = clm_trgt.id
         if (gender_id == 'Q6581097' or gender_id == 'Q2449503'):
             return 'male'
-        if (gender_id == 'Q6581072'or gender_id == 'Q1052281'):
+        if (gender_id == 'Q6581072' or gender_id == 'Q1052281'):
             return 'female'
         if (gender_id == 'Q1097630'):
             return 'non-binary'
-    except (KeyError, pywikibot.exceptions.NoPage):
+    except (KeyError):
         return None
+
+def get_author_gender_guesser(author):
+    """
+    Tries to get gender of author, 'female', 'male', 'non-binary' from the gender guesser module
+
+    >>> from gender_novels.corpus_gen import get_author_gender_guesser
+    >>> get_author_gender_guesser("Cuthbert, Michael")
+    'male'
+    >>> get_author_gender_guesser("Li, Michelle")
+    'female'
+    >>> get_author_gender_guesser("Duan, Mingfei") # should return None
+
+
+    :param author: str
+    :return: str
+    """
+
+    first_name = format_author(author).split()[0]
+    guesser = gender_guesser.Detector()
+    gender_guess = guesser.get_gender(first_name)
+    if (gender_guess == 'andy' or gender_guess == 'unknown'):
+        return None
+    if (gender_guess == 'male' or gender_guess == 'mostly_male'):
+        return 'male'
+    if (gender_guess == 'female' or gender_guess == 'mostly_female'):
+        return 'female'
+
 
 def get_subject_gutenberg(gutenberg_id):
     """
