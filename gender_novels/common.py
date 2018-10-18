@@ -10,7 +10,7 @@ GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
 METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
                  'subject', 'corpus_name', 'notes']
 
-# 30 books from gutenberg downloaded from Dropbox folder shared with Keith, except it's no longer actually 30 books
+# books from gutenberg downloaded from Dropbox folder shared by Keith
 INITIAL_BOOK_STORE = r'corpora/test_books_30'
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
