@@ -1,3 +1,4 @@
+from . import analysis
 from . import common
 from . import corpus
 # from . import corpus_gen
