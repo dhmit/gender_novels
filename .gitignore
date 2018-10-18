@@ -118,3 +118,4 @@ gender_novels/scratch.py
 gender_novels/apicache-py3/
 gender_novels/throttle.ctrl
 gender_novels/analysis/assets/stanford-parser.jar
+gender_novels/analysis/assets/stanford-parser-3.9.1-models.jar

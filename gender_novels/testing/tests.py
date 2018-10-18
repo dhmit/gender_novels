@@ -56,7 +56,10 @@ class Imports(unittest.TestCase):
             except ModuleNotFoundError:
                 self.fail(f'{package} could not be loaded.')
 
-
+class CorporaTestCases(unittest.TestCase):
+    """
+    Checks methods and novels associated with the corpus
+    """
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()

@@ -4,6 +4,7 @@ import numpy as np
 
 
 def books_pronoun_freq(corp):
+    #TODO: add doctests
     '''
     Counts male and female pronouns for every book and finds their relative frequencies per book
     Outputs dictionary mapping novel object to the relative frequency
@@ -36,6 +37,18 @@ def books_pronoun_freq(corp):
     return (relative_freq_female)
 
 def subject_vs_object_pronoun_freqs(corp):
+    '''
+    Takes in a Corpus of novels
+    Returns a tuple of two dictionaries, one male and female
+    Each dictionary maps each Novel in the corpus to the proportion of the pronouns
+        of the specified gender in that novel that are subject pronouns
+
+    #TODO: add doctests
+
+    :param corp: Corpus
+    :return: tuple of two dictionaries (male, female)
+    '''
+
     relative_freq_male_subject = {}
     relative_freq_female_subject = {}
     relative_freq_male_object = {}
@@ -61,6 +74,38 @@ def subject_vs_object_pronoun_freqs(corp):
         result_tuple = (relative_freq_male_subject, relative_freq_female_subject)
 
     return result_tuple
+
+def subject_pronouns_gender_comparison(corp, subject_gender):
+    '''
+    Takes in a Corpus of novels and a gender.
+    The gender determines whether the male frequency or female frequency will
+        be returned
+    Returns a dictionary of each novel in the Corpus mapped to the portion of
+        the subject pronouns in the book that are of the specified gender
+    :param corp: Corpus
+    :param subject_gender: string 'male' or string 'female'
+    :return: dictionary
+    '''
+
+    if not(subject_gender == 'male' or subject_gender == 'female'):
+        raise ValueError('subject_gender must be \'male\' or \'female\'')
+
+    relative_freq_female_sub = {}
+    relative_freq_male_sub = {}
+
+    for book in corp.novels:
+        he = book.get_word_freq('he')
+        she = book.get_word_freq('she')
+
+        relative_freq_female_sub[book] = (she)/(he+she)
+        relative_freq_male_sub[book] = (he)/(he+she)
+
+    if subject_gender == 'male':
+        return relative_freq_male_sub
+    elif subject_gender == 'female':
+        return relative_freq_female_sub
+    else:
+        raise ValueError('subject_gender must be \'male\' or \'female\'')
 
 def dict_to_list(d):
     '''
@@ -280,59 +325,50 @@ def get_mean(data_dict):
     >>> d['nothing'] = [0]
     >>> get_mean(d)
     {'fives': 5.0, 'halfway': 0.5, 'nothing': 0.0}
-
     '''
     mean_dict = {}
     for k, v in data_dict.items():
         mean_dict[k] = np.mean(v)
     return mean_dict
 
+def sort_every_year(frequency_dict):
+    '''
+    Takes in a dictionary of novels mapped to pronoun frequencies and returns a dictionay of
+        years mapped to lists of pronoun frequencies
 
-if __name__ == "__main__":
-    #all_data = books_pronoun_freq(Corpus('sample_novels'))
+    >>> from gender_novels import novel
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    ...                   'corpus_name': 'sample_novels', 'date': '1818',
+    ...                   'filename': 'austen_persuasion.txt'}
+    >>> austen = novel.Novel(novel_metadata)
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1900',
+    ...                   'filename': 'hawthorne_scarlet.txt'}
+    >>> scarlet = novel.Novel(novel_metadata)
+    >>> d = {}
+    >>> d[scarlet] = 0.5
+    >>> d[austen] = 0.3
+    >>> sorted_years = sort_every_year(d)
+    >>> print(sorted_years)
+    {1900: [0.5], 1818: [0.3]}
 
-    #gender = freq_by_author_gender(all_data)
-    #date = freq_by_date(all_data)
-    #location = freq_by_location(all_data)
 
-    #print('Male/Female pronoun comparison: ')
-    #print('By author gender: ')
-    #print(get_mean(gender))
-    #print('\n By date: ')
-    #print(get_mean(date))
-    #print('\n By location: ')
-    #print(get_mean(location))
+    :param frequency_dict: dictionary of novels mapped to pronoun frequencies
+    :return: dictionary of years mapped to lists of pronoun frequencies
+    '''
+    every_year_dict = {}
+    for key,value in frequency_dict.items():
+        frequency_list = [frequency_dict[key]]
 
-    #sub_v_ob = subject_vs_object_pronoun_freqs(Corpus('sample_novels'))
+        if key.date not in every_year_dict.keys():
+            every_year_dict[key.date] = frequency_list
 
-    #female_gender_sub_v_ob = freq_by_author_gender(sub_v_ob[1])
-    #female_date_sub_v_ob = freq_by_date(sub_v_ob[1])
-    #female_loc_sub_v_ob = freq_by_location(sub_v_ob[1])
-    #male_gender_sub_v_ob = freq_by_author_gender(sub_v_ob[0])
-    #male_date_sub_v_ob = freq_by_date(sub_v_ob[0])
-    #male_loc_sub_v_ob = freq_by_location(sub_v_ob[0])
+        elif key.date in every_year_dict.keys():
+            every_year_dict[key.date].append(frequency_dict[key])
 
-    #male_tot = dict_to_list(sub_v_ob[0])
-    #female_tot = dict_to_list(sub_v_ob[1])
+    return every_year_dict
 
-    #print('Subject/Object comparisons: ')
-    #print('Male vs Female in the subject: ')
-    #print('Male: ')
-    #print(np.mean(male_tot))
-    #print('Female: ')
-    #print(np.mean(female_tot))
-    #print('\n Female pronouns: ')
-    #print('By author gender: ')
-    #print(get_mean(female_gender_sub_v_ob))
-    #print('By date: ')
-    #print(get_mean(female_date_sub_v_ob))
-    #print('By location: ')
-    #print(get_mean(female_loc_sub_v_ob))
-    #print('\n Male pronouns: ')
-    #print('By author gender: ')
-    #print(get_mean(male_gender_sub_v_ob))
-    #print('By date:')
-    #print(get_mean(male_date_sub_v_ob))
-    #print('By location: ')
-    #print(get_mean(male_loc_sub_v_ob))
-
+  
+if __name__ == '__main__':
+    from dh_testers.testRunner import main_test
+    main_test()
