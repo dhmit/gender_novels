@@ -2,6 +2,7 @@ import os
 import urllib.request
 
 from pathlib import Path
+import codecs
 
 DEBUG = False
 
@@ -15,7 +16,6 @@ INITIAL_BOOK_STORE = r'corpora/test_books_30'
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
 AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)"
-import codecs
 outputDir = 'converted'
 
 # TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
