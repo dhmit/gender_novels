@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+from collections import Counter
 
 from gender_novels import common
 from gender_novels.novel import Novel
@@ -231,6 +232,23 @@ class Corpus(common.FileLoaderMixin):
 
         return corpus_copy
 
+    def get_wordcount_counter(self):
+        """
+        This function returns a Counter telling how many times a word appears in an entire
+        corpus
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_wordcount_counter()['fire']
+        2069
+
+        """
+        c = Corpus('sample_novels')
+        corpus_counter = Counter()
+        for current_novel in c.novels:
+            novel_counter = current_novel.get_wordcount_counter()
+            corpus_counter += novel_counter
+        return corpus_counter
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
