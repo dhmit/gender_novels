@@ -1,23 +1,24 @@
 /* External assets */
-
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
+@import url('https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy');
 
 /* Base HTML elements */
 
 body {
-    font-family: "Source Sans Pro";
+    font-family: "Sorts Mill Goudy";
+    font-size: large;
 }
 
 /* Custom classes */
 
 .header {
-    background-color: #3E3E3E;
+    background-color: #D23641;
 }
 
 .header-text {
-    color: white;
-    font-weight: bold;
+    color: black;
     text-align: center;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    margin-top: 1rem;
 }
 
 .github-logo {
@@ -27,7 +28,11 @@ body {
     max-width: 60px;
 }
 
-/* Topic Content */
+.content {
+    background-color: #EAD3A8;
+}
+
+/* Topic content */
 
 .topic-content img {
     height: auto;
@@ -40,16 +45,19 @@ body {
 
 .sidebar {
     position: fixed;
-    width: 12%;
+}
+
+.topic-button {
+    text-align: center;
 }
 
 .nav-link {
-    background-color: white;
+    background-color: transparent;
     color: black;
 }
 
 .nav-link.active.show {
-    background-color: darkgray;
+    background-color: #34282C;
     color: white;
 }
 
