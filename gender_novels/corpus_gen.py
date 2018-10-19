@@ -26,6 +26,10 @@ TRUNCATORS = ["\r", "\n", r"; Or, "]
 COUNTRY_ID_TO_NAME = {"Q30":  "United States", "Q145": "United Kingdom", "Q21": "United Kingdom", "Q16": "Canada",
                       "Q408": "Australia", "Q2886622": "Narnia"}
 
+
+GUTENBERG_RSYNC_PATH = '/home/stephan/gutenberg_mirror'
+
+
 def generate_corpus_gutenberg():
     """
     Generate metadata sheet of all novels we want from gutenberg
@@ -47,22 +51,34 @@ def generate_corpus_gutenberg():
         cache.populate()
         print("Done populating cache")
     # go through all books in Keith's thing
-    bookshelf = str(Path(current_dir, INITIAL_BOOK_STORE, r"*.txt"))
-    print("Searching folder", bookshelf)
-    books = glob.iglob(bookshelf)
+
     number_books = 0
-    print('')
     start_time = time.time()
-    for book in books:
+
+    # Generate filepaths
+    # gutenberg_id.txt means ascii file (which works fine for our purposes)
+    # gutenberg_id-0.txt means utf8 file (preferred)
+    filepaths = []
+    for gutenberg_id in range(200):
+        novel_directory = generate_gutenberg_rsync_path(gutenberg_id)
+        utf8_path = novel_directory.joinpath(f'{gutenberg_id}-0.txt')
+        if os.path.isfile(utf8_path):
+            filepaths.append(utf8_path)
+            continue
+        ascii_path = novel_directory.joinpath(f'{gutenberg_id}.txt')
+        if os.path.isfile(ascii_path):
+            filepaths.append(ascii_path)
+
+    print(f"Total number of files to process: {len(filepaths)}")
+
+    for filepath in filepaths:
+        gutenberg_id = int(filepath.parts[-2])
         try:
-            number_books += 1
             start_book = time.time()
-            print("Filepath:", book)
-            # get the book's id
-            gutenberg_id = get_gutenberg_id(book)
+            print("Filepath:", filepath)
             print("ID:", gutenberg_id)
             # check if book is valid novel by our definition
-            if (not is_valid_novel_gutenberg(gutenberg_id, book)):
+            if (not is_valid_novel_gutenberg(gutenberg_id, filepath)):
                 print("Not a novel")
                 print("Time for this book:", time.time() - start_book, "seconds")
                 print('')
@@ -75,7 +91,7 @@ def generate_corpus_gutenberg():
             title = get_title_gutenberg(gutenberg_id)
             print("Title:", title)
             novel_metadata['title'] = title
-            novel_metadata['date'] = get_publication_date(author, title, book, gutenberg_id)
+            novel_metadata['date'] = get_publication_date(author, title, filepath, gutenberg_id)
             print("Date:", novel_metadata['date'])
             novel_metadata['country_publication'] = get_country_publication(author,
                 title)
@@ -88,7 +104,7 @@ def generate_corpus_gutenberg():
             write_metadata(novel_metadata)
             print("wrote metadata")
             # copy text file to new folder
-            copyfile(book, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
+            copyfile(filepath, Path(current_dir, FINAL_BOOK_STORE, str(gutenberg_id) + r".txt"))
             print("Copied book")
             print("Time for this book:",time.time()-start_book, "seconds")
             print('')
@@ -837,6 +853,41 @@ def write_metadata(novel_metadata):
     with open(path, 'a', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=METADATA_LIST)
         writer.writerow(novel_metadata)
+
+def generate_gutenberg_rsync_path(gutenberg_id):
+    """
+    Generates the rsync path for a gutenberg novel based on the gutenberg_id
+
+    >>> generate_gutenberg_rsync_path(9)
+    PosixPath('/home/stephan/gutenberg_data/0/9')
+    >>> generate_gutenberg_rsync_path(19)
+    PosixPath('/home/stephan/gutenberg_data/1/19')
+    >>> generate_gutenberg_rsync_path(125)
+    PosixPath('/home/stephan/gutenberg_data/1/2/125')
+    >>> generate_gutenberg_rsync_path(1113)
+    PosixPath('/home/stephan/gutenberg_data/1/1/1/1113')
+    >>> generate_gutenberg_rsync_path(11177)
+    PosixPath('/home/stephan/gutenberg_data/1/1/1/7/11177')
+
+    :return: Path
+    """
+
+    id_str = str(gutenberg_id)
+
+    novel_path = Path(GUTENBERG_RSYNC_PATH)
+
+    if gutenberg_id < 10:
+        return novel_path.joinpath(Path('0', id_str))
+
+    for i in range(5, 1, -1):
+        try:
+            novel_path = novel_path.joinpath(Path(id_str[-i]))
+        except IndexError:
+            pass
+
+    novel_path = novel_path.joinpath(Path(id_str))
+
+    return novel_path
 
 if __name__ == '__main__':
     # from dh_testers.testRunner import main_test
