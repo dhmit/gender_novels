@@ -327,6 +327,8 @@ def get_author_gutenberg(gutenberg_id):
     >>> from gender_novels import corpus_gen
     >>> get_author_gutenberg(33)
     ['Hawthorne, Nathaniel']
+    >>> get_author_gutenberg(3178)
+    ['Twain, Mark', 'Warner, Charles Dudley']
 
     :param gutenberg_id: int
     :return: list
