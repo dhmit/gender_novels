@@ -327,6 +327,8 @@ def get_author_gutenberg(gutenberg_id):
     >>> from gender_novels import corpus_gen
     >>> get_author_gutenberg(33)
     ['Hawthorne, Nathaniel']
+    >>> get_author_gutenberg(3178)
+    ['Twain, Mark', 'Warner, Charles Dudley']
 
     :param gutenberg_id: int
     :return: list
@@ -505,6 +507,7 @@ def get_publication_date_from_copyright_certain(novel_text):
     else:
         return None
 
+
 def get_publication_date_from_copyright_uncertain(novel_text):
     """
     Tries to extract the publication date from the copyright statement in the
@@ -528,6 +531,7 @@ def get_publication_date_from_copyright_uncertain(novel_text):
             return None
     else:
         return None
+
 
 def get_country_publication(author, title):
     """
@@ -652,6 +656,7 @@ def format_author(author):
         author_formatted = author
     return author_formatted
 
+
 def get_author_gender(authors):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple
@@ -765,6 +770,7 @@ def get_gender_from_wiki_claims(clm_dict):
             return 'non-binary'
     except (KeyError):
         return None
+
 
 def get_author_gender_guesser(author):
     """

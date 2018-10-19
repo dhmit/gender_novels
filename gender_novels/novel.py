@@ -2,6 +2,7 @@ import re
 import string
 from collections import Counter
 from pathlib import Path
+from gutenberg.cleanup import strip_headers
 
 import nltk
 #nltk as part of speech tagger, requires these two packages
@@ -10,7 +11,6 @@ nltk.download('punkt', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
 
 from gender_novels import common
-from gutenberg.cleanup import strip_headers
 from ast import literal_eval
 
 
@@ -64,16 +64,16 @@ class Novel(common.FileLoaderMixin):
         try:
             self.gutenberg_id = int(novel_metadata_dict['gutenberg_id'])
         except KeyError:
-            pass
+            self.gutenberg_id = None
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
         try:
             self.filename = novel_metadata_dict['filename']
         except KeyError:
-            try:
+            if (self.gutenberg_id):
                 self.filename = str(self.gutenberg_id) + r".txt"
-            except NameError:
+            else:
                 raise ValueError('If you do not provide an explicit filename, you must provide the',
                                  f'id. Full metadata: {novel_metadata_dict}')
         self.subject = literal_eval(novel_metadata_dict.get('subject', 'None'))
@@ -92,11 +92,10 @@ class Novel(common.FileLoaderMixin):
             self.text = novel_metadata_dict['text']
         else:
             # Check that the filename looks like a filename (ends in .txt)
-            if self.filename:
-                if not self.filename.endswith('.txt'):
-                    raise ValueError(
-                        f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
-                        f'{novel_metadata_dict}.')
+            if not self.filename.endswith('.txt'):
+                raise ValueError(
+                    f'The novel filename ({self.filename}) should end in .txt . Full metadata: '
+                    f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
 
     @property
@@ -125,7 +124,7 @@ class Novel(common.FileLoaderMixin):
         """
         Overrides python print method for user-defined objects for Novel class
         Returns the filename without the extension - author and title word
-        :return: string
+        :return: str
 
         >>> from gender_novels import novel
         >>> novel_metadata = {'gutenberg_id': '105', 'author': 'Austen, Jane', 'title': 'Persuasion',
@@ -217,13 +216,18 @@ class Novel(common.FileLoaderMixin):
         return (self.author, self.title, self.date) < (other.author, other.title, other.date)
 
     def _load_novel_text(self):
-        """Loads the text of a novel and removes boilerplate at the beginning and end
+        """Loads the text of a novel and uses the remove_boilerplate_text() and
+        remove_table_of_contents() functions on the text of the novel to remove the boilerplate
+        text and table of contents from the novel. After these actions, the novel's text should be
+        only the actual text of the novel.
+
+        Is a private function as it is unnecessary to access it outside the class.
 
         Currently only supports boilerplate removal for Project gutenberg ebooks.
 
-        :rtype: str
+        :return: str
         """
-        # TODO: Check where Keith saved texts and move them, if necessary
+
         file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
 
         try:
@@ -233,17 +237,43 @@ class Novel(common.FileLoaderMixin):
             err += "at the expected location ({file_path})."
             raise FileNotFoundError(err)
 
-        # Extract Project gutenberg Boilerplate
-        # if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-        #     end_intro_boilerplate = text.find(
-        #         '*** START OF THIS PROJECT GUTENBERG EBOOK')
-        #     # second set of *** indicates start
-        #     start_novel = text.find('***', end_intro_boilerplate + 5) + 3
-        #     end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
-        #     text = text[start_novel:end_novel]
-        text = strip_headers(text).strip()
+        # This function will remove the boilerplate text from the novel's text. It has been
+        # placed into a separate function in the case that other novel text cleaning functions
+        # want to be added at a later date.
+        text = self._remove_boilerplate_text(text)
 
         return text
+
+
+    def _remove_boilerplate_text(self, text):
+        """
+        Removes the boilerplate text from an input string of a novel.
+        Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
+        strip_headers() function from the gutenberg module, which can remove even nonstandard
+        headers.
+
+        (see book number 3780 for one example of a nonstandard header — james_highway.txt in our
+        sample corpus; or book number 105, austen_persuasion.txt, which uses the standard Gutenberg
+        header but has had some info about the ebook's production inserted after the standard
+        boilerplate).
+
+        :return: str
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> file_path = Path('corpora', austen.corpus_name, 'texts', austen.filename)
+        >>> raw_text = austen.load_file(file_path)
+        >>> raw_text = austen._remove_boilerplate_text(text)
+        >>> title_line = raw_text[0:raw_text.find('\\n')]
+        >>> title_line
+        'Persuasion'
+        """
+
+        return strip_headers(text.strip())
+
 
     def get_tokenized_text(self):
         """
@@ -415,6 +445,7 @@ class Novel(common.FileLoaderMixin):
             if w == word:
                 check = True
         return word_count
+
 
     def get_word_freq(self, word):
         """
