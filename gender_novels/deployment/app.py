@@ -9,19 +9,20 @@ print(app.config)
 
 
 @app.route('/')
-def render_index():
+def render_gender_novels():
     return render_template('gender_novels.html')
 
 
-@app.route('/team')
-def render_team():
-
+@app.route('/<string:text>/')
+def render_base_text(text):
     """
-    Renders the team page
+    Renders subpage with base.html template that describes our gender novels research
+    :param text: placeholder in base.html written as {{ text }} for words that will vary based on subpage
+    :return: subpage with {{ text }} substituted with actual text such as the About page
 
-    TODO (Backend Developer): Implement this route
-
+    TODO (Xu): Figure out how to link other html files to base.html
     """
+    return render_template('base.html', text = text)
 
 
 if __name__ == '__main__':

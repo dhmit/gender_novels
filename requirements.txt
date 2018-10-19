@@ -9,3 +9,5 @@ pylint
 wordcloud
 nltk
 gutenberg
+pywikibot
+chardet

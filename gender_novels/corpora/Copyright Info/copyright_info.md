@@ -29,11 +29,11 @@ biggest rule.*)
 
 * Because any book first published before 1923 is in the Public Domain, any book which is still 
 copyrighted cannot have been published before 1923. Because our study only examines books written
- from 1770-1922, **any book that is still copyrighted is not within our time period of interest and 
+ from 1776-1922, **any book that is still copyrighted is not within our time period of interest and 
  not the subject of this study.** However, do note the following:
 
 * Not all books in the Public Domain were first published 
-between 1770-1922. Books can enter the Public Domain other ways, eg if  a book's author 
+between 1776-1922. Books can enter the Public Domain other ways, eg if  a book's author 
 voluntarily enters it to the Public Domain. **There are books in the Public Domain which are not 
 the subject of our study.**
 
