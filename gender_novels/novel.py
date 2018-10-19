@@ -12,7 +12,6 @@ nltk.download('averaged_perceptron_tagger', quiet=True)
 from gender_novels import common
 
 
-
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
@@ -139,6 +138,62 @@ class Novel(common.FileLoaderMixin):
         name = self.filename[0:len(self.filename) - 4]
         return f'<Novel ({name})>'
 
+    def __eq__(self, other):
+        """
+        Overload the equality operator to enable comparing and sorting novels.
+
+        >>> from gender_novels.novel import Novel
+        >>> austen_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = Novel(austen_metadata)
+        >>> austen2 = Novel(austen_metadata)
+        >>> austen == austen2
+        True
+        >>> austen.text += 'no longer equal'
+        >>> austen == austen2
+        False
+
+        :return: bool
+        """
+        if not isinstance(other, Novel):
+            raise NotImplementedError("Only a Novel can be compared to another Novel.")
+
+        attributes_required_to_be_equal = ['author', 'date', 'title', 'corpus_name', 'filename',
+                                           'country_publication', 'author_gender', 'notes', 'text']
+
+        for attribute in attributes_required_to_be_equal:
+            if not hasattr(other, attribute):
+                raise AttributeError(f'Comparison novel lacks attribute {attribute}.')
+            if getattr(self, attribute) != getattr(other, attribute):
+                return False
+
+        return True
+
+    def __lt__(self, other):
+        """
+        Overload less than operator to enable comparing and sorting novels
+
+        >>> from gender_novels import novel
+        >>> austen_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(austen_metadata)
+        >>> hawthorne_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '1850',
+        ...                   'filename': 'hawthorne_scarlet.txt'}
+        >>> hawthorne = novel.Novel(hawthorne_metadata)
+        >>> hawthorne < austen
+        False
+        >>> austen < hawthorne
+        True
+
+        :return: bool
+        """
+        if not isinstance(other, Novel):
+            raise NotImplementedError("Only a Novel can be compared to another Novel.")
+
+        return (self.author, self.title, self.date) < (other.author, other.title, other.date)
 
     def _load_novel_text(self):
         """Loads the text of a novel and removes boilerplate at the beginning and end
@@ -251,7 +306,6 @@ class Novel(common.FileLoaderMixin):
                         current_quote = []
                     else:
                         quote_is_paused = True
-
 
         return quotes
 
