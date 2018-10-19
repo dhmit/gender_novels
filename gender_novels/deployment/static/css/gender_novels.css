@@ -1,26 +1,24 @@
 /* External assets */
-
-@import url('https://fonts.googleapis.com/css?family=Palanquin');
-@import url('https://fonts.googleapis.com/css?family=Overpass');
+@import url('https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy');
 
 /* Base HTML elements */
 
 body {
-    font-family: "Palanquin";
+    font-family: "Sorts Mill Goudy";
     font-size: large;
 }
 
 /* Custom classes */
 
 .header {
-    background-color: #EFEFEF;
+    background-color: #D23641;
 }
 
 .header-text {
     color: black;
-    font-family: "Overpass";
-    font-weight: bold;
     text-align: center;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    margin-top: 1rem;
 }
 
 .github-logo {
@@ -28,6 +26,10 @@ body {
     width: auto;
     max-height: 60px;
     max-width: 60px;
+}
+
+.content {
+    background-color: #EAD3A8;
 }
 
 /* Topic content */
@@ -45,13 +47,17 @@ body {
     position: fixed;
 }
 
+.topic-button {
+    text-align: center;
+}
+
 .nav-link {
-    background-color: white;
+    background-color: #EAD3A8;
     color: black;
 }
 
 .nav-link.active.show {
-    background-color: darkgray;
+    background-color: #34282C;
     color: white;
 }
 
