@@ -2,6 +2,7 @@ import os
 import urllib.request
 
 from pathlib import Path
+import codecs
 
 DEBUG = False
 
@@ -10,15 +11,14 @@ GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
 METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
                  'subject', 'corpus_name', 'notes']
 
-# 30 books from gutenberg downloaded from Dropbox folder shared with Keith,
+# books from gutenberg downloaded from Dropbox folder shared by Keith
 INITIAL_BOOK_STORE = r'corpora/test_books_30'
 # plus some extras
 FINAL_BOOK_STORE = r'test_corpus'
-AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)"
-import codecs
+AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*(\((?P<real_name>(\w+ )*\w*)\))*"
 outputDir = 'converted'
 
-#TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
+# TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
 
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
@@ -152,21 +152,25 @@ class FileLoaderMixin:
             # has \r and \n -> replace with only \n
             return text.replace('\r\n', '\n')
 
+
 def get_text_file_encoding(filepath):
     """
     For text file at filepath returns the text encoding as a string (e.g. 'utf-8')
 
-    >>> get_text_file_encoding(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
+    >>> from gender_novels import common
+    >>> common.get_text_file_encoding(r"corpora/sample_novels/texts/hawthorne_scarlet.txt")
     'UTF-8-SIG'
 
     Note: For files containing only ascii characters, this function will return 'ascii' even if
     the file was encoded with utf-8
+
+    >>> import os
     >>> text = 'here is an ascii text'
     >>> file_path = Path(BASE_PATH, 'example_file.txt')
-    >>> with codecs.open(file_path, 'w', 'utf-8') as source: source.write(text)
+    >>> with codecs.open(file_path, 'w', 'utf-8') as source:
+    ...     source.write(text)
     >>> get_text_file_encoding(file_path)
     'ascii'
-    >>> import os
     >>> os.remove(file_path)
 
     :param filepath: fstr
@@ -235,6 +239,7 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
         text = source_file.read()
     with codecs.open(target_path, 'w', encoding=target_encoding) as target_file:
         target_file.write(text)
+
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
