@@ -5,6 +5,7 @@ from gender_novels import common
 from gender_novels.novel import Novel
 
 
+
 class Corpus(common.FileLoaderMixin):
     """The corpus class is used to load the metadata and full
     texts of all novels in a corpus
@@ -13,19 +14,37 @@ class Corpus(common.FileLoaderMixin):
 
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
-    >>> type(c.novels), len(c.novels)
-    (<class 'list'>, 93)
+    >>> type(c.novels), len(c)
+    (<class 'list'>, 94)
 
     >>> c.novels[0].author
     'Aanrud, Hans'
-
     """
 
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
         self.novels = []
         if corpus_name is not None:
+            self.relative_corpus_path = Path('corpora', self.corpus_name)
             self.novels = self._load_novels()
+
+    def __len__(self):
+        """
+        For convenience: returns the number of novels in
+        the corpus.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> len(c)
+        94
+
+        >>> female_corpus = c.filter_by_gender('female')
+        >>> len(female_corpus)
+        38
+
+        :return: int
+        """
+        return len(self.novels)
 
     def __iter__(self):
         """
@@ -44,19 +63,6 @@ class Corpus(common.FileLoaderMixin):
         """
         for this_novel in self.novels:
             yield this_novel
-
-    def __len__(self):
-        """
-        For corpus length, return number of novels
-
-        :return: int
-
-        >>> from gender_novels.corpus import Corpus
-        >>> c = Corpus('sample_novels')
-        >>> len(c)
-        93
-        """
-        return len(self.novels)
 
     def __eq__(self, other):
         """
@@ -124,7 +130,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> sample_corpus = Corpus('sample_novels')
         >>> corpus_copy = sample_corpus.clone()
-        >>> len(corpus_copy.novels) == len(sample_corpus.novels)
+        >>> len(corpus_copy) == len(sample_corpus)
         True
 
         :return: Corpus
@@ -137,9 +143,8 @@ class Corpus(common.FileLoaderMixin):
     def _load_novels(self):
         novels = []
 
-        relative_csv_path = Path('corpora',
-                                 self.corpus_name,
-                                 f'{self.corpus_name}.csv')
+        relative_csv_path = (self.relative_corpus_path
+                             / f'{self.corpus_name}.csv')
         try:
             csv_file = self.load_file(relative_csv_path)
         except FileNotFoundError:
@@ -164,7 +169,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
-        37
+        38
 
         Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
         but no abbreviations.
@@ -176,7 +181,7 @@ class Corpus(common.FileLoaderMixin):
         :rtype: int
         """
         filtered_corpus = self.filter_by_gender(gender)
-        return len(filtered_corpus.novels)
+        return len(filtered_corpus)
 
     def filter_by_gender(self, gender):
         """
@@ -189,13 +194,13 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> female_corpus = c.filter_by_gender('female')
-        >>> len(female_corpus.novels)
-        37
+        >>> len(female_corpus)
+        38
         >>> female_corpus.novels[0].title
         'The Indiscreet Letter'
 
         >>> male_corpus = c.filter_by_gender('male')
-        >>> len(male_corpus.novels)
+        >>> len(male_corpus)
         55
 
         >>> male_corpus.novels[0].title
@@ -213,16 +218,16 @@ class Corpus(common.FileLoaderMixin):
         corpus_copy = self.clone()
         corpus_copy.novels = []
 
-        for novel in self.novels:
+        for this_novel in self.novels:
             # check if all novels have an author_gender attribute
-            if not hasattr(novel, 'author_gender'):
+            if not hasattr(this_novel, 'author_gender'):
                 err = f'Cannot count author genders in {self.corpus_name} '
                 err += 'corpus. The novel '
-                err += f'{novel.title} by {novel.author} lacks '
+                err += f'{this_novel.title} by {this_novel.author} lacks '
                 err += 'the attribute "author_gender."'
                 raise AttributeError(err)
-            if novel.author_gender == gender:
-                corpus_copy.novels.append(novel)
+            if this_novel.author_gender == gender:
+                corpus_copy.novels.append(this_novel)
 
         return corpus_copy
 
