@@ -12,25 +12,27 @@ nltk.download('averaged_perceptron_tagger', quiet=True)
 gutenberg_imported = True
 
 from gender_novels import common
+from ast import literal_eval
 try:
     from gutenberg.cleanup import strip_headers
 except ImportError:
     print('Cannot import gutenberg')
     gutenberg_imported = False
 
+    
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
 
     >>> from gender_novels import novel
-    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    >>> novel_metadata = {'gutenberg_id': '105', 'author': 'Austen, Jane', 'title': 'Persuasion',
     ...                   'corpus_name': 'sample_novels', 'date': '1818',
     ...                   'filename': 'austen_persuasion.txt'}
     >>> austen = novel.Novel(novel_metadata)
     >>> type(austen.text)
     <class 'str'>
     >>> len(austen.text)
-    467018
+    466879
     """
 
     def __init__(self, novel_metadata_dict):
@@ -40,7 +42,7 @@ class Novel(common.FileLoaderMixin):
                 'novel_metadata_dict must be a dictionary or support .items()')
 
         # Check that the essential attributes for the novel exists.
-        for key in ('author', 'date', 'title', 'corpus_name', 'filename'):
+        for key in ('author', 'title', 'corpus_name'):
             if key not in novel_metadata_dict:
                 raise ValueError(f'novel_metadata_dict must have an entry for "{key}". Full ',
                                  f'metadata: {novel_metadata_dict}')
@@ -52,20 +54,39 @@ class Novel(common.FileLoaderMixin):
                              f'{novel_metadata_dict}.')
 
         # Check that the date is a year (4 consecutive integers)
-        if not re.match(r'^\d{4}$', novel_metadata_dict['date']):
-            raise ValueError('The novel date should be a year (4 integers), not',
-                             f'{novel_metadata_dict["date"]}. Full metadata: {novel_metadata_dict}')
+        if 'date' in novel_metadata_dict:
+            if not re.match(r'^\d{4}$', novel_metadata_dict['date']):
+                raise ValueError('The novel date should be a year (4 integers), not',
+                                 f'{novel_metadata_dict["date"]}. Full metadata: {novel_metadata_dict}')
 
-        self.author = novel_metadata_dict['author']
-        self.date = int(novel_metadata_dict['date'])
+        if '[' in novel_metadata_dict['author']:
+            self.author = literal_eval(novel_metadata_dict['author'])
+        else:
+            self.author = novel_metadata_dict['author']
         self.title = novel_metadata_dict['title']
         self.corpus_name = novel_metadata_dict['corpus_name']
-        self.filename = novel_metadata_dict['filename']
 
         # optional attributes
+        try:
+            self.gutenberg_id = int(novel_metadata_dict['gutenberg_id'])
+        except KeyError:
+            self.gutenberg_id = None
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
+        try:
+            self.filename = novel_metadata_dict['filename']
+        except KeyError:
+            if (self.gutenberg_id):
+                self.filename = str(self.gutenberg_id) + r".txt"
+            else:
+                raise ValueError('If you do not provide an explicit filename, you must provide the',
+                                 f'id. Full metadata: {novel_metadata_dict}')
+        self.subject = literal_eval(novel_metadata_dict.get('subject', 'None'))
+        try:
+            self.date = int(novel_metadata_dict['date'])
+        except KeyError:
+            self.date = None
         self._word_counts_counter = None
         self._word_count = None
 
@@ -76,7 +97,6 @@ class Novel(common.FileLoaderMixin):
         if 'text' in novel_metadata_dict:
             self.text = novel_metadata_dict['text']
         else:
-
             # Check that the filename looks like a filename (ends in .txt)
             if not self.filename.endswith('.txt'):
                 raise ValueError(
@@ -92,12 +112,12 @@ class Novel(common.FileLoaderMixin):
         However, it is performance-wise costly, so it's only loaded when it's actually required.
 
         >>> from gender_novels import novel
-        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        >>> novel_metadata = {'gutenberg_id': '105', 'author': 'Austen, Jane', 'title': 'Persuasion',
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
         >>> austen.word_count
-        83305
+        83285
 
         :return: int
         """
@@ -113,7 +133,7 @@ class Novel(common.FileLoaderMixin):
         :return: str
 
         >>> from gender_novels import novel
-        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        >>> novel_metadata = {'gutenberg_id': '105', 'author': 'Austen, Jane', 'title': 'Persuasion',
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
@@ -133,7 +153,7 @@ class Novel(common.FileLoaderMixin):
         :return: string
 
         >>> from gender_novels import novel
-        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        >>> novel_metadata = {'gutenberg_id': '105', 'author': 'Austen, Jane', 'title': 'Persuasion',
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
@@ -257,6 +277,7 @@ class Novel(common.FileLoaderMixin):
         >>> title_line
         'Persuasion'
         """
+
         if gutenberg_imported:
             return strip_headers(text.strip())
         else:
@@ -272,6 +293,7 @@ class Novel(common.FileLoaderMixin):
             text = text[start_novel:end_novel]
         return text
 
+      
     def get_tokenized_text(self):
         """
         Tokenizes the text and returns it as a list of tokens
@@ -465,7 +487,6 @@ class Novel(common.FileLoaderMixin):
 
         word_frequency = self.get_count_of_word(word) / self.word_count
         return word_frequency
-
 
 
     def get_part_of_speech_tags(self):

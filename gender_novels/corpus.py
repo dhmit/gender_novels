@@ -250,6 +250,22 @@ class Corpus(common.FileLoaderMixin):
             corpus_counter += novel_counter
         return corpus_counter
 
+def get_metadata_fields(corpus_name):
+    """
+    Gives a list of all metadata fields for corpus
+    >>> from gender_novels import corpus
+    >>> corpus.get_metadata_fields('gutenberg')
+    ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender', 'subject', 'corpus_name', 'notes']
+
+    :param: corpus_name: str
+    :return: list
+    """
+    if corpus_name == 'sample_novels':
+        return ['author', 'date', 'title', 'country_publication', 'author_gender', 'filename', 'notes']
+    else:
+        return common.METADATA_LIST
+
+
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()

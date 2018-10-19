@@ -419,16 +419,20 @@ def get_publication_date(author, title, filepath, gutenberg_id = None):
     """
     #TODO: remember to uncomment worldcat function when it is done
 
-    date = get_publication_date_from_copyright(get_novel_text_gutenberg(filepath))
+    novel_text = get_novel_text_gutenberg(filepath)
+    date = get_publication_date_from_copyright_certain(novel_text)
     if (date != None):
         return date
     else:
         pass
-        # date = get_publication_date_worldcat(author, title)
+        # date = get_publication_date_loc(author, title)
     if (date != None):
         return date
     else:
-        return get_publication_date_wikidata(author, title)
+        date = get_publication_date_wikidata(author, title)
+    if (date == None):
+        date = get_publication_date_from_copyright_uncertain(novel_text)
+    return date
 
 def get_publication_date_wikidata(author, title):
     """
@@ -481,37 +485,53 @@ def get_publication_date_wikidata(author, title):
     return year
 
 
-def get_publication_date_from_copyright(novel_text):
+def get_publication_date_from_copyright_certain(novel_text):
     """
     Tries to extract the publication date from the copyright statement in the
-    given text
+    given text, if it is prefaced with some variation of 'COPYRIGHT'
     Otherwise returns None
 
     >>> novel_text = "This work blah blah blah blah COPYRIGHT, 1894 blah"
     >>> novel_text += "and they all died."
-    >>> from gender_novels import corpus_gen
-    >>> get_publication_date_from_copyright(novel_text)
+    >>> from gender_novels.corpus_gen import get_publication_date_from_copyright_certain
+    >>> get_publication_date_from_copyright_certain(novel_text)
     1894
 
     TODO: should this function take the novel's text as a string or the id or?
-    TODO: should function also try to find publication years not prefaced with
-        "copyright" at the risk of finding arbitrary 4-digit numbers?
-    :param novel_text: string
+    TODO: split into two functions
     :return: int
     """
     match = re.search(r"(COPYRIGHT,?\s*) (\d{4})", novel_text, flags = re.IGNORECASE)
-    if not match:
-        match = re.search(r"\d{4}", novel_text[:3000])
-        if match:
-            year = int(match.group(0))
-            if (year < 2038 and year > 1492):
-                return year
-            else:
-                return None
+    if match:
+        return int(match.group(2))
+    else:
+        return None
+
+
+def get_publication_date_from_copyright_uncertain(novel_text):
+    """
+    Tries to extract the publication date from the copyright statement in the
+    given text when it is not prefaced with some variation of 'COPYRIGHT'
+    Otherwise returns None
+
+    >>> novel_text = "This work blah blah blah blah Brams and Co. 1894 blah"
+    >>> novel_text += "and they all died."
+    >>> from gender_novels.corpus_gen import get_publication_date_from_copyright_uncertain
+    >>> get_publication_date_from_copyright_uncertain(novel_text)
+    1894
+
+    :return: int
+    """
+    match = re.search(r"\d{4}", novel_text[:3000])
+    if match:
+        year = int(match.group(0))
+        if (year < 2038 and year > 1492):
+            return year
         else:
             return None
     else:
-        return int(match.group(2))
+        return None
+
 
 def get_country_publication(author, title):
     """
@@ -636,6 +656,7 @@ def format_author(author):
         author_formatted = author
     return author_formatted
 
+
 def get_author_gender(authors):
     """
     Tries to get gender of author, 'female', 'male', 'non-binary', or 'both' (if there are multiple
@@ -749,6 +770,7 @@ def get_gender_from_wiki_claims(clm_dict):
             return 'non-binary'
     except (KeyError):
         return None
+
 
 def get_author_gender_guesser(author):
     """
