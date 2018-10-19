@@ -23,7 +23,7 @@ statistically significant or simply flukes.
 
 ## Our Data
 Due to the availability of resources, it is necessary to point out thatour analysis will not 
-precisely reflect popular literature in the 19th century. Going it is important to consider 
+precisely reflect popular literature in the 19th century. It is important to consider 
 whether the obscurity/popularity of a novel is relevant to our analysis. For example, 19th 
 century novels featuring more radical implications on gender roles may have become more 
 well-known due to their claims. While the list of novels that we are pulling from is 
