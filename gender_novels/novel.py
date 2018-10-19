@@ -2,18 +2,24 @@ import re
 import string
 from collections import Counter
 from pathlib import Path
-from gutenberg.cleanup import strip_headers
+
 
 import nltk
 #nltk as part of speech tagger, requires these two packages
 #TODO: Figure out how to put these nltk packages in setup.py, not here
 nltk.download('punkt', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
+gutenberg_imported = True
 
 from gender_novels import common
 from ast import literal_eval
+try:
+    from gutenberg.cleanup import strip_headers
+except ImportError:
+    print('Cannot import gutenberg')
+    gutenberg_imported = False
 
-
+    
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
@@ -272,9 +278,22 @@ class Novel(common.FileLoaderMixin):
         'Persuasion'
         """
 
-        return strip_headers(text.strip())
+        if gutenberg_imported:
+            return strip_headers(text.strip())
+        else:
+            return self._remove_boilerplate_without_gutenberg(text)
 
+    def _remove_boilerplate_without_gutenberg(self, text):
+        if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
+            end_intro_boilerplate = text.find(
+                '*** START OF THIS PROJECT GUTENBERG EBOOK')
+            # second set of *** indicates start
+            start_novel = text.find('***', end_intro_boilerplate + 5) + 3
+            end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+            text = text[start_novel:end_novel]
+        return text
 
+      
     def get_tokenized_text(self):
         """
         Tokenizes the text and returns it as a list of tokens
