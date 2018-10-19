@@ -22,7 +22,7 @@ currently somewhat small sample size of novels, it is difficult to know if these
 statistically significant or simply flukes.
 
 ## Our Data
-Due to the availability of resources, it is necessary to point out thatour analysis will not 
+Due to the availability of resources, it is necessary to point out that our analysis will not
 precisely reflect popular literature in the 19th century. It is important to consider 
 whether the obscurity/popularity of a novel is relevant to our analysis. For example, 19th 
 century novels featuring more radical implications on gender roles may have become more 
