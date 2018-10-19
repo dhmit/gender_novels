@@ -117,4 +117,11 @@ gender_novels/scratch.py
 # Gutenberg module things
 gender_novels/apicache-py3/
 gender_novels/throttle.ctrl
-gender_novels/deployment/static/css/gender_novels.css
+
+# Stanford NLP Jar files
+gender_novels/analysis/assets/stanford-parser.jar
+gender_novels/analysis/assets/stanford-parser-3.9.1-models.jar
+
+# Corpus generator testing
+gender_novels/test_corpus/
+gender_novels/corpora/test_books_30/
