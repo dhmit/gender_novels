@@ -239,7 +239,7 @@ class Corpus(common.FileLoaderMixin):
 
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
-        >>>c.get_wordcount_counter()['fire']
+        >>> c.get_wordcount_counter()['fire']
         2069
 
         """
