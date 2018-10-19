@@ -10,3 +10,5 @@ wordcloud
 nltk
 gutenberg
 pywikibot
+chardet
+pandas
