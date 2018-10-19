@@ -1,7 +1,5 @@
 import urllib
 from nltk.parse.stanford import StanfordDependencyParser
-from gender_novels.corpus import Corpus
-from nltk.tokenize import sent_tokenize
 import os.path
 
 def load_jars(path_to_jar, path_to_models_jar):

@@ -245,8 +245,10 @@ class Novel(common.FileLoaderMixin):
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
         ...                   'filename': 'austen_persuasion.txt'}
         >>> austen = novel.Novel(novel_metadata)
-        >>> cleaned_text = austen._remove_boilerplate_text(austen._load_novel_text())
-        >>> title_line = cleaned_text[0:cleaned_text.find("\\n")]
+        >>> file_path = Path('corpora', austen.corpus_name, 'texts', austen.filename)
+        >>> raw_text = austen.load_file(file_path)
+        >>> raw_text = austen._remove_boilerplate_text(text)
+        >>> title_line = raw_text[0:raw_text.find('\\n')]
         >>> title_line
         'Persuasion'
         """
@@ -256,49 +258,128 @@ class Novel(common.FileLoaderMixin):
 
     def _remove_table_of_contents(self, text):
         """
-        Removes the Table of Contents from an input string of a novel. Written with the intent of
-        being used on Table of Contents removal for Project Gutenberg texts.
+        Removes the Table of Contents (ToC) from an input string of a novel. Written with the
+        intent of being used on Table of Contents removal for Project Gutenberg texts.
 
-        This function works from the observation that books in Project Gutenberg always have
-        chapter titles that are either
-        A) Allcaps words or phrases or
-        B) Capitalized Roman Numerals.
-        This means that the first chapter can be identified as a line which is either
-        A) entirely composed of capital letters or
-        B) entirely composed of the letters {I, V, X, L, C, D, M}
-        [operating under the assumption that no chapter will exceed 3899 chapters, the maximum
-        number that can be obtained with standard Roman Numeral conventions]
-        And that all chapter titles are followed by at least one empty line.
+        This function works from the observation that Tables of Contents have very uniform
+        formatting. They include several lines of Chapter Names that include numbers in the form
+        A) Arabic numerals (eg 1, 2, 3...) [entirely comprised of the digits {1, 2, 3, 4, 5, 6,
+        7, 8, 9, 0}]
+        B) Roman numerals (eg I, II, III...) [entirely comprised of the letters {I, V, X, L, C,
+        D, M}]
+        C) English numbers (eg ONE, TWO, THREE...) [very uncommon but does happen]
 
-        The function looks for a line which is composed entirely of allcaps or Roman Numerals and
-        followed only by empty lines until finding a line which is not entirely allcaps.
+        Additionally, the ToC is very often introduced with the word 'CONTENTS' (but not always).
+
+        This function will not be able to remove all Tables of Contents, but will do quite well
+        at removing most.
 
         :return: str
         TODO(derek): Make this fully functional
+
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> file_path = Path('corpora', austen.corpus_name, 'texts', austen.filename)
+        >>> raw_text = austen.load_file(file_path)
+        >>> raw_text = austen._remove_table_of_contents(text)
+        >>> toc_index = austen.text.find('CONTENTS\\n')
+        >>> toc_index
+        -1
         """
 
         # Finds all positions of line breaks in the text file for the first few lines, tuned off
-        # the parameter of charactersearch characters out
-        charactersearch = 8000
+        # the parameter of character_search_range characters out. 3000 is a generous tolerance.
+        character_search_range = 3000
 
-        lines_of_text = text.split("\n")
-        line_breaks = text[0:charactersearch].find("\n")
-        # Creates a 2D array where each entry is the [contents of line, position of the line's
-        # start, position of the line's end]. The last line break is not considered because,
-        # of course, there is no next line after the last line.
+        # Creates a 2D array lines_of_text where each entry is the [contents of line, position of
+        # the line's start, position of the line's end]. The last line break is not considered
+        # because, of course, there is no next line after the last line.
+        line_breaks = text[0:character_search_range].find("\n")
+        lines_of_text = []
         for linebreak in range(len(line_breaks))-1:
-            currentlinecontents = text[linebreak:linebreak+1]
-            lines_of_text.append([currentlinecontents, linebreak, linebreak+1])
+            current_line_contents = text[linebreak:linebreak+1]
+            lines_of_text.append([current_line_contents, linebreak, linebreak+1])
 
-        # Identifies lines which are comprised entirely of allcap characters and puts them in
-        # another 2D array. Determines whether a line is entirely allcaps by examining whether
-        # each of its characters are members of the set of capital letters plus
-        allcap_lines = []
-        # for line in lines_of_text:
-        #    if line[0]
+        # I will now generate the set of English spelled out numbers we will search for
+        limited_english_numbers = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT',
+                           'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN',
+                           'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN', 'TWENTY', 'THIRTY',
+                           'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY', 'HUNDRED',
+                           'ONE-HUNDRED', 'ONE HUNDRED', 'TWO-HUNDRED', 'TWO HUNDRED']
+        # This above list is not what we will use. What we really want to use is the list of
+        # numbers that are these numbers with a space before or after them, generated as follows:
+        english_numbers = []
+        for number in limited_english_numbers:
+            english_numbers.append(" " + number)
+            english_numbers.append(number + " ")
+
+        # the spaces are to prevent picking up numbers inside of words like 'someone' — the
+        # number will always be at the beginning or end of the line, and will always be bookended
+        #  by a space somehow. There are three positions the number XX it can come in:
+        # XX              CHAPTERNAME \n
+        #         XX CHAPTERNAME      \n
+        # CHAPTERNAME               XX\n
+        # In all three of these forms, the digit is either preceded by or followed by a space.
+
+        # Note that all English numbers beyond Nineteen have formulaic forms, where they are
+        # composed of a tens place (eg 'Twenty', 'Eighty') and optionally a ones place (eg 'One',
+        #  'Six'). Because the digit is bookended by predictable forms, this algorithm will be
+        # able to pick up either the front space plus the 10s component or the 1s component plus
+        # the final space, locating the chapter.
+
+        # I make the assumption that no books will have more than two hundred and ninety nine
+        # chapters, which I believe is a defensible assumption.
+
+
+        # This is the position of the final line in the Table of Contents corresponding to a
+        # chapter. We want to find this line so we can excise everything before it and itself.
+        final_chapter_line_end_position = -1
+
+        # Identifies lines that are part of the table of contents to try to find the last
+        for line in lines_of_text:
+            currentline = line[0]
+
+            # If we can find an Arabic Numeral in the line at all, we consider it a chapter line
+            for digit in string.digits:
+                # If it is a chapter line and it is further than our furthest chapter line hereto
+                if currentline.find(digit)!=-1 and line[2]>final_chapter_line_end_position:
+                    final_chapter_line_end_position = line[2]
+
+            # Assuming no book will have more than 300 chapters, we can conclude if it uses Roman
+            # Numerals to number chapters, then the Roman Numerals must have the following form:
+            roman_hundreds_place=-1
+            roman_tens_place=-1
+            roman_ones_place=-1
+            for roman_hundreds in ["C", "CC", "CCC"]:
+                roman_hundreds_place = currentline.find(roman_hundreds)
+            for roman_tens in ["X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]:
+                roman_tens_place = currentline.find(roman_tens)
+            for roman_ones in ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]:
+                roman_ones_place = currentline.find(roman_ones)
+
+            if 
+
+
+
+
+
+
+        # If no chapter lines were found (eg no Table of Contents is in this book) returns the
+        # unedited string; elsewise it returns the book from the newline char of the table of
+        # contents line onward, excising everything before and including the last table of
+        # contents line.
+        if final_chapter_line_end_position==-1:
+            return text
+        return text[final_chapter_line_end_position:]
+
+
+    def _remove_list_of_illustrations(self, text):
 
         return text
-
 
     def get_tokenized_text(self):
         """
