@@ -5,7 +5,11 @@ This file is intended for individual analyses of the gender_novels project
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 import nltk
+nltk.download('stopwords')
 import collections
+import math
+from operator import itemgetter
+from scipy.stats import chi2
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
@@ -158,7 +162,80 @@ def display_gender_freq(d, title):
     plt.savefig(filepng, bbox_inches='tight')
     plt.savefig(filepdf, bbox_inches='tight')
 
-if __name__ == '__main__':
-    test_function()
+def dunn_individual_word(m_corpus,f_corpus,word):
+    '''
+    applies dunning log likelihood to compare individual word usage in male and female corpus
+
+    :param word: desired word to compare
+    :param m_corpus: c.filter_by_gender('male')
+    :param f_corpus: c. filter_by_gender('female')
+    :return: log likelihoods and p value
+         >>> c = Corpus('sample_novels')
+         >>> m_corpus = c.filter_by_gender('male')
+         >>> f_corpus = c.filter_by_gender('female')
+         >>> word  = "submissive"
+         >>> dunn_individual_word(m_corpus, f_corpus, word)
+    '''
+
+    #total_word_ is a counter object
+
+    male_counter = m_corpus.get_wordcount_counter()
+    female_counter = f_corpus.get_wordcount_counter()
+    wordcount_male = male_counter[word]
+    wordcount_female = female_counter[word]
+    total_male_wordsum = 0
+    total_female_wordsum = 0
+    for male_word in male_counter:
+        total_male_wordsum = male_counter[male_word]
+    for female_word in female_counter:
+        total_female_wordsum = female_counter[female_word]
+
+
+    #function implementation
+    #male
+    e1 = total_male_wordsum * (wordcount_male * wordcount_female) / (total_male_wordsum +
+                                                                   total_female_wordsum)
+    e2 = total_female_wordsum * (wordcount_male * wordcount_female) / (total_male_wordsum +
+                                                                     total_female_wordsum)
+
+    dunning_log_likelihood = 2 * (wordcount_male * math.log(wordcount_male / e1) + wordcount_female * math.log(
+        wordcount_female/e2))
+
+    if wordcount_male*math.log(wordcount_male/e1) < 0:
+        dunning_log_likelihood = -dunning_log_likelihood
+
+    p = 1 - chi2.cdf(abs(dunning_log_likelihood),1)
+    return dunning_log_likelihood
+
+def dunning_total():
+    '''
+    goes through gendered corpora
+    runs dunning_indiviidual on all words that are in BOTH corpora
+    returns sorted dictionary of words and their dunning scores
+    shows top 10 and lowest 10 words
+
+    :return: dictionary of common word with dunning value and p value
+
+         >>> c = Corpus('sample_novels')
+         >>> m_corpus = c.filter_by_gender('male')
+         >>> f_corpus = c.filter_by_gender('female')
+         >>> dunning_total()
+    '''
+    c = Corpus('sample_novels')
+    male_corpus = c.filter_by_gender('male')
+    female_corpus = c.filter_by_gender('female')
+    wordcount_male = male_corpus.get_wordcount_counter()
+    wordcount_female = female_corpus.get_wordcount_counter()
+
+    #dictionary
+    dunning_result = {}
+    for word in wordcount_male:
+        if word in wordcount_female:
+            dunning_result[word] = dunn_individual_word(male_corpus,female_corpus,word)
+    sorted(dunning_result.items(), key = itemgetter(1))
+
+    return dunning_result
+    if __name__ == '__main__':
+        test_function()
 
 
