@@ -202,6 +202,7 @@ def instance_dist(novel, word):
                 count = 0
     return output
 
+
 if __name__ == '__main__':
     test_function()
 
