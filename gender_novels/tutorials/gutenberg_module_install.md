@@ -30,9 +30,9 @@ For example, if you have Python 3.5 on a 64-bit version of Windows, you
 should download `bsddb3‑6.2.1‑cp35‑cp35m‑win_amd64.whl`.
 
 After you download the wheel, install it and you're good to go:
-
+```
     pip install bsddb3‑6.2.1‑cp35‑cp35m‑win_amd64.whl
- 
+```
 Remember to install this in your virtual environment, otherwise the thing won't work.  Just 
 activate your virtual environment in Powershell, cd to the directory where you saved the thing, 
 and then run the command.  Then you can install gutenberg normally.  
