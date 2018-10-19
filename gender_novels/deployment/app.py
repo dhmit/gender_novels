@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+import pandas as pd
 
 app = Flask(__name__)
 app.config['ENV'] = 'development'
@@ -10,7 +11,11 @@ print(app.config)
 
 @app.route('/')
 def render_gender_novels():
-    return render_template('landing_page.html')
+    # Reads the CSV of the corpora, translates it to HTML, then saves it in corpora_table.html
+    temp = pd.read_csv("../../gender_novels/corpora/sample_novels/sample_novels.csv")
+    temp.to_html("templates/corpora_table.html")
+
+    return render_template('gender_novels.html', corpora_table="Corpora table goes here")
 
 
 @app.route('/<string:text>/')

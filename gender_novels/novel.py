@@ -3,15 +3,20 @@ import string
 from collections import Counter
 from pathlib import Path
 
+
 import nltk
 #nltk as part of speech tagger, requires these two packages
 #TODO: Figure out how to put these nltk packages in setup.py, not here
 nltk.download('punkt', quiet=True)
-nltk.download('averaged_perceptron_tagger', quiet= True)
-
+nltk.download('averaged_perceptron_tagger', quiet=True)
+gutenberg_imported = True
 
 from gender_novels import common
-
+try:
+    from gutenberg.cleanup import strip_headers
+except ImportError:
+    print('Cannot import gutenberg')
+    gutenberg_imported = False
 
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
@@ -61,7 +66,8 @@ class Novel(common.FileLoaderMixin):
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
-        self.word_counts = None
+        self._word_counts_counter = None
+        self._word_count = None
 
         if self.author_gender not in {'female', 'male', 'non-binary', 'unknown', 'both'}:
             raise ValueError('Author gender has to be "female", "male" "non-binary," or "unknown" ',
@@ -78,11 +84,33 @@ class Novel(common.FileLoaderMixin):
                     f'{novel_metadata_dict}.')
             self.text = self._load_novel_text()
 
+    @property
+    def word_count(self):
+        """
+        Lazy-loading for Novel.word_count attribute. Returns the number of words in the novel.
+        The word_count attribute is useful for the get_word_freq function.
+        However, it is performance-wise costly, so it's only loaded when it's actually required.
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> austen.word_count
+        83305
+
+        :return: int
+        """
+
+        if self._word_count is None:
+            self._word_count = len(self.get_tokenized_text())
+        return self._word_count
+
     def __str__(self):
         """
         Overrides python print method for user-defined objects for Novel class
         Returns the filename without the extension - author and title word
-        :return: string
+        :return: str
 
         >>> from gender_novels import novel
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
@@ -96,13 +124,94 @@ class Novel(common.FileLoaderMixin):
         name = self.filename[0:len(self.filename)-4]
         return name
 
+    def __repr__(self):
+        '''
+        Overrides the built-in __repr__ method
+        Returns the object type (Novel) and then the filename without the extension
+            in <>.
+
+        :return: string
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> repr(austen)
+        '<Novel (austen_persuasion)>'
+        '''
+
+        name = self.filename[0:len(self.filename) - 4]
+        return f'<Novel ({name})>'
+
+    def __eq__(self, other):
+        """
+        Overload the equality operator to enable comparing and sorting novels.
+
+        >>> from gender_novels.novel import Novel
+        >>> austen_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = Novel(austen_metadata)
+        >>> austen2 = Novel(austen_metadata)
+        >>> austen == austen2
+        True
+        >>> austen.text += 'no longer equal'
+        >>> austen == austen2
+        False
+
+        :return: bool
+        """
+        if not isinstance(other, Novel):
+            raise NotImplementedError("Only a Novel can be compared to another Novel.")
+
+        attributes_required_to_be_equal = ['author', 'date', 'title', 'corpus_name', 'filename',
+                                           'country_publication', 'author_gender', 'notes', 'text']
+
+        for attribute in attributes_required_to_be_equal:
+            if not hasattr(other, attribute):
+                raise AttributeError(f'Comparison novel lacks attribute {attribute}.')
+            if getattr(self, attribute) != getattr(other, attribute):
+                return False
+
+        return True
+
+    def __lt__(self, other):
+        """
+        Overload less than operator to enable comparing and sorting novels
+
+        >>> from gender_novels import novel
+        >>> austen_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(austen_metadata)
+        >>> hawthorne_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '1850',
+        ...                   'filename': 'hawthorne_scarlet.txt'}
+        >>> hawthorne = novel.Novel(hawthorne_metadata)
+        >>> hawthorne < austen
+        False
+        >>> austen < hawthorne
+        True
+
+        :return: bool
+        """
+        if not isinstance(other, Novel):
+            raise NotImplementedError("Only a Novel can be compared to another Novel.")
+
+        return (self.author, self.title, self.date) < (other.author, other.title, other.date)
 
     def _load_novel_text(self):
-        """Loads the text of a novel and removes boilerplate at the beginning and end
+        """Loads the text of a novel and uses the remove_boilerplate_text() and
+        remove_table_of_contents() functions on the text of the novel to remove the boilerplate
+        text and table of contents from the novel. After these actions, the novel's text should be
+        only the actual text of the novel.
 
-        Currently only supports boilerplate removal for Project Gutenberg ebooks.
+        Is a private function as it is unnecessary to access it outside the class.
 
-        :rtype: str
+        Currently only supports boilerplate removal for Project gutenberg ebooks.
+
+        :return: str
         """
 
         file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
@@ -114,7 +223,46 @@ class Novel(common.FileLoaderMixin):
             err += "at the expected location ({file_path})."
             raise FileNotFoundError(err)
 
-        # Extract Project Gutenberg Boilerplate
+        # This function will remove the boilerplate text from the novel's text. It has been
+        # placed into a separate function in the case that other novel text cleaning functions
+        # want to be added at a later date.
+        text = self._remove_boilerplate_text(text)
+
+        return text
+
+
+    def _remove_boilerplate_text(self, text):
+        """
+        Removes the boilerplate text from an input string of a novel.
+        Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
+        strip_headers() function from the gutenberg module, which can remove even nonstandard
+        headers.
+
+        (see book number 3780 for one example of a nonstandard header — james_highway.txt in our
+        sample corpus; or book number 105, austen_persuasion.txt, which uses the standard Gutenberg
+        header but has had some info about the ebook's production inserted after the standard
+        boilerplate).
+
+        :return: str
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'austen_persuasion.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> file_path = Path('corpora', austen.corpus_name, 'texts', austen.filename)
+        >>> raw_text = austen.load_file(file_path)
+        >>> raw_text = austen._remove_boilerplate_text(text)
+        >>> title_line = raw_text[0:raw_text.find('\\n')]
+        >>> title_line
+        'Persuasion'
+        """
+        if gutenberg_imported:
+            return strip_headers(text.strip())
+        else:
+            return self._remove_boilerplate_without_gutenberg(text)
+
+    def _remove_boilerplate_without_gutenberg(self, text):
         if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
             end_intro_boilerplate = text.find(
                 '*** START OF THIS PROJECT GUTENBERG EBOOK')
@@ -122,7 +270,6 @@ class Novel(common.FileLoaderMixin):
             start_novel = text.find('***', end_intro_boilerplate + 5) + 3
             end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
             text = text[start_novel:end_novel]
-
         return text
 
     def get_tokenized_text(self):
@@ -209,7 +356,6 @@ class Novel(common.FileLoaderMixin):
                     else:
                         quote_is_paused = True
 
-
         return quotes
 
     def get_count_of_word(self, word):
@@ -233,10 +379,10 @@ class Novel(common.FileLoaderMixin):
         """
 
         # If word_counts were not previously initialized, do it now and store it for the future.
-        if not self.word_counts:
-            self.word_counts = Counter(self.get_tokenized_text())
+        if not self._word_counts_counter:
+            self._word_counts_counter = Counter(self.get_tokenized_text())
 
-        return self.word_counts[word]
+        return self._word_counts_counter[word]
 
     def get_wordcount_counter(self):
         """
@@ -258,14 +404,15 @@ class Novel(common.FileLoaderMixin):
         """
 
         # If word_counts were not previously initialized, do it now and store it for the future.
-        if not self.word_counts:
-            self.word_counts = Counter(self.get_tokenized_text())
-        return self.word_counts
+        if not self._word_counts_counter:
+            self._word_counts_counter = Counter(self.get_tokenized_text())
+        return self._word_counts_counter
 
     def words_associated(self, word):
         """
         Returns a counter of the words found after given word
-        In the case of double/repeated words, the counter would include the word itself and the next new word
+        In the case of double/repeated words, the counter would include the word itself and the next
+        new word
         Note: words always return lowercase
 
         >>> from gender_novels import novel
@@ -296,6 +443,7 @@ class Novel(common.FileLoaderMixin):
                 check = True
         return word_count
 
+
     def get_word_freq(self, word):
         """
         Returns dictionary with key as word and value as the frequency of appearance in book
@@ -310,15 +458,15 @@ class Novel(common.FileLoaderMixin):
         ...                   'corpus_name': 'sample_novels', 'date': '1900',
         ...                   'filename': None, 'text': summary}
         >>> scarlett = novel.Novel(novel_metadata)
-        >>> f = scarlett.get_word_freq('sad')
-        >>> f
-        0.13333
+        >>> frequency = scarlett.get_word_freq('sad')
+        >>> frequency
+        0.13333333333333333
         """
-        book_length = len(self.get_tokenized_text())
-        w_count = self.get_count_of_word(word)
-        word_freq = round((w_count / book_length), 5)
 
-        return word_freq
+        word_frequency = self.get_count_of_word(word) / self.word_count
+        return word_frequency
+
+
 
     def get_part_of_speech_tags(self):
         """

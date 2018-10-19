@@ -4,9 +4,11 @@ import numpy as np
 
 
 def books_pronoun_freq(corp):
+    #TODO: add doctests
     '''
-    Counts male and female pronouns for every book and finds their relatvie frequencies per book
-    Outputs dictionary mapping novel object to the relative frequency of male pronouns in that book
+    Counts male and female pronouns for every book and finds their relative frequencies per book
+    Outputs dictionary mapping novel object to the relative frequency
+        of female pronouns in that book
 
     :param: Corpus object
     :return: dictionary with data organized by groups
@@ -32,8 +34,98 @@ def books_pronoun_freq(corp):
         relative_freq_male[book] = temp_dict['male']
         relative_freq_female[book] = temp_dict['female']
 
-    return (relative_freq_male)
+    return (relative_freq_female)
 
+def subject_vs_object_pronoun_freqs(corp):
+    '''
+    Takes in a Corpus of novels
+    Returns a tuple of two dictionaries, one male and female
+    Each dictionary maps each Novel in the corpus to the proportion of the pronouns
+        of the specified gender in that novel that are subject pronouns
+
+    #TODO: add doctests
+
+    :param corp: Corpus
+    :return: tuple of two dictionaries (male, female)
+    '''
+
+    relative_freq_male_subject = {}
+    relative_freq_female_subject = {}
+    relative_freq_male_object = {}
+    relative_freq_female_object = {}
+
+    for book in corp.novels:
+        he = book.get_word_freq('he')
+        him = book.get_word_freq('him')
+
+        she = book.get_word_freq('she')
+        her = book.get_word_freq('her')
+
+        temp_dict_male = {'subject': he, 'object': him}
+        temp_dict_female = {'subject': she, 'object': her}
+        temp_dict_male = get_comparative_word_freq(temp_dict_male)
+        temp_dict_female = get_comparative_word_freq(temp_dict_female)
+
+        relative_freq_male_subject[book] = temp_dict_male['subject']
+        relative_freq_female_subject[book] = temp_dict_female['subject']
+        relative_freq_male_object[book] = temp_dict_male['object']
+        relative_freq_female_object[book] = temp_dict_female['object']
+
+        result_tuple = (relative_freq_male_subject, relative_freq_female_subject)
+
+    return result_tuple
+
+def subject_pronouns_gender_comparison(corp, subject_gender):
+    '''
+    Takes in a Corpus of novels and a gender.
+    The gender determines whether the male frequency or female frequency will
+        be returned
+    Returns a dictionary of each novel in the Corpus mapped to the portion of
+        the subject pronouns in the book that are of the specified gender
+    :param corp: Corpus
+    :param subject_gender: string 'male' or string 'female'
+    :return: dictionary
+    '''
+
+    if not(subject_gender == 'male' or subject_gender == 'female'):
+        raise ValueError('subject_gender must be \'male\' or \'female\'')
+
+    relative_freq_female_sub = {}
+    relative_freq_male_sub = {}
+
+    for book in corp.novels:
+        he = book.get_word_freq('he')
+        she = book.get_word_freq('she')
+
+        relative_freq_female_sub[book] = (she)/(he+she)
+        relative_freq_male_sub[book] = (he)/(he+she)
+
+    if subject_gender == 'male':
+        return relative_freq_male_sub
+    elif subject_gender == 'female':
+        return relative_freq_female_sub
+    else:
+        raise ValueError('subject_gender must be \'male\' or \'female\'')
+
+def dict_to_list(d):
+    '''
+    Takes in a dictionary and returns a list of the values in the dictionary
+    If there are repeats in the values, there will be repeats in the list
+    :param d: dictionary
+    :return: list of values in the dictionary
+
+    >>> d = {'a': 1, 'b': 'bee', 'c': 65}
+    >>> dict_to_list(d)
+    [1, 'bee', 65]
+
+    >>> d2 = {}
+    >>> dict_to_list(d2)
+    []
+    '''
+    L = []
+    for key, value in d.items():
+        L.append(value)
+    return L
 
 def freq_by_author_gender(d):
     '''
@@ -48,6 +140,21 @@ def freq_by_author_gender(d):
 
     :param d: dictionary
     :return: dictionary
+
+    >>> from gender_novels import novel
+    >>> novel_metadata = {'author': 'Brontë, Anne', 'title': 'The Tenant of Wildfell Hall',
+    ...                   'corpus_name': 'sample_novels', 'date': '1848', 'author_gender':'female',
+    ...                   'filename': 'bronte_wildfell.txt'}
+    >>> bronte = novel.Novel(novel_metadata)
+    >>> novel_metadata = {'author': 'Adams, William Taylor', 'title': 'Fighting for the Right',
+    ...                   'corpus_name': 'sample_novels', 'date': '1892', 'author_gender':'male',
+    ...                   'filename': 'adams_fighting.txt'}
+    >>> fighting = novel.Novel(novel_metadata)
+    >>> d = {}
+    >>> d[fighting] = 0.3
+    >>> d[bronte] = 0.6
+    >>> freq_by_author_gender(d)
+    {'male_author': [0.3], 'female_author': [0.6]}
     '''
 
     male_author = []
@@ -82,6 +189,21 @@ def freq_by_date(d):
 
     :param d: dictionary
     :return: dictionary
+
+    >>> from gender_novels import novel
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    ...                   'corpus_name': 'sample_novels', 'date': '1818',
+    ...                   'filename': 'austen_persuasion.txt'}
+    >>> austen = novel.Novel(novel_metadata)
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1900',
+    ...                   'filename': 'hawthorne_scarlet.txt'}
+    >>> scarlet = novel.Novel(novel_metadata)
+    >>> d = {}
+    >>> d[scarlet] = 0.5
+    >>> d[austen] = 0.3
+    >>> freq_by_date(d)
+    {'date_to_1810': [], 'date_1810_to_1819': [0.3], 'date_1820_to_1829': [], 'date_1830_to_1839': [], 'date_1840_to_1849': [], 'date_1850_to_1859': [], 'date_1860_to_1869': [], 'date_1870_to_1879': [], 'date_1880_to_1889': [], 'date_1890_to_1899': [], 'date_1900_on': [0.5]}
     '''
 
     date_to_1810 = []
@@ -151,6 +273,21 @@ def freq_by_location(d):
 
     :param d: dictionary
     :return: dictionary
+
+    >>> from gender_novels import novel
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    ...                   'corpus_name': 'sample_novels', 'date': '1818',
+    ...                   'country_publication': 'England', 'filename': 'austen_persuasion.txt'}
+    >>> austen = novel.Novel(novel_metadata)
+    >>> novel_metadata2 = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1900',
+    ...                   'country_publication': 'United States', 'filename':'hawthorne_scarlet.txt'}
+    >>> scarlet = novel.Novel(novel_metadata2)
+    >>> d = {}
+    >>> d[scarlet] = 0.5
+    >>> d[austen] = 0.3
+    >>> freq_by_location(d)
+    {'location_England': [0.3], 'location_US': [0.5], 'location_other': []}
     '''
 
     location_England = []
@@ -181,23 +318,57 @@ def get_mean(data_dict):
 
     :param data_dict: dictionary matching some object to lists
     :return: dictionary with original key mapped to an average of the input list
+
+    >>> d = {}
+    >>> d['fives'] = [5,5,5]
+    >>> d['halfway'] = [0,1]
+    >>> d['nothing'] = [0]
+    >>> get_mean(d)
+    {'fives': 5.0, 'halfway': 0.5, 'nothing': 0.0}
     '''
     mean_dict = {}
     for k, v in data_dict.items():
         mean_dict[k] = np.mean(v)
     return mean_dict
 
+def sort_every_year(frequency_dict):
+    '''
+    Takes in a dictionary of novels mapped to pronoun frequencies and returns a dictionay of
+        years mapped to lists of pronoun frequencies
 
-if __name__ == "__main__":
-    all_data = books_pronoun_freq(Corpus('sample_novels'))
+    >>> from gender_novels import novel
+    >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+    ...                   'corpus_name': 'sample_novels', 'date': '1818',
+    ...                   'filename': 'austen_persuasion.txt'}
+    >>> austen = novel.Novel(novel_metadata)
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1900',
+    ...                   'filename': 'hawthorne_scarlet.txt'}
+    >>> scarlet = novel.Novel(novel_metadata)
+    >>> d = {}
+    >>> d[scarlet] = 0.5
+    >>> d[austen] = 0.3
+    >>> sorted_years = sort_every_year(d)
+    >>> print(sorted_years)
+    {1900: [0.5], 1818: [0.3]}
 
-    gender = freq_by_author_gender(all_data)
-    date = freq_by_date(all_data)
-    location = freq_by_location(all_data)
 
-    print('By author gender: ')
-    print(get_mean(gender))
-    print('\n By date: ')
-    print(get_mean(date))
-    print('\n By location: ')
-    print(get_mean(location))
+    :param frequency_dict: dictionary of novels mapped to pronoun frequencies
+    :return: dictionary of years mapped to lists of pronoun frequencies
+    '''
+    every_year_dict = {}
+    for key,value in frequency_dict.items():
+        frequency_list = [frequency_dict[key]]
+
+        if key.date not in every_year_dict.keys():
+            every_year_dict[key.date] = frequency_list
+
+        elif key.date in every_year_dict.keys():
+            every_year_dict[key.date].append(frequency_dict[key])
+
+    return every_year_dict
+
+  
+if __name__ == '__main__':
+    from dh_testers.testRunner import main_test
+    main_test()

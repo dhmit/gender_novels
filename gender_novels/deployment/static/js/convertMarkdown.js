@@ -4,7 +4,8 @@ window.onload = () => {
     from within local markdown files, this could be converted into a
     foreach loop or something similar
      */
-  convertMarkdown("topic-content", "overview");
+  convertMarkdown("overview", "gender_novels_overview");
+  convertMarkdown("topic-one", "gender_novels_analysis");
 };
 
 function convertMarkdown(id, filename)

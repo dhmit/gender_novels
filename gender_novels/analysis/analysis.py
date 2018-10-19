@@ -5,11 +5,13 @@ This file is intended for individual analyses of the gender_novels project
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 import nltk
-nltk.download('stopwords')
-import collections
 import math
 from operator import itemgetter
+nltk.download('stopwords', quiet=True)
+#TODO: add prior two lines to setup, necessary to run
+import collections
 from scipy.stats import chi2
+from statistics import mean, median, mode
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
@@ -33,24 +35,26 @@ def get_count_words(novel, words):
     >>> summary += "which made her very sad, and then Arthur was also sad, and everybody was "
     >>> summary += "sad and then Arthur died and it was very sad.  Sadness."
     >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
-    ...                   'corpus_name': 'sample_novels', 'date': 'long long ago',
+    ...                   'corpus_name': 'sample_novels', 'date': '1850',
     ...                   'filename': None, 'text': summary}
     >>> scarlett = novel.Novel(novel_metadata)
     >>> get_count_words(scarlett, ["sad", "and"])
-    {"sad":4, "and":4}
+    {'sad': 4, 'and': 4}
 
-    :param words: a list of words to be counted in text
-    :return: a dictionary where the key is the word and the value is the count 
+    :param:words: a list of words to be counted in text
+    :return: a dictionary where the key is the word and the value is the count
     """
     dic_word_counts = {}
     for word in words:
         dic_word_counts[word] = novel.get_count_of_word(word)
     return dic_word_counts
 
+
 def get_comparative_word_freq(freqs):
     """
     Returns a dictionary of the frequency of words counted relative to each other.
-    
+    If frequency passed in is zero, returns zero
+
     :param freqs: dictionary
     :return: dictionary
 
@@ -61,18 +65,24 @@ def get_comparative_word_freq(freqs):
     >>> scarlet = novel.Novel(novel_metadata)
     >>> d = {'he':scarlet.get_word_freq('he'), 'she':scarlet.get_word_freq('she')}
     >>> d
-    {'he': 0.00733, 'she': 0.00589}
+    {'he': 0.007329554965683813, 'she': 0.005894731807638042}
     >>> x = get_comparative_word_freq(d)
     >>> x
-    {'he': 0.55446, 'she': 0.44554}
+    {'he': 0.554249547920434, 'she': 0.445750452079566}
+    >>> d2 = {'he': 0, 'she': 0}
+    >>> d2
+    {'he': 0, 'she': 0}
     """
 
     total_freq = sum(freqs.values())
     comp_freqs = {}
 
     for k, v in freqs.items():
-        freq = v / total_freq
-        comp_freqs[k] = round(freq, 5)
+        try:
+            freq = v / total_freq
+        except ZeroDivisionError:
+            freq = 0
+        comp_freqs[k] = freq
 
     return comp_freqs
 
@@ -84,8 +94,8 @@ def get_counts_by_pos(freqs):
     It also filters out words like "is", "the". We used `nltk`'s stop words function for filtering.
     
     >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
-    {'VBN': Counter({'baked':1}), 'NN': Counter({'chair':9}), 'VBG': Counter({'swimming':16})}
-     >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
+    {'VBN': Counter({'baked': 1}), 'NN': Counter({'chair': 3}), 'VBG': Counter({'swimming': 4})}
+    >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
     {'RB': Counter({'quietly': 42, 'usually': 7})}
 
     :param freqs:
@@ -240,6 +250,40 @@ def dunning_total(m_corpus, f_corpus):
 
 
 import unittest
+
+def instance_dist(novel, word):
+    """
+    >>> from gender_novels import novel
+    >>> summary = "Hester was her convicted of adultery. "
+    >>> summary += "which made her very sad, and then her Arthur was also sad, and her everybody was "
+    >>> summary += "sad and then Arthur her died and it was very sad. her Sadness."
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1966',
+    ...                   'filename': None, 'text': summary}
+    >>> scarlett = novel.Novel(novel_metadata)
+    >>> instance_dist(scarlett, "her")
+    [6, 5, 6, 7, 7]
+
+    :param:novel to analyze, gendered word
+    :return: list of distances between instances of gendered word
+
+    """
+    output = []
+    count = 0
+    start = False
+    text = novel.get_tokenized_text()
+
+    for e in text:
+        if not start:
+            if e == word:
+                start = True
+        else:
+            count += 1
+            if e == word:
+                output.append(count)
+                count = 0
+    return output
+
 
 
 class Test(unittest.TestCase):
