@@ -231,6 +231,21 @@ class Corpus(common.FileLoaderMixin):
 
         return corpus_copy
 
+    def get_metadata_fields(self):
+        """
+        Gives a list of all metadata fields for corpus
+        >>> from gender_novels.corpus import Corpus
+        >>> sample_novels = Corpus('sample_novels')
+        >>> sample_novels.get_metadata_fields()
+        ['author', 'date', 'title', 'country_publication', 'author_gender', 'filename', 'notes']
+
+        :return: list
+        """
+        if self.corpus_name == 'sample_novels':
+            return ['author', 'date', 'title', 'country_publication', 'author_gender', 'filename', 'notes']
+        else:
+            return common.METADATA_LIST
+
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test

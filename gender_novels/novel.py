@@ -64,7 +64,7 @@ class Novel(common.FileLoaderMixin):
         try:
             self.gutenberg_id = int(novel_metadata_dict['gutenberg_id'])
         except KeyError:
-            self.gutenberg_id = None
+            pass
         self.country_publication = novel_metadata_dict.get('country_publication', None)
         self.notes = novel_metadata_dict.get('notes', None)
         self.author_gender = novel_metadata_dict.get('author_gender', 'unknown')
@@ -224,7 +224,7 @@ class Novel(common.FileLoaderMixin):
         :rtype: str
         """
         # TODO: Check where Keith saved texts and move them, if necessary
-        file_path = Path('corpora', self.corpus_name, 'texts', str(self.gutenberg_id) + '.txt')
+        file_path = Path('corpora', self.corpus_name, 'texts', self.filename)
 
         try:
             text = self.load_file(file_path)
