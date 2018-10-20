@@ -11,11 +11,14 @@ print(app.config)
 
 @app.route('/')
 def render_gender_novels():
+    """
+    TODO (Redlon): Assign the converted HTML to an ID within the DOM
     # Reads the CSV of the corpora, translates it to HTML, then saves it in corpora_table.html
     # temp = pd.read_csv("../../gender_novels/corpora/sample_novels/sample_novels.csv")
     # temp.to_html("templates/corpora_table.html")
+    """
 
-    return render_template('gender_novels.html', corpora_table="Corpora table goes here")
+    return render_template('overview.html', corpora_table="Corpora table goes here")
 
 
 if __name__ == '__main__':
