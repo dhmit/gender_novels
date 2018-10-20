@@ -20,7 +20,7 @@
 
     <!-- Horizontal navigation bar -->
     <div class="container-fluid hrz-nav">
-        <div class="row justify-content-center">
+        <div class="row">
             <div class="col">
                 <div class="nav nav-pills mb-3 justify-content-center" id="v-pills-tab"
                      role="tablist">
@@ -32,19 +32,21 @@
                        href="#corpora" role="tab" aria-selected="false"><span>Corpora</span></a>
 
 
-                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
-                           role="button" aria-haspopup="true" aria-expanded="false">Analyses</a>
+                           aria-haspopup="true" aria-expanded="false">Analyses</a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item nav-link" href="#copyright">Separated link</a>
-                        </div>
-                    </li>
+                            <a class="nav-link topic-button dropdown-menu" id="copyright-tab"
+                               data-toggle="pill"
+                       href="#copyright" role="tab" aria-selected="false"><span>Copyright</span></a>
+                            </div>
 
                     <a class="nav-link topic-button" id="team-tab" data-toggle="pill"
                        href="#team" role="tab" aria-selected="false"><span>Our Team</span></a>
 
+                    <!--
                     <a class="nav-link topic-button" id="copyright-tab" data-toggle="pill"
                        href="#copyright" role="tab" aria-selected="false"><span>Copyright</span></a>
+                       -->
                 </div>
             </div>
         </div>
