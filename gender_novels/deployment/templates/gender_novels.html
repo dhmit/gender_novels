@@ -12,14 +12,40 @@
     <!-- Header -->
     <div class="container-fluid header">
         <div class="row justify-content-center align-items-center">
-            <div class="col-10">
+            <div class="col">
                 <h1 class="header-text display-2">The Gender Novels Project</h1>
             </div>
-            <div class="col-2" align="right">
-                <a href="https://github.com/dhmit/gender_novels" target="_blank">
-                    <img src="{{ url_for('static', filename='graphics/GitHub_dark.png') }}"
-                         class="github-logo">
-                </a>
+        </div>
+    </div>
+
+    <!-- Horizontal navigation bar -->
+    <div class="container-fluid hrz-nav">
+        <div class="row justify-content-center">
+            <div class="col">
+                <div class="nav nav-pills mb-3 justify-content-center" id="v-pills-tab"
+                     role="tablist">
+                    <a class="nav-link active show topic-button" id="overview-tab"
+                       data-toggle="pill" href="#overview" role="tab"
+                       aria-selected="true"><span>Overview</span></a>
+
+                    <a class="nav-link topic-button" id="corpora-tab" data-toggle="pill"
+                       href="#corpora" role="tab" aria-selected="false"><span>Corpora</span></a>
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#"
+                           role="button" aria-haspopup="true" aria-expanded="false">Analyses</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item nav-link" href="#copyright">Separated link</a>
+                        </div>
+                    </li>
+
+                    <a class="nav-link topic-button" id="team-tab" data-toggle="pill"
+                       href="#team" role="tab" aria-selected="false"><span>Our Team</span></a>
+
+                    <a class="nav-link topic-button" id="copyright-tab" data-toggle="pill"
+                       href="#copyright" role="tab" aria-selected="false"><span>Copyright</span></a>
+                </div>
             </div>
         </div>
     </div>
@@ -28,18 +54,8 @@
     <div class="container-fluid content">
         <div class="row justify-content-start">
             <div class="col-2">
-                <!-- Vertical sidebar (for topic navigation) -->
-                <div class="nav flex-column nav-pills sidebar" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link active show topic-button" id="overview-tab"
-                       data-toggle="pill" href="#overview" role="tab"
-                       aria-selected="true"><span>Overview</span></a>
-                    <a class="nav-link topic-button" id="corpora-tab" data-toggle="pill"
-                       href="#corpora" role="tab" aria-selected="false"><span>Corpora</span></a>
-                    <a class="nav-link topic-button" id="topic-one-tab" data-toggle="pill"
-                       href="#topic-one" role="tab" aria-selected="false"><span>Analysis</span></a>
-                </div>
             </div>
-            <!-- Topic Content -->
+            <!-- Topic content -->
             <div class="col-8" align="center">
                 <div class="topic-content">
                     <!-- Content assigned in convertMarkdown.js -->
@@ -48,8 +64,29 @@
                         <div class="tab-pane fade" id="corpora" role="tabpanel"
                              aria-labelledby="corpora-tab">{{ corpora_table }}</div>
                         <div class="tab-pane fade" id="topic-one" role="tabpanel" aria-labelledby="topic-one-tab"></div>
+                        <div class="tab-pane fade" id="copyright" role="tabpanel"
+                             aria-labelledby="copyright-tab"></div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="container-fluid footer">
+        <div class="row">
+            <div class="col-9">
+            </div>
+            <div class="col-2 align-self-center" align="right">
+                <p class="github-text align-self-center">
+                    Visit our GitHub to view and download the code we used for this project
+                </p>
+            </div>
+            <div class="col-1 align-self-center" align="right">
+                <a href="https://github.com/dhmit/gender_novels" target="_blank">
+                    <img src="{{ url_for('static', filename='graphics/GitHub_light.png') }}"
+                         class="github-logo">
+                </a>
             </div>
         </div>
     </div>

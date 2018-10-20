@@ -12,22 +12,10 @@ print(app.config)
 @app.route('/')
 def render_gender_novels():
     # Reads the CSV of the corpora, translates it to HTML, then saves it in corpora_table.html
-    temp = pd.read_csv("../../gender_novels/corpora/sample_novels/sample_novels.csv")
-    temp.to_html("templates/corpora_table.html")
+    # temp = pd.read_csv("../../gender_novels/corpora/sample_novels/sample_novels.csv")
+    # temp.to_html("templates/corpora_table.html")
 
     return render_template('gender_novels.html', corpora_table="Corpora table goes here")
-
-
-@app.route('/<string:text>/')
-def render_base_text(text):
-    """
-    Renders subpage with base.html template that describes our gender novels research
-    :param text: placeholder in base.html written as {{ text }} for words that will vary based on subpage
-    :return: subpage with {{ text }} substituted with actual text such as the About page
-
-    TODO (Xu): Figure out how to link other html files to base.html
-    """
-    return render_template('base.html', text = text)
 
 
 if __name__ == '__main__':

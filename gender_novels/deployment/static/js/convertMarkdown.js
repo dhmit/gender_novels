@@ -6,6 +6,7 @@ window.onload = () => {
      */
   convertMarkdown("overview", "gender_novels_overview");
   convertMarkdown("topic-one", "gender_novels_analysis");
+  convertMarkdown("copyright", "copyright_info")
 };
 
 function convertMarkdown(id, filename)
