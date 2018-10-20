@@ -115,8 +115,9 @@ def get_counts_by_pos(freqs):
             if tag not in sorted_words.keys():
                 sorted_words[tag] = collections.Counter({word:freqs[word]})
             else:
-                sorted_words[tag].update({word:freqs[word]})
+                sorted_words[tag].update({word: freqs[word]})
     return sorted_words
+
 
 def display_gender_freq(d, title):
     """
@@ -140,40 +141,58 @@ def display_gender_freq(d, title):
         she_val.append(d[entry][1])
 
     fig, ax = plt.subplots()
+    plt.ylim(0, 1)
 
     index = np.arange(len(d.keys()))
     bar_width = 0.35
-
-    opacity = 0.4
-    error_config = {'ecolor': '0.3'}
 
     he_val = tuple(he_val)
     she_val = tuple(she_val)
     authors = tuple(authors)
 
-    rects1 = ax.bar(index, he_val, bar_width,
-                    alpha=opacity, color='b',
-                    error_kw=error_config,
-                    label='He')
+    rects1 = ax.bar(index, he_val, bar_width, color='cyan', label='He')
 
-    rects2 = ax.bar(index + bar_width, she_val, bar_width,
-                    alpha=opacity, color='r',
-                    error_kw=error_config,
-                    label='She')
+    rects2 = ax.bar(index + bar_width, she_val, bar_width, color='plum', label='She')
 
     ax.set_xlabel('Authors')
     ax.set_ylabel('Frequency')
     ax.set_title('Gendered Pronouns by Author')
     ax.set_xticks(index + bar_width / 2)
+    plt.xticks(fontsize=8, rotation=90)
     ax.set_xticklabels(authors)
     ax.legend()
 
     fig.tight_layout()
-    #plt.show()
-    filepng = "visualizations/" + title + ".png"
-    filepdf = "visualizations/" + title + ".pdf"
+    filepng = "visualizations/he_she_freq" + title + ".png"
+    filepdf = "visualizations/he_she_freq" + title + ".pdf"
     plt.savefig(filepng, bbox_inches='tight')
     plt.savefig(filepdf, bbox_inches='tight')
+
+
+def run_gender_freq(corpus):
+    """
+    Runs a program that uses the gender frequency analysis on all novels existing in a given
+    corpus, and outputs the data as graphs
+    :param corpus:
+    :return:
+    """
+    novels = corpus._load_novels()
+    c = len(novels)
+    loops = c//10 + 1
+
+    num = 0
+
+    while num < loops:
+        dictionary = {}
+        for novel in novels[num * 10: min(c, num * 10 + 9)]:
+            d = {'he': novel.get_word_freq('he'), 'she': novel.get_word_freq('she')}
+            d = get_comparative_word_freq(d)
+            lst = [d["he"], d["she"]]
+            book = novel.title[0:20] + "\n" + novel.author
+            dictionary[book] = lst
+        display_gender_freq(dictionary, str(num))
+        num += 1
+
 
 def dunn_individual_word(total_words_m_corpus, total_words_f_corpus, wordcount_female,
                          wordcount_male):
@@ -434,7 +453,6 @@ def instance_stats(book, medians1, medians2, title):
     ax.legend()
 
     fig.tight_layout()
-    # plt.show()
     filepng = "visualizations/" + title + ".png"
     filepdf = "visualizations/" + title + ".pdf"
     plt.savefig(filepng, bbox_inches='tight')
@@ -445,6 +463,7 @@ def run_dist_inst(corpus):
     """
     Runs a program that uses the instance distance analysis on all novels existing in a given
     corpus, and outputs the data as graphs
+    :param corpus:
     :return:
     """
     novels = corpus._load_novels()
@@ -485,6 +504,7 @@ class Test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
-    # run_dist_inst(Corpus('sample_novels'))
+    # unittest.main()
+    run_dist_inst(Corpus('sample_novels'))
+    # run_gender_freq(Corpus('sample_novels'))
 
