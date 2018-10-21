@@ -31,13 +31,22 @@ p {
     margin-top: 1rem;
 }
 
+.content {
+    background-color: #EAD3A8;
+}
+
+/* Navbar */
 .header-nav {
     background-color: #EAD3A8;
     margin-bottom: -1rem;
 }
 
-.content {
-    background-color: #EAD3A8;
+.nav-link {
+    color: black;
+}
+
+a:hover {
+    color: #D23641 !important;
 }
 
 /* Topic content */
@@ -45,8 +54,8 @@ p {
 .topic-content img {
     height: auto;
     width: auto;
-    max-height: 60%;
-    max-width: 60%;
+    max-height: 75%;
+    max-width: 75%;
 }
 
 /* Footer */

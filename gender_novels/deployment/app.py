@@ -8,17 +8,39 @@ app.config['DEBUG'] = True
 
 print(app.config)
 
+"""
+All of these functions render each individual subpage of the overall website
+so that the Gender Novels landing page is able to link to them
+"""
 
 @app.route('/')
-def render_gender_novels():
-    """
-    TODO (Redlon): Assign the converted HTML to an ID within the DOM
-    # Reads the CSV of the corpora, translates it to HTML, then saves it in corpora_table.html
-    # temp = pd.read_csv("../../gender_novels/corpora/sample_novels/sample_novels.csv")
-    # temp.to_html("templates/corpora_table.html")
-    """
+def render_overview():
+    return render_template('overview.html')
 
-    return render_template('overview.html', corpora_table="Corpora table goes here")
+
+@app.route('/copyright.html')
+def render_copyright():
+    return render_template('copyright.html')
+
+@app.route('/corpora.html')
+def render_corpora():
+    return render_template('corpora.html')
+
+@app.route('/topic_one.html')
+def render_topic_one():
+    return render_template('topic_one.html')
+
+@app.route('/testing_tutorial.html')
+def render_testing_tutorial():
+    return render_template('testing_tutorial.html')
+
+@app.route('/test_page.html')
+def render_test_page():
+    return render_template('test_page.html')
+
+@app.route('/team.html')
+def render_team():
+    return render_template('team.html')
 
 
 if __name__ == '__main__':
