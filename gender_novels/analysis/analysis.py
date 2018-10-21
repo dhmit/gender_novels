@@ -18,6 +18,7 @@ stop_words = set(stopwords.words('english'))
 import numpy as np
 import matplotlib.pyplot as plt
 from more_itertools import windowed
+import unittest
 #import matplotlib.pyplot as plt
 
 
@@ -251,8 +252,6 @@ def dunning_total(m_corpus, f_corpus):
     return dunning_result
 
 
-import unittest
-
 def instance_dist(novel, word):
     """
     Takes in a particular word, returns a list of distances between each instance of that word in the novel.
@@ -286,6 +285,7 @@ def instance_dist(novel, word):
                 output.append(count)
                 count = 0
     return output
+
 
 def pronoun_instance_dist(novel, words):
     """
@@ -322,6 +322,7 @@ def pronoun_instance_dist(novel, words):
                 count = 0
     return output
 
+
 def male_instance_dist(novel):
     """
         Takes in a novel, returns a list of distances between each instance of a female pronoun in that novel
@@ -340,6 +341,7 @@ def male_instance_dist(novel):
        :return: list of distances between instances of gendered word
     """
     return pronoun_instance_dist(novel, ["his", "him", "he", "himself"])
+
 
 def female_instance_dist(novel):
     """
@@ -360,9 +362,10 @@ def female_instance_dist(novel):
     """
     return pronoun_instance_dist(novel, ["her", "hers", "she", "herself"])
 
+
 def find_gender_adj(novel, female):
     """
-        Takes in a novel and boolean indicating gender, returns a list of adjectives that appear within
+        Takes in a novel and boolean indicating gender, returns a dictionary of adjectives that appear within
         a window of 5 words around each male pronoun
         >>> from gender_novels import novel
         >>> summary = "James was convicted of adultery. "
@@ -415,7 +418,7 @@ def find_gender_adj(novel, female):
 
 def find_male_adj(novel):
     """
-        Takes in a novel, returns a list of adjectives that appear within a window of 5 words around each male pronoun
+        Takes in a novel, returns a dictionary of adjectives that appear within a window of 5 words around each male pronoun
        >>> from gender_novels import novel
        >>> summary = "James was convicted of adultery. "
        >>> summary += "he was a handsome guy, and everyone thought that he was so handsome, and everybody was "
@@ -432,9 +435,10 @@ def find_male_adj(novel):
     """
     return find_gender_adj(novel, False)
 
+
 def find_female_adj(novel):
     """
-        Takes in a novel, returns a list of adjectives that appear within a window of 5 words around each female pronoun
+        Takes in a novel, returns a dictionary of adjectives that appear within a window of 5 words around each female pronoun
        >>> from gender_novels import novel
        >>> summary = "Jane was convicted of adultery. "
        >>> summary += "she was a beautiful gal, and everyone thought that she was very beautiful, and everybody was "
@@ -457,10 +461,14 @@ if __name__ == '__main__':
     print("loading corpus")
     corpus = Corpus('sample_novels')
     print("loading novel")
-    novel = corpus._load_novels()[1]
+    novel = corpus._load_novels()[15]
     print(novel.author, novel.title, novel.word_count)
     print("running function")
-    print(find_male_adj(novel))
+    result = find_male_adj(novel)
+    output = []
+    for key in result.keys():
+        output.append((result[key], key))
+    print(sorted(output, reverse=True))
 
 class Test(unittest.TestCase):
     def test_dunning_total(self):
