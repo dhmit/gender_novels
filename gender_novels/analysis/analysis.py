@@ -3,12 +3,11 @@ This file is intended for individual analyses of the gender_novels project
 """
 
 from gender_novels.corpus import Corpus
-from gender_novels.novel import Novel
 import nltk
 import math
 from operator import itemgetter
 nltk.download('stopwords', quiet=True)
-#TODO: add prior two lines to setup, necessary to run
+# TODO: add prior two lines to setup, necessary to run
 import collections
 from scipy.stats import chi2
 from statistics import mean, median, mode
@@ -19,8 +18,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from more_itertools import windowed
 import unittest
-#import matplotlib.pyplot as plt
-
+import seaborn as sns
+sns.set()
+sns.palplot(sns.color_palette(palette="pastel"))
 
 def test_function():
     d = {"Austin": [.5, .5], "Elliot": [.8, .2], "Sam": [.14, .22]}
@@ -116,13 +116,15 @@ def get_counts_by_pos(freqs):
             if tag not in sorted_words.keys():
                 sorted_words[tag] = collections.Counter({word:freqs[word]})
             else:
-                sorted_words[tag].update({word:freqs[word]})
+                sorted_words[tag].update({word: freqs[word]})
     return sorted_words
+
 
 def display_gender_freq(d, title):
     """
     Takes in a dictionary sorted by author and gender frequencies, and a title.
     Outputs the resulting graph to 'visualizations/title.pdf' AND 'visualizations/title.png'
+
     dictionary format {"Author/Novel": [he_freq, she_freq]}
 
     Will scale to allow inputs of larger dictionaries with non-binary values
@@ -140,40 +142,58 @@ def display_gender_freq(d, title):
         she_val.append(d[entry][1])
 
     fig, ax = plt.subplots()
+    plt.ylim(0, 1)
 
     index = np.arange(len(d.keys()))
     bar_width = 0.35
-
-    opacity = 0.4
-    error_config = {'ecolor': '0.3'}
 
     he_val = tuple(he_val)
     she_val = tuple(she_val)
     authors = tuple(authors)
 
-    rects1 = ax.bar(index, he_val, bar_width,
-                    alpha=opacity, color='b',
-                    error_kw=error_config,
-                    label='He')
+    rects1 = ax.bar(index, he_val, bar_width, color='cyan', label='He')
 
-    rects2 = ax.bar(index + bar_width, she_val, bar_width,
-                    alpha=opacity, color='r',
-                    error_kw=error_config,
-                    label='She')
+    rects2 = ax.bar(index + bar_width, she_val, bar_width, color='plum', label='She')
 
     ax.set_xlabel('Authors')
     ax.set_ylabel('Frequency')
     ax.set_title('Gendered Pronouns by Author')
     ax.set_xticks(index + bar_width / 2)
+    plt.xticks(fontsize=8, rotation=90)
     ax.set_xticklabels(authors)
     ax.legend()
 
     fig.tight_layout()
-    #plt.show()
-    filepng = "visualizations/" + title + ".png"
-    filepdf = "visualizations/" + title + ".pdf"
+    filepng = "visualizations/he_she_freq" + title + ".png"
+    filepdf = "visualizations/he_she_freq" + title + ".pdf"
     plt.savefig(filepng, bbox_inches='tight')
     plt.savefig(filepdf, bbox_inches='tight')
+
+
+def run_gender_freq(corpus):
+    """
+    Runs a program that uses the gender frequency analysis on all novels existing in a given
+    corpus, and outputs the data as graphs
+    :param corpus:
+    :return:
+    """
+    novels = corpus._load_novels()
+    c = len(novels)
+    loops = c//10 + 1
+
+    num = 0
+
+    while num < loops:
+        dictionary = {}
+        for novel in novels[num * 10: min(c, num * 10 + 9)]:
+            d = {'he': novel.get_word_freq('he'), 'she': novel.get_word_freq('she')}
+            d = get_comparative_word_freq(d)
+            lst = [d["he"], d["she"]]
+            book = novel.title[0:20] + "\n" + novel.author
+            dictionary[book] = lst
+        display_gender_freq(dictionary, str(num))
+        num += 1
+
 
 def dunn_individual_word(total_words_m_corpus, total_words_f_corpus, wordcount_female,
                          wordcount_male):
@@ -347,8 +367,8 @@ def female_instance_dist(novel):
     """
         Takes in a novel, returns a list of distances between each instance of a female pronoun in that novel
        >>> from gender_novels import novel
-       >>> summary = "James was her convicted of adultery. "
-       >>> summary += "which made her very sad, and then she Arthur was also sad, and herself everybody was "
+       >>> summary = "Hester was her convicted of adultery. "
+       >>> summary += "which made her very sad, and then she Hester was also sad, and herself everybody was "
        >>> summary += "sad and then she died and it was very sad. Her Sadness."
        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
        ...                   'corpus_name': 'sample_novels', 'date': '1966',
@@ -470,6 +490,191 @@ if __name__ == '__main__':
         output.append((result[key], key))
     print(sorted(output, reverse=True))
 
+def process_medians(helst, shelst, authlst):
+    """
+    >>> medians_he = [12, 130, 0, 12, 314, 18, 15, 12, 123]
+    >>> medians_she = [123, 52, 12, 345, 0,  13, 214, 12, 23]
+    >>> books = ["a", "b", "c", "d", "e", "f", "g", "h", "i"]
+    >>> process_medians(helst=medians_he, shelst=medians_she, authlst=books)
+    {'he': [0, 2.5, 0, 1.3846153846153846, 0, 1.0, 5.3478260869565215], 'she': [10.25, 0, 28.75,
+    0, 14.266666666666667, 0, 0], 'book': ['a', 'b', 'd', 'f', 'g', 'h', 'i']}
+
+    :param helst:
+    :param shelst:
+    :param authlst:
+    :return: a dictionary sorted as so {
+                                        "he":[ratio of he to she if >= 1, else 0],
+                                        "she":[ratio of she to he if > 1, else 0]
+                                        "book":[lst of book authors]
+                                       }
+    """
+    d = {"he": [], "she": [], "book": []}
+    for num in range(len(helst)):
+        if helst[num] > 0 and shelst[num] > 0:
+            res = helst[num] - shelst[num]
+            if res >= 0:
+                d["he"].append(helst[num] / shelst[num])
+                d["she"].append(0)
+                d["book"].append(authlst[num])
+            else:
+                d["he"].append(0)
+                d["she"].append(shelst[num] / helst[num])
+                d["book"].append(authlst[num])
+        else:
+            if helst == 0:
+                print("ERR: no MALE values: " + authlst[num])
+            if shelst == 0:
+                print("ERR: no FEMALE values: " + authlst[num])
+    return d
+
+
+def bubble_sort_across_lists(dictionary):
+    """
+    >>> d = {'he': [0, 2.5, 0, 1.3846153846153846, 0, 1.0, 5.3478260869565215],
+    ...     'she': [10.25, 0, 28.75, 0, 14.266666666666667, 0, 0],
+    ...     'book': ['a', 'b', 'd', 'f', 'g', 'h', 'i']}
+    >>> bubble_sort_across_lists(d)
+    {'he': [5.3478260869565215, 2.5, 1.3846153846153846, 1.0, 0, 0, 0], 'she': [0, 0, 0, 0,
+    10.25, 14.266666666666667, 28.75], 'book': ['i', 'b', 'f', 'h', 'a', 'g', 'd']}
+
+    :param dictionary: containing 3 different list values.
+    Note: dictionary keys MUST contain arguments 'he', 'she', and 'book'
+    :return dictionary sorted across all three lists in a specific method:
+    1) Descending order of 'he' values
+    2) Ascending order of 'she' values
+    3) Corresponding values of 'book' values
+    """
+    lst1 = dictionary['he']
+    lst2 = dictionary['she']
+    lst3 = dictionary['book']
+    r = range(len(lst1) - 1)
+    p = True
+
+    # sort by lst1 descending
+    for j in r:
+        for i in r:
+            if lst1[i] < lst1[i + 1]:
+                # manipulating lst 1
+                temp1 = lst1[i]
+                lst1[i] = lst1[i + 1]
+                lst1[i + 1] = temp1
+                # manipulating lst 2
+                temp2 = lst2[i]
+                lst2[i] = lst2[i + 1]
+                lst2[i + 1] = temp2
+                # manipulating lst of authors
+                temp3 = lst3[i]
+                lst3[i] = lst3[i + 1]
+                lst3[i + 1] = temp3
+                p = False
+        if p:
+            break
+        else:
+            p = True
+
+    # sort by lst2 ascending
+    for j in r:
+        for i in r:
+            if lst2[i] > lst2[i + 1]:
+                # manipulating lst 1
+                temp1 = lst1[i]
+                lst1[i] = lst1[i + 1]
+                lst1[i + 1] = temp1
+                # manipulating lst 2
+                temp2 = lst2[i]
+                lst2[i] = lst2[i + 1]
+                lst2[i + 1] = temp2
+                # manipulating lst of authors
+                temp3 = lst3[i]
+                lst3[i] = lst3[i + 1]
+                lst3[i + 1] = temp3
+                p = False
+        if p:
+            break
+        else:
+            p = True
+    d = {}
+    d['he'] = lst1
+    d['she'] = lst2
+    d['book'] = lst3
+    return d
+
+
+def instance_stats(book, medians1, medians2, title):
+    """
+    :param book:
+    :param medians1:
+    :param medians2:
+    :param title:
+    :return: file written to visualizations folder depicting the ratio of two values given as a
+    bar graph
+    """
+    fig, ax = plt.subplots()
+    plt.ylim(0, 1000)
+
+    index = np.arange(len(book))
+    bar_width = .7
+
+    medians_she = tuple(medians2)
+    medians_he = tuple(medians1)
+    book = tuple(book)
+
+    rects1 = ax.bar(index, medians_he, bar_width, color='cyan', label='Male to Female')
+
+    rects2 = ax.bar(index, medians_she, bar_width, color='plum', label='Female to Male')
+
+    ax.set_xlabel('Book')
+    ax.set_ylabel('Ratio of Median Values')
+    ax.set_title(
+        'MtF or FtM Ratio of Median Distance of Gendered Instances by Author')
+    ax.set_xticks(index)
+    plt.xticks(fontsize=8, rotation=90)
+    ax.set_xticklabels(book)
+    ax.set_yscale("symlog")
+
+    ax.legend()
+
+    fig.tight_layout()
+    filepng = "visualizations/" + title + ".png"
+    filepdf = "visualizations/" + title + ".pdf"
+    plt.savefig(filepng, bbox_inches='tight')
+    plt.savefig(filepdf, bbox_inches='tight')
+
+
+def run_dist_inst(corpus):
+    """
+    Runs a program that uses the instance distance analysis on all novels existing in a given
+    corpus, and outputs the data as graphs
+    :param corpus:
+    :return:
+    """
+    novels = corpus._load_novels()
+    c = len(novels)
+    loops = c//10 + 1
+
+    num = 0
+
+    while num < loops:
+        medians_he = []
+        medians_she = []
+        books = []
+        for novel in novels[num * 10: min(c, num * 10 + 9)]:
+            result_he = instance_dist(novel, "he")
+            result_she = instance_dist(novel, "she")
+            try:
+                medians_he.append(median(result_he))
+            except:
+                medians_he.append(0)
+            try:
+                medians_she.append(median(result_she))
+            except:
+                medians_she.append(0)
+            books.append(novel.title[0:20] + "\n" + novel.author)
+        d = process_medians(helst=medians_he, shelst=medians_she, authlst=books)
+        d = bubble_sort_across_lists(d)
+        instance_stats(d["book"], d["he"], d["she"], "inst_dist" + str(num))
+        num += 1
+
 class Test(unittest.TestCase):
     def test_dunning_total(self):
         c = Corpus('sample_novels')
@@ -478,6 +683,9 @@ class Test(unittest.TestCase):
         results = dunning_total(m_corpus, f_corpus)
         print(results)
 
+
 if __name__ == '__main__':
-    unittest.main()
+    # unittest.main()
+    run_dist_inst(Corpus('sample_novels'))
+    # run_gender_freq(Corpus('sample_novels'))
 
