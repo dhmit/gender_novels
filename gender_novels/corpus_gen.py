@@ -288,6 +288,10 @@ def title_invalidates_entry(title):
     if (title.find("translated by ") != -1):
         # print("Was a translation")
         return True
+    # if (title.find("vol. ") != -1):
+    #     return True
+    # if re.match(r"volume \d+", title, flags= re.IGNORECASE):
+    #     return True
     return False
 
 
