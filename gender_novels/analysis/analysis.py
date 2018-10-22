@@ -16,10 +16,11 @@ stop_words = set(stopwords.words('english'))
 
 import numpy as np
 import matplotlib.pyplot as plt
+from more_itertools import windowed
+import unittest
 import seaborn as sns
 sns.set()
 sns.palplot(sns.color_palette(palette="pastel"))
-
 
 def test_function():
     d = {"Austin": [.5, .5], "Elliot": [.8, .2], "Sam": [.14, .22]}
@@ -271,11 +272,9 @@ def dunning_total(m_corpus, f_corpus):
     return dunning_result
 
 
-import unittest
-
-
 def instance_dist(novel, word):
     """
+    Takes in a particular word, returns a list of distances between each instance of that word in the novel.
     >>> from gender_novels import novel
     >>> summary = "Hester was her convicted of adultery. "
     >>> summary += "which made her very sad, and then her Arthur was also sad, and her everybody was "
@@ -307,6 +306,189 @@ def instance_dist(novel, word):
                 count = 0
     return output
 
+
+def pronoun_instance_dist(novel, words):
+    """
+        Takes in a novel and list of gender pronouns, returns a list of distances between each
+        instance of a pronoun in that novel
+        >>> from gender_novels import novel
+        >>> summary = "James was his convicted of adultery. "
+        >>> summary += "which made him very sad, and then his Jane was also sad, and himself everybody was "
+        >>> summary += "sad and then he died and it was very sad. His Sadness."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '1966',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> pronoun_instance_dist(scarlett, ["his", "him", "he", "himself"])
+        [6, 5, 6, 6, 7]
+
+        :param:novel
+        :return: list of distances between instances of pronouns
+    """
+    text = novel.get_tokenized_text()
+    output = []
+    count = 0
+    start = False
+
+    for e in text:
+        e = e.lower()
+        if not start:
+            if e in words:
+                start = True
+        else:
+            count += 1
+            if e in words:
+                output.append(count)
+                count = 0
+    return output
+
+
+def male_instance_dist(novel):
+    """
+        Takes in a novel, returns a list of distances between each instance of a female pronoun in that novel
+       >>> from gender_novels import novel
+       >>> summary = "James was his convicted of adultery. "
+       >>> summary += "which made him very sad, and then he Arthur was also sad, and himself everybody was "
+       >>> summary += "sad and then he died and it was very sad. His Sadness."
+       >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+       ...                   'corpus_name': 'sample_novels', 'date': '1966',
+       ...                   'filename': None, 'text': summary}
+       >>> scarlett = novel.Novel(novel_metadata)
+       >>> male_instance_dist(scarlett)
+       [6, 5, 6, 6, 7]
+
+       :param: novel
+       :return: list of distances between instances of gendered word
+    """
+    return pronoun_instance_dist(novel, ["his", "him", "he", "himself"])
+
+
+def female_instance_dist(novel):
+    """
+        Takes in a novel, returns a list of distances between each instance of a female pronoun in that novel
+       >>> from gender_novels import novel
+       >>> summary = "Hester was her convicted of adultery. "
+       >>> summary += "which made her very sad, and then she Hester was also sad, and herself everybody was "
+       >>> summary += "sad and then she died and it was very sad. Her Sadness."
+       >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+       ...                   'corpus_name': 'sample_novels', 'date': '1966',
+       ...                   'filename': None, 'text': summary}
+       >>> scarlett = novel.Novel(novel_metadata)
+       >>> female_instance_dist(scarlett)
+       [6, 5, 6, 6, 7]
+
+       :param: novel
+       :return: list of distances between instances of gendered word
+    """
+    return pronoun_instance_dist(novel, ["her", "hers", "she", "herself"])
+
+
+def find_gender_adj(novel, female):
+    """
+        Takes in a novel and boolean indicating gender, returns a dictionary of adjectives that appear within
+        a window of 5 words around each male pronoun
+        >>> from gender_novels import novel
+        >>> summary = "James was convicted of adultery. "
+        >>> summary += "he was a handsome guy, and everyone thought that he was so handsome, and everybody was "
+        >>> summary += "sad and then he died a very handsome death. His Sadness."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '1966',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = novel.Novel(novel_metadata)
+        >>> find_gender_adj(scarlett, False)
+        {'handsome': 3, 'sad': 1}
+
+        :param:novel, boolean indicating whether to search for female adjectives (true) or male adj (false)
+        :return: dictionary of adjectives that appear around male pronouns and the number of occurences
+    """
+    output = {}
+    text = novel.get_tokenized_text()
+
+    if female:
+        distances = female_instance_dist(novel)
+        pronouns1 = ["her", "hers", "she", "herself"]
+        pronouns2 = ["his", "him", "he", "himself"]
+    else:
+        distances = male_instance_dist(novel)
+        pronouns1 = ["his", "him", "he", "himself"]
+        pronouns2 = ["her", "hers", "she", "herself"]
+    lower_window_bound = median(sorted(distances)[:int(len(distances) / 2)])
+
+    if not lower_window_bound >= 5:
+        return "lower window bound less than 5"
+    for l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11 in windowed(text, 11):
+        l6 = l6.lower()
+        if not l6 in pronouns1:
+            continue
+        words = [l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, l11]
+        if bool(set(words) & set(pronouns2)):
+            continue
+        for index, word in enumerate(words):
+            words[index] = word.lower()
+        tags = nltk.pos_tag(words)
+        for tag_index, tag in enumerate(tags):
+            if tags[tag_index][1] == "JJ":
+                word = words[tag_index]
+                if word in output.keys():
+                    output[word] += 1
+                else:
+                    output[word] = 1
+    return output
+
+
+def find_male_adj(novel):
+    """
+        Takes in a novel, returns a dictionary of adjectives that appear within a window of 5 words around each male pronoun
+       >>> from gender_novels import novel
+       >>> summary = "James was convicted of adultery. "
+       >>> summary += "he was a handsome guy, and everyone thought that he was so handsome, and everybody was "
+       >>> summary += "sad and then he died a very handsome death. His Sadness."
+       >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+       ...                   'corpus_name': 'sample_novels', 'date': '1966',
+       ...                   'filename': None, 'text': summary}
+       >>> scarlett = novel.Novel(novel_metadata)
+       >>> find_male_adj(scarlett)
+       {'handsome': 3, 'sad': 1}
+
+       :param:novel
+       :return: dictionary of adjectives that appear around male pronouns and the number of occurences
+    """
+    return find_gender_adj(novel, False)
+
+
+def find_female_adj(novel):
+    """
+        Takes in a novel, returns a dictionary of adjectives that appear within a window of 5 words around each female pronoun
+       >>> from gender_novels import novel
+       >>> summary = "Jane was convicted of adultery. "
+       >>> summary += "she was a beautiful gal, and everyone thought that she was very beautiful, and everybody was "
+       >>> summary += "sad and then she died. Everyone agreed that she was a beautiful corpse that deserved peace."
+       >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+       ...                   'corpus_name': 'sample_novels', 'date': '1966',
+       ...                   'filename': None, 'text': summary}
+       >>> scarlett = novel.Novel(novel_metadata)
+       >>> find_female_adj(scarlett)
+       {'beautiful': 3, 'sad': 1}
+
+       :param:novel
+       :return: dictionary of adjectives that appear around female pronouns and the number of occurences
+
+       """
+    return find_gender_adj(novel, True)
+
+if __name__ == '__main__':
+    test_function()
+    print("loading corpus")
+    corpus = Corpus('sample_novels')
+    print("loading novel")
+    novel = corpus._load_novels()[15]
+    print(novel.author, novel.title, novel.word_count)
+    print("running function")
+    result = find_male_adj(novel)
+    output = []
+    for key in result.keys():
+        output.append((result[key], key))
+    print(sorted(output, reverse=True))
 
 def process_medians(helst, shelst, authlst):
     """
@@ -492,7 +674,6 @@ def run_dist_inst(corpus):
         d = bubble_sort_across_lists(d)
         instance_stats(d["book"], d["he"], d["she"], "inst_dist" + str(num))
         num += 1
-
 
 class Test(unittest.TestCase):
     def test_dunning_total(self):
