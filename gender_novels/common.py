@@ -7,14 +7,11 @@ import codecs
 DEBUG = False
 
 BASE_PATH = Path(os.path.abspath(os.path.dirname(__file__)))
-GUTENBERG_METADATA_PATH = Path('corpora', 'gutenberg', 'gutenberg.csv')
-METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
-                 'subject', 'corpus_name', 'notes']
+
 
 # books from gutenberg downloaded from Dropbox folder shared by Keith
 INITIAL_BOOK_STORE = r'corpora/test_books_30' #TODO: change to actual directory when generating corpus
 # plus some extras
-FINAL_BOOK_STORE = r'test_corpus' #TODO: change to actual directory when generating corpus
 AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*(\((?P<real_name>(\w+ )*\w*)\))*"
 outputDir = 'converted'
 TEXT_START_MARKERS = frozenset((
@@ -286,10 +283,12 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
     :param target_path: str or Path
     :param target_encoding: str
 
+    >>> from gender_novels.common import BASE_PATH
     >>> text = ' ¶¶¶¶ here is a test file'
     >>> source_path = Path(BASE_PATH, 'source_file.txt')
     >>> target_path = Path(BASE_PATH, 'target_file.txt')
-    >>> with codecs.open(source_path, 'w', 'iso-8859-1') as source: source.write(text)
+    >>> with codecs.open(source_path, 'w', 'iso-8859-1') as source:
+    ...     source.write(text)
     >>> get_text_file_encoding(source_path)
     'ISO-8859-1'
     >>> convert_text_file_to_new_encoding(source_path, target_path, target_encoding='utf-8')
@@ -332,4 +331,4 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
-    main_test()
+    main_test(import_plus_relative=True) # this allows for relative calls in the import.

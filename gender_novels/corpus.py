@@ -143,6 +143,10 @@ class Corpus(common.FileLoaderMixin):
 
     def _load_novels(self):
         novels = []
+        load_test_corpus = False
+        if self.corpus_name == 'test_corpus':
+            load_test_corpus = True
+            self.corpus_name = 'sample_novels'
 
         relative_csv_path = (self.relative_corpus_path
                              / f'{self.corpus_name}.csv')
@@ -159,6 +163,8 @@ class Corpus(common.FileLoaderMixin):
             novel_metadata['corpus_name'] = self.corpus_name
             this_novel = Novel(novel_metadata_dict=novel_metadata)
             novels.append(this_novel)
+            if load_test_corpus and len(novels) == 10:
+                break
 
         return sorted(novels)
 
