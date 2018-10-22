@@ -13,12 +13,10 @@ from gutenberg.cleanup import strip_headers
 from gutenberg.query import get_metadata
 
 from gender_novels import common
-from gender_novels.common import INITIAL_BOOK_STORE, AUTHOR_NAME_REGEX, BASE_PATH
+from gender_novels.common import INITIAL_BOOK_STORE, AUTHOR_NAME_REGEX, BASE_PATH, METADATA_LIST
 
 # TODO: A lot of things
 
-METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
-                 'subject', 'corpus_name', 'notes']
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",

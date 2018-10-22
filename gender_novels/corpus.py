@@ -275,6 +275,11 @@ class Corpus(common.FileLoaderMixin):
         :return: Novel
         """
 
+        if (metadata_field == "date" or metadata_field == "gutenberg_id")
+
+        for novel in self.novels:
+
+
 def get_metadata_fields(corpus_name):
     """
     Gives a list of all metadata fields for corpus
