@@ -190,26 +190,39 @@ def dunn_individual_word(total_words_m_corpus, total_words_f_corpus, wordcount_f
 
     '''
 
-    #function implementation
-    e1 = total_words_m_corpus * (wordcount_male + wordcount_female) / (total_words_m_corpus +
-                                                                      total_words_f_corpus)
-    e2 = total_words_m_corpus * (wordcount_male + wordcount_female) / (total_words_m_corpus
-                                                                       +total_words_f_corpus)
-    # print("e1 valaue: ", e1)
-    # print("e2 value: ", e2)
+def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_word_corpus_1,
+                     count_of_word_corpus_2):
+    '''
+    applies dunning log likelihood to compare individual word usage in male and female corpus
 
-    dunning_log_likelihood = 2 * (wordcount_male * math.log(wordcount_male / e1)) +2*(
-        wordcount_female*math.log(wordcount_female/e2))
+    :param word: desired word to compare
+    :param m_corpus: c.filter_by_gender('male')
+    :param f_corpus: c. filter_by_gender('female')
+    :return: log likelihoods and p value
+    >>> total_words_m_corpus = 8648489
+    >>> total_words_f_corpus = 8700765
+    >>> wordcount_female = 1000
+    >>> wordcount_male = 50
+    >>> dunn_individual_word(total_words_m_corpus,total_words_f_corpus,wordcount_male,wordcount_female)
 
-    # print(math.log10(wordcount_male / e1))  #WHY IS THIS VALUE ZERO??
-    # print(math.log10(wordcount_female / e2))  #WHY IS THIS VALUE ZERO??
+    '''
+    a = count_of_word_corpus_1
+    b = count_of_word_corpus_2
+    c = total_words_corpus_1
+    d = total_words_corpus_2
 
+    e1 = c * (a + b) / (c + d)
+    e2 = d * (a + b) / (c + d)
 
-    if wordcount_male*math.log(wordcount_male/e1) < 0:
+    dunning_log_likelihood = 2 * (a * math.log(a / e1) + b * math.log(b / e2))
+
+    if count_of_word_corpus_1 * math.log(count_of_word_corpus_1 / e1) < 0:
         dunning_log_likelihood = -dunning_log_likelihood
 
-    #p = 1 - chi2.cdf(abs(dunning_log_likelihood),1)
+    p = 1 - chi2.cdf(abs(dunning_log_likelihood), 1)
+
     return dunning_log_likelihood
+
 
 def dunning_total(m_corpus, f_corpus):
     '''
@@ -241,11 +254,12 @@ def dunning_total(m_corpus, f_corpus):
         wordcount_male = wordcounter_male[word]
         if word in wordcounter_female:
             wordcount_female = wordcounter_female[word]
-            dunning_result[word] = dunn_individual_word(totalmale_words,totalfemale_words,
-                                                        wordcount_male,wordcount_female)
-    dunning_result = sorted(dunning_result.items(), key = itemgetter(1))
-    print(dunning_result)
 
+            dunning_word = dunn_individual_word(totalmale_words, totalfemale_words,wordcount_male, wordcount_female)
+            dunning_result[word] = (dunning_word, wordcount_male, wordcount_female)
+    dunning_result = sorted(dunning_result.items(), key=itemgetter(1))
+
+    print(dunning_result)
     return dunning_result
 
 
@@ -292,7 +306,8 @@ class Test(unittest.TestCase):
         m_corpus = c.filter_by_gender('male')
         f_corpus = c.filter_by_gender('female')
         results = dunning_total(m_corpus, f_corpus)
-        print(results)
+        print(results[10::])
+        #print(reversed(results[-100::]))
 
 if __name__ == '__main__':
     unittest.main()
