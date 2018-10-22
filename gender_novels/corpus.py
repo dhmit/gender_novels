@@ -260,7 +260,7 @@ class Corpus(common.FileLoaderMixin):
     def get_novel(self, metadata_field, field_val):
         """
         Returns a specific Novel object from self.novels that has metadata matching field_val for
-        metadata_field.
+        metadata_field.  Otherwise raises a ValueError.
         N.B. This function will only return the first novel in the self.novels (which is sorted as
         defined by the Novel.__lt__ function).  It should only be used if you're certain there is
         only one match in the Corpus or if you're not picky about which Novel you get.
@@ -275,10 +275,14 @@ class Corpus(common.FileLoaderMixin):
         :return: Novel
         """
 
-        if (metadata_field == "date" or metadata_field == "gutenberg_id")
+        if (metadata_field == "date" or metadata_field == "gutenberg_id"):
+            field_val = int(field_val)
 
         for novel in self.novels:
+            if getattr(novel, metadata_field) == field_val:
+                return novel
 
+        raise ValueError("Novel not found")
 
 def get_metadata_fields(corpus_name):
     """
