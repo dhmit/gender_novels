@@ -256,6 +256,25 @@ class Corpus(common.FileLoaderMixin):
             corpus_counter += novel_counter
         return corpus_counter
 
+
+    def get_novel(self, metadata_field, field_val):
+        """
+        Returns a specific Novel object from self.novels that has metadata matching field_val for
+        metadata_field.
+        N.B. This function will only return the first novel in the self.novels (which is sorted as
+        defined by the Novel.__lt__ function).  It should only be used if you're certain there is
+        only one match in the Corpus or if you're not picky about which Novel you get.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_novel("author", "Dickens, Charles")
+        <Novel (dickens_twocities)>
+
+        :param metadata_field: str
+        :param field_val: str/int
+        :return: Novel
+        """
+
 def get_metadata_fields(corpus_name):
     """
     Gives a list of all metadata fields for corpus
