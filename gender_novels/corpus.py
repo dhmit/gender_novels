@@ -24,6 +24,10 @@ class Corpus(common.FileLoaderMixin):
 
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
+        self.load_test_corpus = False
+        if self.corpus_name == 'test_corpus':
+            self.load_test_corpus = True
+            self.corpus_name = 'sample_novels'
         self.novels = []
         if corpus_name is not None:
             self.relative_corpus_path = Path('corpora', self.corpus_name)
@@ -159,6 +163,8 @@ class Corpus(common.FileLoaderMixin):
             novel_metadata['corpus_name'] = self.corpus_name
             this_novel = Novel(novel_metadata_dict=novel_metadata)
             novels.append(this_novel)
+            if self.load_test_corpus and len(novels) == 10:
+                break
 
         return sorted(novels)
 

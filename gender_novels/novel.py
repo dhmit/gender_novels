@@ -2,7 +2,7 @@ import re
 import string
 from collections import Counter
 from pathlib import Path
-
+import os
 
 import nltk
 #nltk as part of speech tagger, requires these two packages
@@ -18,8 +18,8 @@ try:
 except ImportError:
     print('Cannot import gutenberg')
     gutenberg_imported = False
+from gender_novels.common import TEXT_END_MARKERS, TEXT_START_MARKERS, LEGALESE_END_MARKERS, LEGALESE_START_MARKERS
 
-    
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
@@ -221,6 +221,15 @@ class Novel(common.FileLoaderMixin):
 
         return (self.author, self.title, self.date) < (other.author, other.title, other.date)
 
+    def __hash__(self):
+        """
+        Makes the Novel object hashable
+
+        :return:
+        """
+
+        return hash(repr(self))
+
     def _load_novel_text(self):
         """Loads the text of a novel and uses the remove_boilerplate_text() and
         remove_table_of_contents() functions on the text of the novel to remove the boilerplate
@@ -268,32 +277,108 @@ class Novel(common.FileLoaderMixin):
         >>> from gender_novels import novel
         >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
         ...                   'corpus_name': 'sample_novels', 'date': '1818',
-        ...                   'filename': 'austen_persuasion.txt'}
+        ...                   'filename': 'james_highway.txt'}
         >>> austen = novel.Novel(novel_metadata)
         >>> file_path = Path('corpora', austen.corpus_name, 'texts', austen.filename)
         >>> raw_text = austen.load_file(file_path)
-        >>> raw_text = austen._remove_boilerplate_text(text)
+        >>> raw_text = austen._remove_boilerplate_text(raw_text)
         >>> title_line = raw_text[0:raw_text.find('\\n')]
         >>> title_line
-        'Persuasion'
+        "THE KING'S HIGHWAY"
+
+        TODO: so apparently neither version of remove_boilerplate_text works on Persuasion, and it doesn't look like it's
+        easily fixable/worth fixing
         """
 
         if gutenberg_imported:
-            return strip_headers(text.strip())
+            return strip_headers(text).strip()
         else:
-            return self._remove_boilerplate_without_gutenberg(text)
+            return self._remove_boilerplate_text_without_gutenberg(text)
 
-    def _remove_boilerplate_without_gutenberg(self, text):
-        if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
-            end_intro_boilerplate = text.find(
-                '*** START OF THIS PROJECT GUTENBERG EBOOK')
-            # second set of *** indicates start
-            start_novel = text.find('***', end_intro_boilerplate + 5) + 3
-            end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
-            text = text[start_novel:end_novel]
-        return text
 
-      
+    def _remove_boilerplate_text_without_gutenberg(self, text):
+        """
+        Removes the boilerplate text from an input string of a novel.
+        Currently only supports boilerplate removal for Project Gutenberg ebooks. Uses the
+        strip_headers() function, somewhat inelegantly copy-pasted from the gutenberg module, which can remove even nonstandard
+        headers.
+
+        (see book number 3780 for one example of a nonstandard header — james_highway.txt in our
+        sample corpus; or book number 105, austen_persuasion.txt, which uses the standard Gutenberg
+        header but has had some info about the ebook's production inserted after the standard
+        boilerplate).
+
+        :return: str
+
+        >>> from gender_novels import novel
+        >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
+        ...                   'corpus_name': 'sample_novels', 'date': '1818',
+        ...                   'filename': 'james_highway.txt'}
+        >>> austen = novel.Novel(novel_metadata)
+        >>> file_path = Path('corpora', austen.corpus_name, 'texts', austen.filename)
+        >>> raw_text = austen.load_file(file_path)
+        >>> raw_text = austen._remove_boilerplate_text_without_gutenberg(raw_text)
+        >>> title_line = raw_text[0:raw_text.find('\\n')]
+        >>> title_line
+        "THE KING'S HIGHWAY"
+        """
+
+        # # old method
+        # if text.find('*** START OF THIS PROJECT GUTENBERG EBOOK') > -1:
+        #     end_intro_boilerplate = text.find(
+        #         '*** START OF THIS PROJECT GUTENBERG EBOOK')
+        #     # second set of *** indicates start
+        #     start_novel = text.find('***', end_intro_boilerplate + 5) + 3
+        #     end_novel = text.find('*** END OF THIS PROJECT GUTENBERG EBOOK')
+        #     text = text[start_novel:end_novel]
+        # return text
+
+        # new method copy-pasted from Gutenberg library
+        lines = text.splitlines()
+        sep = str(os.linesep)
+
+        out = []
+        i = 0
+        footer_found = False
+        ignore_section = False
+
+        for line in lines:
+            reset = False
+
+            if i <= 600:
+                # Check if the header ends here
+                if any(line.startswith(token) for token in TEXT_START_MARKERS):
+                    reset = True
+
+                # If it's the end of the header, delete the output produced so far.
+                # May be done several times, if multiple lines occur indicating the
+                # end of the header
+                if reset:
+                    out = []
+                    continue
+
+            if i >= 100:
+                # Check if the footer begins here
+                if any(line.startswith(token) for token in TEXT_END_MARKERS):
+                    footer_found = True
+
+                # If it's the beginning of the footer, stop output
+                if footer_found:
+                    break
+
+            if any(line.startswith(token) for token in LEGALESE_START_MARKERS):
+                ignore_section = True
+                continue
+            elif any(line.startswith(token) for token in LEGALESE_END_MARKERS):
+                ignore_section = False
+                continue
+
+            if not ignore_section:
+                out.append(line.rstrip(sep))
+                i += 1
+
+        return sep.join(out).strip()
+
     def get_tokenized_text(self):
         """
         Tokenizes the text and returns it as a list of tokens

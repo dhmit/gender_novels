@@ -12,3 +12,5 @@ gutenberg
 pywikibot
 chardet
 pandas
+more-itertools
+seaborn
