@@ -273,6 +273,11 @@ class Corpus(common.FileLoaderMixin):
         <Novel (dickens_twocities)>
         >>> c.get_novel("date", '1857')
         <Novel (bronte_professor)>
+        >>> try:
+        ...     c.get_novel("meme_quality", "over 9000")
+        ... except AttributeError as exception:
+        ...     print(exception)
+        Metadata field meme_quality invalid for this corpus
 
         :param metadata_field: str
         :param field_val: str/int
