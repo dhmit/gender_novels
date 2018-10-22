@@ -95,7 +95,7 @@ def get_counts_by_pos(freqs):
     This functions returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
     and the value is a counter object of words of that part of speech and their frequencies.
     It also filters out words like "is", "the". We used `nltk`'s stop words function for filtering.
-    
+
     >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
     {'VBN': Counter({'baked': 1}), 'NN': Counter({'chair': 3}), 'VBG': Counter({'swimming': 4})}
     >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
@@ -685,7 +685,6 @@ class Test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # unittest.main()
+    unittest.main()
     run_dist_inst(Corpus('sample_novels'))
     # run_gender_freq(Corpus('sample_novels'))
-
