@@ -9,6 +9,7 @@
 
     <!-- DH Lab modules -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+    <script type="text/javascript" src="{{ url_for('static', filename='js/convertMarkdown.js') }}"></script>
 
     <!-- Bootstrap modules -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -26,9 +27,71 @@
 </head>
 
 <body>
-{% block content %}{% endblock content %}
+    <!-- Header -->
+    <div class="container-fluid header">
+        <div class="row justify-content-center align-items-center">
+            <div class="col">
+                <h1 class="header-text display-2">The Gender Novels Project</h1>
+            </div>
+        </div>
+    </div>
 
-{{ text }}
+    <!-- Navbar -->
+    <div class="container-fluid header-nav">
+        <nav class="navbar navbar-expand-lg">
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Overview<span class="sr-only">(current)
+                        </span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="corpora.html">Corpora</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Analyses
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="topic_one.html">Topic One</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="team.html">Our Team</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="copyright.html">Copyright</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="testing_tutorial.html">Testing Tutorial</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="test_page.html">Test Page</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+{% block content %}{% endblock content %}
+    <!-- Footer -->
+    <div class="container-fluid footer">
+        <div class="row">
+            <div class="col-9">
+            </div>
+            <div class="col-2 align-self-center" align="right">
+                <p class="github-text align-self-center">
+                    Visit our GitHub to view and download the code we used for this project
+                </p>
+            </div>
+            <div class="col-1 align-self-center" align="right">
+                <a href="https://github.com/dhmit/gender_novels" target="_blank">
+                    <img src="{{ url_for('static', filename='graphics/GitHub_light.png') }}"
+                         class="github-logo">
+                </a>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

@@ -1,11 +1,23 @@
 window.onload = () => {
-    /*
-    If there were multiple bodies that required "variable" content
-    from within local markdown files, this could be converted into a
-    foreach loop or something similar
-     */
-  convertMarkdown("overview", "gender_novels_overview");
+    loadPageContent();
 };
+
+function loadPageContent() {
+    let content_dict = {};
+
+    content_dict["overview"] = "gender_novels_overview";
+    content_dict["copyright"] = "copyright_info";
+    content_dict["topic-one"] = "gender_novels_analysis";
+    content_dict["testing-tutorial"] = "testing_tutorial";
+    content_dict["test-page"] = "test";
+
+    for (let id in content_dict) {
+        try {
+            convertMarkdown(id, content_dict[id]);
+        } catch {
+        }
+    }
+}
 
 function convertMarkdown(id, filename)
 {
