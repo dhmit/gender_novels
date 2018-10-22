@@ -301,7 +301,8 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
     :return:
     """
 
-    valid_encodings = ['utf-8', 'utf8', 'UTF-8-SIG', 'ascii', 'iso-8859-1', 'ISO-8859-1']
+    valid_encodings = ['utf-8', 'utf8', 'UTF-8-SIG', 'ascii', 'iso-8859-1', 'ISO-8859-1',
+                       'Windows-1252']
 
     # if the source_path or target_path is a string, turn to Path object.
     if isinstance(source_path, str):
