@@ -1,10 +1,78 @@
+/* External assets */
+@import url('https://fonts.googleapis.com/css?family=Sorts+Mill+Goudy');
+
 /* Base HTML elements */
+
+body {
+    font-size: large;
+}
 
 div {
     padding: 5px;
+    font-family: "Sorts Mill Goudy";
 }
 
 p {
     word-wrap: break-word;
+}
+
+/* Base Bootstrap classes */
+
+/* Custom classes */
+
+.header {
+    background-color: #D23641;
+}
+
+.header-text {
+    color: black;
+    text-align: center;
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    margin-top: 1rem;
+}
+
+.content {
+    background-color: #EAD3A8;
+}
+
+/* Navbar */
+.header-nav {
+    background-color: #EAD3A8;
+    margin-bottom: -1rem;
+}
+
+.nav-link {
+    color: black;
+}
+
+a:hover {
+    color: #D23641 !important;
+}
+
+/* Topic content */
+
+.topic-content img {
+    height: auto;
+    width: auto;
+    max-height: 75%;
+    max-width: 75%;
+}
+
+/* Footer */
+
+.footer {
+    background-color: #34282C;
+}
+
+.github-text {
+    color: white;
+    margin-top: 1rem;
+}
+
+.github-logo {
+    height: auto;
+    width: auto;
+    max-height: 60px;
+    max-width: 60px;
 }
 
