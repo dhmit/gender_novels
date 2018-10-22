@@ -275,6 +275,10 @@ class Corpus(common.FileLoaderMixin):
         :return: Novel
         """
 
+        if metadata_field not in get_metadata_fields(self.corpus_name):
+            raise AttributeError("Metadata field invalid for this corpus")
+        # TODO: change this to work with Charlotte's functions once she adds them
+
         if (metadata_field == "date" or metadata_field == "gutenberg_id"):
             field_val = int(field_val)
 
