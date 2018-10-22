@@ -12,9 +12,9 @@ METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication
                  'subject', 'corpus_name', 'notes']
 
 # books from gutenberg downloaded from Dropbox folder shared by Keith
-INITIAL_BOOK_STORE = r'corpora/test_books_30'
+INITIAL_BOOK_STORE = r'corpora/test_books_30' #TODO: change to actual directory when generating corpus
 # plus some extras
-FINAL_BOOK_STORE = r'test_corpus'
+FINAL_BOOK_STORE = r'test_corpus' #TODO: change to actual directory when generating corpus
 AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*(\((?P<real_name>(\w+ )*\w*)\))*"
 outputDir = 'converted'
 
@@ -69,6 +69,10 @@ class FileLoaderMixin:
         >>> novel_text_str = f.load_file(novel_path_str)
         >>> novel_text == novel_text_str
         True
+        >>> novel_path2 = Path(r"corpora/test_books_30/20-0.txt")
+        >>> paradise_lost = f.load_file(novel_path2)
+        >>> paradise_lost[1:61]
+        'The Project Gutenberg EBook of Paradise Lost, by John Milton'
 
         Returns a str (txt file) or list of strs (csv file)
         """

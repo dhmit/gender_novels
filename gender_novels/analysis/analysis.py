@@ -5,15 +5,18 @@ This file is intended for individual analyses of the gender_novels project
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 import nltk
+import math
+from operator import itemgetter
 nltk.download('stopwords', quiet=True)
 #TODO: add prior two lines to setup, necessary to run
 import collections
+from scipy.stats import chi2
 from statistics import mean, median, mode
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
 import numpy as np
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 
 def test_function():
@@ -89,7 +92,7 @@ def get_counts_by_pos(freqs):
     This functions returns a dictionary where each key is a part of speech tag (e.g. 'NN' for nouns)
     and the value is a counter object of words of that part of speech and their frequencies.
     It also filters out words like "is", "the". We used `nltk`'s stop words function for filtering.
-    
+
     >>> get_counts_by_pos(collections.Counter({'baked':1,'chair':3,'swimming':4}))
     {'VBN': Counter({'baked': 1}), 'NN': Counter({'chair': 3}), 'VBG': Counter({'swimming': 4})}
     >>> get_counts_by_pos(collections.Counter({'is':10,'usually':7,'quietly':42}))
@@ -169,6 +172,85 @@ def display_gender_freq(d, title):
     plt.savefig(filepng, bbox_inches='tight')
     plt.savefig(filepdf, bbox_inches='tight')
 
+def dunn_individual_word(total_words_m_corpus, total_words_f_corpus, wordcount_female,
+                         wordcount_male):
+
+    '''
+    applies dunning log likelihood to compare individual word usage in male and female corpus
+
+    :param word: desired word to compare
+    :param m_corpus: c.filter_by_gender('male')
+    :param f_corpus: c. filter_by_gender('female')
+    :return: log likelihoods and p value
+        >>> total_words_m_corpus = 8648489
+        >>> total_words_f_corpus = 8700765
+        >>> wordcount_female = 1000
+        >>> wordcount_male = 50
+        >>> dunn_individual_word(total_words_m_corpus,total_words_f_corpus,wordcount_male,wordcount_female)
+
+    '''
+
+    #function implementation
+    e1 = total_words_m_corpus * (wordcount_male + wordcount_female) / (total_words_m_corpus +
+                                                                      total_words_f_corpus)
+    e2 = total_words_m_corpus * (wordcount_male + wordcount_female) / (total_words_m_corpus
+                                                                       +total_words_f_corpus)
+    # print("e1 valaue: ", e1)
+    # print("e2 value: ", e2)
+
+    dunning_log_likelihood = 2 * (wordcount_male * math.log(wordcount_male / e1)) +2*(
+        wordcount_female*math.log(wordcount_female/e2))
+
+    # print(math.log10(wordcount_male / e1))  #WHY IS THIS VALUE ZERO??
+    # print(math.log10(wordcount_female / e2))  #WHY IS THIS VALUE ZERO??
+
+
+    if wordcount_male*math.log(wordcount_male/e1) < 0:
+        dunning_log_likelihood = -dunning_log_likelihood
+
+    #p = 1 - chi2.cdf(abs(dunning_log_likelihood),1)
+    return dunning_log_likelihood
+
+def dunning_total(m_corpus, f_corpus):
+    '''
+    goes through gendered corpora
+    runs dunning_indiviidual on all words that are in BOTH corpora
+    returns sorted dictionary of words and their dunning scores
+    shows top 10 and lowest 10 words
+
+    :return: dictionary of common word with dunning value and p value
+
+         >>> c = Corpus('sample_novels')
+         >>> m_corpus = c.filter_by_gender('male')
+         >>> f_corpus = c.filter_by_gender('female')
+         >>> dunning_total(m_corpus, f_corpus)
+    '''
+    wordcounter_male = m_corpus.get_wordcount_counter()
+    wordcounter_female = f_corpus.get_wordcount_counter()
+
+    totalmale_words = 0
+    totalfemale_words = 0
+
+    for male_word in wordcounter_male:
+        totalmale_words += wordcounter_male[male_word]
+    for female_word in wordcounter_female:
+        totalfemale_words += wordcounter_female[female_word]
+
+    dunning_result = {}
+    for word in wordcounter_male:
+        wordcount_male = wordcounter_male[word]
+        if word in wordcounter_female:
+            wordcount_female = wordcounter_female[word]
+            dunning_result[word] = dunn_individual_word(totalmale_words,totalfemale_words,
+                                                        wordcount_male,wordcount_female)
+    dunning_result = sorted(dunning_result.items(), key = itemgetter(1))
+    print(dunning_result)
+
+    return dunning_result
+
+
+import unittest
+
 def instance_dist(novel, word):
     """
     >>> from gender_novels import novel
@@ -203,6 +285,14 @@ def instance_dist(novel, word):
     return output
 
 
-if __name__ == '__main__':
-    test_function()
+class Test(unittest.TestCase):
+    def test_dunning_total(self):
+        c = Corpus('sample_novels')
+        m_corpus = c.filter_by_gender('male')
+        f_corpus = c.filter_by_gender('female')
+        results = dunning_total(m_corpus, f_corpus)
+        print(results)
 
+
+if __name__ == '__main__':
+    unittest.main()
