@@ -4,5 +4,5 @@ module is imported in gender_novels
 """
 
 if __name__ == '__main__':
-    from dh_testers.warningMultiprocess import main
+    from dh_testers.multiprocess import main
     main()

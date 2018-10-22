@@ -8,26 +8,39 @@ app.config['DEBUG'] = True
 
 print(app.config)
 
+"""
+All of these functions render each individual subpage of the overall website
+so that the Gender Novels landing page is able to link to them
+"""
 
 @app.route('/')
-def render_gender_novels():
-    # Reads the CSV of the corpora, translates it to HTML, then saves it in corpora_table.html
-    temp = pd.read_csv("../../gender_novels/corpora/sample_novels/sample_novels.csv")
-    temp.to_html("templates/corpora_table.html")
-
-    return render_template('gender_novels.html', corpora_table="Corpora table goes here")
+def render_overview():
+    return render_template('overview.html')
 
 
-@app.route('/<string:text>/')
-def render_base_text(text):
-    """
-    Renders subpage with base.html template that describes our gender novels research
-    :param text: placeholder in base.html written as {{ text }} for words that will vary based on subpage
-    :return: subpage with {{ text }} substituted with actual text such as the About page
+@app.route('/copyright.html')
+def render_copyright():
+    return render_template('copyright.html')
 
-    TODO (Xu): Figure out how to link other html files to base.html
-    """
-    return render_template('base.html', text = text)
+@app.route('/corpora.html')
+def render_corpora():
+    return render_template('corpora.html')
+
+@app.route('/topic_one.html')
+def render_topic_one():
+    return render_template('topic_one.html')
+
+@app.route('/testing_tutorial.html')
+def render_testing_tutorial():
+    return render_template('testing_tutorial.html')
+
+@app.route('/test_page.html')
+def render_test_page():
+    return render_template('test_page.html')
+
+@app.route('/team.html')
+def render_team():
+    return render_template('team.html')
 
 
 if __name__ == '__main__':

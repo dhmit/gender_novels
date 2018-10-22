@@ -14,6 +14,91 @@ INITIAL_BOOK_STORE = r'corpora/test_books_30' #TODO: change to actual directory 
 # plus some extras
 AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*(\((?P<real_name>(\w+ )*\w*)\))*"
 outputDir = 'converted'
+TEXT_START_MARKERS = frozenset((
+    "*END*THE SMALL PRINT",
+    "*** START OF THE PROJECT GUTENBERG",
+    "*** START OF THIS PROJECT GUTENBERG",
+    "This etext was prepared by",
+    "E-text prepared by",
+    "Produced by",
+    "Distributed Proofreading Team",
+    "Proofreading Team at http://www.pgdp.net",
+    "http://gallica.bnf.fr)",
+    "      http://archive.org/details/",
+    "http://www.pgdp.net",
+    "by The Internet Archive)",
+    "by The Internet Archive/Canadian Libraries",
+    "by The Internet Archive/American Libraries",
+    "public domain material from the Internet Archive",
+    "Internet Archive)",
+    "Internet Archive/Canadian Libraries",
+    "Internet Archive/American Libraries",
+    "material from the Google Print project",
+    "*END THE SMALL PRINT",
+    "***START OF THE PROJECT GUTENBERG",
+    "This etext was produced by",
+    "*** START OF THE COPYRIGHTED",
+    "The Project Gutenberg",
+    "http://gutenberg.spiegel.de/ erreichbar.",
+    "Project Runeberg publishes",
+    "Beginning of this Project Gutenberg",
+    "Project Gutenberg Online Distributed",
+    "Gutenberg Online Distributed",
+    "the Project Gutenberg Online Distributed",
+    "Project Gutenberg TEI",
+    "This eBook was prepared by",
+    "http://gutenberg2000.de erreichbar.",
+    "This Etext was prepared by",
+    "This Project Gutenberg Etext was prepared by",
+    "Gutenberg Distributed Proofreaders",
+    "Project Gutenberg Distributed Proofreaders",
+    "the Project Gutenberg Online Distributed Proofreading Team",
+    "**The Project Gutenberg",
+    "*SMALL PRINT!",
+    "More information about this book is at the top of this file.",
+    "tells you about restrictions in how the file may be used.",
+    "l'authorization à les utilizer pour preparer ce texte.",
+    "of the etext through OCR.",
+    "*****These eBooks Were Prepared By Thousands of Volunteers!*****",
+    "We need your donations more than ever!",
+    " *** START OF THIS PROJECT GUTENBERG",
+    "****     SMALL PRINT!",
+    '["Small Print" V.',
+    '      (http://www.ibiblio.org/gutenberg/',
+    'and the Project Gutenberg Online Distributed Proofreading Team',
+    'Mary Meehan, and the Project Gutenberg Online Distributed Proofreading',
+    '                this Project Gutenberg edition.',
+))
+TEXT_END_MARKERS = frozenset((
+    "*** END OF THE PROJECT GUTENBERG",
+    "*** END OF THIS PROJECT GUTENBERG",
+    "***END OF THE PROJECT GUTENBERG",
+    "End of the Project Gutenberg",
+    "End of The Project Gutenberg",
+    "Ende dieses Project Gutenberg",
+    "by Project Gutenberg",
+    "End of Project Gutenberg",
+    "End of this Project Gutenberg",
+    "Ende dieses Projekt Gutenberg",
+    "        ***END OF THE PROJECT GUTENBERG",
+    "*** END OF THE COPYRIGHTED",
+    "End of this is COPYRIGHTED",
+    "Ende dieses Etextes ",
+    "Ende dieses Project Gutenber",
+    "Ende diese Project Gutenberg",
+    "**This is a COPYRIGHTED Project Gutenberg Etext, Details Above**",
+    "Fin de Project Gutenberg",
+    "The Project Gutenberg Etext of ",
+    "Ce document fut presente en lecture",
+    "Ce document fut présenté en lecture",
+    "More information about this book is at the top of this file.",
+    "We need your donations more than ever!",
+    "END OF PROJECT GUTENBERG",
+    " End of the Project Gutenberg",
+    " *** END OF THIS PROJECT GUTENBERG",
+))
+LEGALESE_START_MARKERS = frozenset(("<<THIS ELECTRONIC VERSION OF",))
+LEGALESE_END_MARKERS = frozenset(("SERVICE THAT CHARGES FOR DOWNLOAD",))
 
 # TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
 
@@ -198,10 +283,12 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
     :param target_path: str or Path
     :param target_encoding: str
 
+    >>> from gender_novels.common import BASE_PATH
     >>> text = ' ¶¶¶¶ here is a test file'
     >>> source_path = Path(BASE_PATH, 'source_file.txt')
     >>> target_path = Path(BASE_PATH, 'target_file.txt')
-    >>> with codecs.open(source_path, 'w', 'iso-8859-1') as source: source.write(text)
+    >>> with codecs.open(source_path, 'w', 'iso-8859-1') as source:
+    ...     source.write(text)
     >>> get_text_file_encoding(source_path)
     'ISO-8859-1'
     >>> convert_text_file_to_new_encoding(source_path, target_path, target_encoding='utf-8')
@@ -244,4 +331,4 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
-    main_test()
+    main_test(import_plus_relative=True) # this allows for relative calls in the import.
