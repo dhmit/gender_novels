@@ -4,6 +4,8 @@ import urllib.request
 from pathlib import Path
 import codecs
 
+import seaborn as sns
+
 DEBUG = False
 
 BASE_PATH = Path(os.path.abspath(os.path.dirname(__file__)))
@@ -329,6 +331,19 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
     with codecs.open(target_path, 'w', encoding=target_encoding) as target_file:
         target_file.write(text)
 
+def load_graph_settings(show_grid_lines=True):
+    '''
+    This function sets the seaborn graph settings to the defaults for our project.
+    Defaults to displaying gridlines. To remove gridlines, call with False.
+    :return:
+    '''
+    show_grid_lines_string = str(show_grid_lines)
+    palette = "colorblind"
+    style_name = "white"
+    style_list = {'axes.edgecolor': '.6', 'grid.color': '.9', 'axes.grid': show_grid_lines_string,
+                  'font.family': 'serif'}
+    sns.set_color_codes(palette)
+    sns.set_style(style_name, style_list)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test

@@ -313,9 +313,8 @@ class Corpus(common.FileLoaderMixin):
         2269
 
         """
-        c = Corpus('sample_novels')
         corpus_counter = Counter()
-        for current_novel in c.novels:
+        for current_novel in self.novels:
             novel_counter = current_novel.get_wordcount_counter()
             corpus_counter += novel_counter
         return corpus_counter
