@@ -20,20 +20,31 @@ def load_jars(path_to_jar, path_to_models_jar):
         urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
 
 
-def count_gender_subj_obj(tree):
+def count_gender_subj_obj(triples, dependency_parser):
     """
-    This function takes in an dependency tree for a sentence and counts female and male subject and
-    object occurences
+    This function takes in a list of dependency triples for a sentence and counts female and male
+    subject and object occurrences
 
     We have chosen not to include indirect object positions because whether or not they represent
     passivity (at least, compared to being a direct object) is debatable
 
-    :param tree: An array which is a dependency tree
-    :return: the counts of male and female subject and object occurences as a tuple of 4
+    :param triples: A list of dependency triples
+    :return: the counts of male and female subject and object occurrences as a tuple of 4
+
+    >>> path_to_jar = "assets/stanford-parser.jar"
+    >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
+    >>> load_jars(path_to_jar, path_to_models_jar)
+    >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+    >>> sentence = "She hit him first"
+    >>> result = dependency_parser.raw_parse(sentence.lower())
+    >>> parse = next(result)
+    >>> triples = list(parse.triples())
+    >>> count_gender_subj_obj(triples, dependency_parser)
+    (0, 1, 1, 0)
     """
 
     male_subj_count = male_obj_count = female_subj_count = female_obj_count = 0
-    for triple in tree:
+    for triple in triples:
         if triple[1] == "nsubj" and triple[2][0] == "he":
             male_subj_count += 1
         if triple[1] == "dobj" and triple[2][0] == "him":
@@ -46,23 +57,32 @@ def count_gender_subj_obj(tree):
     return (male_subj_count, male_obj_count, female_subj_count, female_obj_count)
 
 
-def parse_sentence(sentence):
+def parse_sentence(sentence, dependency_parser):
     """
     This function does all sentence parsing (we cannot split this up into separate functions for
-    performance reasons (each additional function will require iterating over the entire tree again)
+    performance reasons (each additional function will require iterating over the entire list again)
     :param sentence: sentence (string) we want to parse
     :return: the counts of male and female subject and object occurrences as a tuple of 4
+    (this should later return more info about adjectives and verbs related to gendered pronouns)
+
+    >>> path_to_jar = "assets/stanford-parser.jar"
+    >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
+    >>> load_jars(path_to_jar, path_to_models_jar)
+    >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+    >>> sentence = "She hit him first"
+    >>> parse_sentence(sentence)
+    (0, 1, 1, 0)
     """
+
     result = dependency_parser.raw_parse(sentence.lower())
     parse = next(result)
     # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
     # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
     triples = list(parse.triples())
-    tree = list(triples)
-    return count_gender_subj_obj(tree)
+    return count_gender_subj_obj(triples, dependency_parser)
 
 
-def parse_novel(novel):
+def parse_novel(novel, dependency_parser):
     """
     This function calls the parse_sentence function for all sentences in the novel
     :param novel: Novel object we want to analyze
@@ -82,8 +102,10 @@ def parse_novel(novel):
     return (t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
 
 
-if __name__ == "__main__":
-
+def test_analysis():
+    """
+    This function contains all analysis code to be run (previously in main function)
+    """
     # create dependency parser
     path_to_jar = "assets/stanford-parser.jar"
     path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
@@ -94,17 +116,12 @@ if __name__ == "__main__":
     novel = novels[0]
     # print(parse_novel(novel))
 
-    sentences = {"She hit him before he could hit her back"}
+    sentences = {"She told him first"}
 
     for sentence in sentences:
-        result = dependency_parser.raw_parse(sentence.lower())
-        parse = next(result)
-        # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
-        # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
-        tree = list(parse.triples())
-        print(sentence)
-        print("--")
-        print(parse.tree())
-        print("--")
-        print(count_gender_subj_obj(tree))
-        print()
+        result = parse_sentence(sentence, dependency_parser)
+        print(result)
+
+
+if __name__ == "__main__":
+    test_analysis()
