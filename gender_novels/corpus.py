@@ -16,18 +16,86 @@ class Corpus(common.FileLoaderMixin):
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
     >>> type(c.novels), len(c)
-    (<class 'list'>, 94)
+    (<class 'list'>, 99)
 
     >>> c.novels[0].author
     'Aanrud, Hans'
+
+    You can use 'test_corpus' to load a test corpus of 10 novels:
+    >>> test_corpus = Corpus('test_corpus')
+    >>> len(test_corpus)
+    10
+
     """
 
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
+        if self.corpus_name == 'gutenberg':
+            self._download_gutenberg_if_not_locally_available()
+
+        self.load_test_corpus = False
+        if self.corpus_name == 'test_corpus':
+            self.load_test_corpus = True
+            self.corpus_name = 'sample_novels'
         self.novels = []
         if corpus_name is not None:
             self.relative_corpus_path = Path('corpora', self.corpus_name)
             self.novels = self._load_novels()
+
+    def _download_gutenberg_if_not_locally_available(self):
+        """
+        Checks if the gutenberg corpus is available locally. If not, downloads the corpus
+        and extracts it to corpora/gutenberg
+
+        No tests because the function depends on user input
+
+        :return:
+        """
+
+        import os
+        gutenberg_path = Path(common.BASE_PATH, 'corpora', 'gutenberg')
+
+        # if there are more than 4000 text files available, we know that the corpus was downloaded
+        # and can return
+        try:
+            no_gutenberg_novels=  len(os.listdir(Path(gutenberg_path, 'texts')))
+            if no_gutenberg_novels > 4000:
+                gutenberg_available = True
+            else:
+                gutenberg_available = False
+        # if the texts path was not found, we know that we need to download the corpus
+        except FileNotFoundError:
+            gutenberg_available = False
+
+        if not gutenberg_available:
+
+            print("The Project Gutenberg corpus is currently not available on your system.",
+                  "It consists of more than 4000 novels and 1.8 GB of data.")
+            download_prompt = input(
+                  "If you want to download the corpus, please enter (y). Any other input will "
+                  "terminate the program: ")
+            if not download_prompt in ['y', '(y)']:
+                raise ValueError("Project Gutenberg corpus will not be downloaded.")
+
+            import zipfile
+            import urllib
+            url = 'https://s3-us-west-2.amazonaws.com/gutenberg-cache/gutenberg_corpus.zip'
+            urllib.request.urlretrieve(url, 'gutenberg_corpus.zip')
+            zipf = zipfile.ZipFile('gutenberg_corpus.zip')
+            if not os.path.isdir(gutenberg_path):
+                os.mkdir(gutenberg_path)
+            zipf.extractall(gutenberg_path)
+            os.remove('gutenberg_corpus.zip')
+
+            # check that we now have 4000 novels available
+            try:
+                no_gutenberg_novels = len(os.listdir(Path(gutenberg_path, 'texts')))
+                print(f'Successfully downloaded {no_gutenberg_novels} novels.')
+            except FileNotFoundError:
+                raise FileNotFoundError("Something went wrong while downloading the gutenberg"
+                                        "corpus.")
+
+
 
     def __len__(self):
         """
@@ -41,7 +109,7 @@ class Corpus(common.FileLoaderMixin):
 
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
-        38
+        39
 
         :return: int
         """
@@ -143,10 +211,6 @@ class Corpus(common.FileLoaderMixin):
 
     def _load_novels(self):
         novels = []
-        load_test_corpus = False
-        if self.corpus_name == 'test_corpus':
-            load_test_corpus = True
-            self.corpus_name = 'sample_novels'
 
         relative_csv_path = (self.relative_corpus_path
                              / f'{self.corpus_name}.csv')
@@ -163,7 +227,7 @@ class Corpus(common.FileLoaderMixin):
             novel_metadata['corpus_name'] = self.corpus_name
             this_novel = Novel(novel_metadata_dict=novel_metadata)
             novels.append(this_novel)
-            if load_test_corpus and len(novels) == 10:
+            if self.load_test_corpus and len(novels) == 10:
                 break
 
         return sorted(novels)
@@ -256,6 +320,97 @@ class Corpus(common.FileLoaderMixin):
             corpus_counter += novel_counter
         return corpus_counter
 
+    def get_corpus_metadata(self):
+        """
+        This function returns a sorted list of all metadata fields
+        in the corpus as strings. This is different from the get_metadata_fields;
+        this returns the fields which are specific to the corpus it is being called on.
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_corpus_metadata()
+        ['author', 'author_gender', 'corpus_name', 'country_publication', 'date', 'filename', 'notes', 'title']
+
+        :return: list
+        """
+        metadata_fields = set()
+        for novel in self.novels:
+            for field in getmembers(novel):
+                metadata_fields.add(field)
+        return sorted(list(metadata_fields))
+
+    def get_field_vals(self,field):
+        """
+        This function returns a sorted list of all values for a
+        particular metadata field as strings.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_field_vals('corpus_name')
+        ['sample_novels']
+
+        :param field: str
+        :return: list
+        """
+        metadata_fields = self.get_corpus_metadata()
+
+        if field not in metadata_fields:
+            raise ValueError(
+                f'\'{field}\' is not a valid metadata field for this corpus'
+            )
+
+        values = set()
+        for novel in self.novels:
+            values.add(getattr(novel,field))
+
+        return sorted(list(values))
+
+    def subcorpus(self,metadata_field,field_value):
+        """
+        This method takes a metadata field and value of that field and returns
+        a new Corpus object which includes the subset of movels in the original
+        Corpus that have the specified value for the specified field.
+
+        :param metadata_field: str
+        :param field_value: str
+        :return: Corpus
+        """
+        pass
+
+    def multi_filter(self,characteristic_dict):
+        """
+        This method takes a dictionary of metadata fields and corresponding values
+        and returns a Corpus object which is the subcorpus of the input corpus which
+        satisfies all the specified constraints.
+
+        #>>> from gender_novels.corpus import Corpus
+        #>>> c = Corpus('sample_novels')
+        #>>> characteristics = {'author':'female',
+                                'country_publication':'England'}
+        #>>> subcorpus_multi_filtered = c.multi_filter(characteristics)
+        #>>> female_subcorpus = c.filter_by_gender('female')
+        #>>> subcorpus_repeated_method = female_subcorpus.Subcorpus('country_publication','England')
+        #>>> subcorpus_multi_filtered == subcorpus_repeated_method
+        True
+
+        :param characteristic_dict: dict
+        :return: Corpus
+        """
+
+        new_corp = self.copy()
+        metadata_fields = self.get_corpus_metadata()
+
+        for field in dict:
+            if field not in metadata_fields:
+                raise ValueErro(
+                    f'\'{field}\' is not a valid metadata field for this corpus'
+                )
+                new_corp.subcorpus(field,characteristic_dict[field])
+
+        return new_corp
+
+        #TODO: add date range support
+        #TODO: apply all filters at once instead of recursing Subcorpus method
+
 
     def get_novel(self, metadata_field, field_val):
         """
@@ -347,6 +502,9 @@ def get_metadata_fields(corpus_name):
         return ['author', 'date', 'title', 'country_publication', 'author_gender', 'filename', 'notes']
     else:
         return common.METADATA_LIST
+
+
+
 
 
 if __name__ == '__main__':
