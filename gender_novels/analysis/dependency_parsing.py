@@ -2,6 +2,7 @@ import urllib
 from nltk.parse.stanford import StanfordDependencyParser
 from nltk.tokenize import sent_tokenize
 from gender_novels.corpus import Corpus
+from gender_novels.novel import Novel
 import os.path
 
 def get_parser(path_to_jar, path_to_models_jar):
@@ -85,8 +86,12 @@ def parse_novel(novel, parser):
 
     >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> novels = Corpus('sample_novels').novels
-    >>> novel = novels[0]
-    >>> parse_novel(novel, parser)
+    >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+    ...                   'corpus_name': 'sample_novels', 'date': '1900',
+    ...                   'filename': None, 'text': "He told her"}
+    >>> toy_novel = Novel(novel_metadata)
+    >>> parse_novel(toy_novel, parser)
+    (1, 0, 1, 0)
 
     """
 
@@ -101,7 +106,7 @@ def parse_novel(novel, parser):
         t_female_obj_count += female_obj_count
         # print(sentence)
         # print cumulative counts
-        print(t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
+        # print(t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
     return (t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
 
 
