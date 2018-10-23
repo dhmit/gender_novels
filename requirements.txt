@@ -13,3 +13,4 @@ pywikibot
 chardet
 pandas
 scipy
+more-itertools
