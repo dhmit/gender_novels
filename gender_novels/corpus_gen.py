@@ -26,8 +26,7 @@ COUNTRY_ID_TO_NAME = {"Q30":  "United States", "Q145": "United Kingdom", "Q21": 
                       "Q408": "Australia", "Q2886622": "Narnia"}
 
 # This directory contains 11 sample books.
-#GUTENBERG_RSYNC_PATH = Path(BASE_PATH, 'corpora', 'gutenberg_mirror_sample')
-GUTENBERG_RSYNC_PATH = Path('/home/stephan/gutenberg_mirror')
+GUTENBERG_RSYNC_PATH = Path(BASE_PATH, 'corpora', 'gutenberg_mirror_sample')
 
 
 def generate_corpus_gutenberg():
