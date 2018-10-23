@@ -85,8 +85,8 @@ def parse_novel(novel, parser):
     # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
     # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
     tree = list(result)
-    (t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count) = count_gender_subj_obj(tree)
-    return (t_male_subj_count, t_male_obj_count, t_female_subj_count, t_female_obj_count)
+    counts = count_gender_subj_obj(tree)
+    return counts
 
 
 def test_analysis():
