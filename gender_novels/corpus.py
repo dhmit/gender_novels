@@ -16,14 +16,23 @@ class Corpus(common.FileLoaderMixin):
     >>> from gender_novels.corpus import Corpus
     >>> c = Corpus('sample_novels')
     >>> type(c.novels), len(c)
-    (<class 'list'>, 94)
+    (<class 'list'>, 99)
 
     >>> c.novels[0].author
     'Aanrud, Hans'
+
+    You can use 'test_corpus' to load a test corpus of 10 novels:
+    >>> test_corpus = Corpus('test_corpus')
+    >>> len(test_corpus)
+    10
+
     """
 
     def __init__(self, corpus_name=None):
         self.corpus_name = corpus_name
+        if self.corpus_name == 'gutenberg':
+            self._download_gutenberg_if_not_locally_available()
+
         self.load_test_corpus = False
         if self.corpus_name == 'test_corpus':
             self.load_test_corpus = True
@@ -32,6 +41,61 @@ class Corpus(common.FileLoaderMixin):
         if corpus_name is not None:
             self.relative_corpus_path = Path('corpora', self.corpus_name)
             self.novels = self._load_novels()
+
+    def _download_gutenberg_if_not_locally_available(self):
+        """
+        Checks if the gutenberg corpus is available locally. If not, downloads the corpus
+        and extracts it to corpora/gutenberg
+
+        No tests because the function depends on user input
+
+        :return:
+        """
+
+        import os
+        gutenberg_path = Path(common.BASE_PATH, 'corpora', 'gutenberg')
+
+        # if there are more than 4000 text files available, we know that the corpus was downloaded
+        # and can return
+        try:
+            no_gutenberg_novels=  len(os.listdir(Path(gutenberg_path, 'texts')))
+            if no_gutenberg_novels > 4000:
+                gutenberg_available = True
+            else:
+                gutenberg_available = False
+        # if the texts path was not found, we know that we need to download the corpus
+        except FileNotFoundError:
+            gutenberg_available = False
+
+        if not gutenberg_available:
+
+            print("The Project Gutenberg corpus is currently not available on your system.",
+                  "It consists of more than 4000 novels and 1.8 GB of data.")
+            download_prompt = input(
+                  "If you want to download the corpus, please enter (y). Any other input will "
+                  "terminate the program: ")
+            if not download_prompt in ['y', '(y)']:
+                raise ValueError("Project Gutenberg corpus will not be downloaded.")
+
+            import zipfile
+            import urllib
+            url = 'https://s3-us-west-2.amazonaws.com/gutenberg-cache/gutenberg_corpus.zip'
+            urllib.request.urlretrieve(url, 'gutenberg_corpus.zip')
+            zipf = zipfile.ZipFile('gutenberg_corpus.zip')
+            if not os.path.isdir(gutenberg_path):
+                os.mkdir(gutenberg_path)
+            zipf.extractall(gutenberg_path)
+            os.remove('gutenberg_corpus.zip')
+
+            # check that we now have 4000 novels available
+            try:
+                no_gutenberg_novels = len(os.listdir(Path(gutenberg_path, 'texts')))
+                print(f'Successfully downloaded {no_gutenberg_novels} novels.')
+            except FileNotFoundError:
+                raise FileNotFoundError("Something went wrong while downloading the gutenberg"
+                                        "corpus.")
+
+
 
     def __len__(self):
         """
@@ -45,7 +109,7 @@ class Corpus(common.FileLoaderMixin):
 
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
-        38
+        39
 
         :return: int
         """
@@ -346,6 +410,83 @@ class Corpus(common.FileLoaderMixin):
 
         #TODO: add date range support
         #TODO: apply all filters at once instead of recursing Subcorpus method
+
+
+    def get_novel(self, metadata_field, field_val):
+        """
+        Returns a specific Novel object from self.novels that has metadata matching field_val for
+        metadata_field.  Otherwise raises a ValueError.
+        N.B. This function will only return the first novel in the self.novels (which is sorted as
+        defined by the Novel.__lt__ function).  It should only be used if you're certain there is
+        only one match in the Corpus or if you're not picky about which Novel you get.  If you want
+        more selectivity use get_novel_multiple_fields, or if you want multiple novels use the subcorpus
+        function.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_novel("author", "Dickens, Charles")
+        <Novel (dickens_twocities)>
+        >>> c.get_novel("date", '1857')
+        <Novel (bronte_professor)>
+        >>> try:
+        ...     c.get_novel("meme_quality", "over 9000")
+        ... except AttributeError as exception:
+        ...     print(exception)
+        Metadata field meme_quality invalid for this corpus
+
+        :param metadata_field: str
+        :param field_val: str/int
+        :return: Novel
+        """
+
+        if metadata_field not in get_metadata_fields(self.corpus_name):
+            raise AttributeError(f"Metadata field {metadata_field} invalid for this corpus")
+        # TODO: change this to work with Charlotte's functions once she adds them
+
+        if (metadata_field == "date" or metadata_field == "gutenberg_id"):
+            field_val = int(field_val)
+
+        for novel in self.novels:
+            if getattr(novel, metadata_field) == field_val:
+                return novel
+
+        raise ValueError("Novel not found")
+
+    def get_novel_multiple_fields(self, metadata_dict):
+        """
+        Returns a specific Novel object from self.novels that has metadata that matches a partial
+        dict of metadata.  Otherwise raises a ValueError.
+        N.B. This method will only return the first novel in the self.novels (which is sorted as
+        defined by the Novel.__lt__ function).  It should only be used if you're certain there is
+        only one match in the Corpus or if you're not picky about which Novel you get.  If you want
+        multiple novels use the subcorpus function.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_novel_multiple_fields({"author": "Dickens, Charles", "author_gender": "male"})
+        <Novel (dickens_twocities)>
+        >>> c.get_novel_multiple_fields({"author": "Chopin, Kate", "title": "The Awakening"})
+        <Novel (chopin_awakening)>
+
+        :param metadata_dict: dict
+        :return: Novel
+        """
+
+        for field in metadata_dict.keys():
+            if field not in get_metadata_fields(self.corpus_name):
+                raise AttributeError(f"Metadata field {field} invalid for this corpus")
+            # TODO: change this to work with Charlotte's functions once she adds them
+
+        for novel in self.novels:
+            match = True
+            for field, val in metadata_dict.items():
+                if getattr(novel, field) != val:
+                    match = False
+            if match:
+                return novel
+
+        raise ValueError("Novel not found")
+
 
 def get_metadata_fields(corpus_name):
     """
