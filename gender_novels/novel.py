@@ -19,7 +19,7 @@ except ImportError:
     print('Cannot import gutenberg')
     gutenberg_imported = False
 from gender_novels.common import TEXT_END_MARKERS, TEXT_START_MARKERS, LEGALESE_END_MARKERS, LEGALESE_START_MARKERS
-    
+
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
@@ -221,6 +221,15 @@ class Novel(common.FileLoaderMixin):
 
         return (self.author, self.title, self.date) < (other.author, other.title, other.date)
 
+    def __hash__(self):
+        """
+        Makes the Novel object hashable
+
+        :return:
+        """
+
+        return hash(repr(self))
+
     def _load_novel_text(self):
         """Loads the text of a novel and uses the remove_boilerplate_text() and
         remove_table_of_contents() functions on the text of the novel to remove the boilerplate
@@ -369,7 +378,7 @@ class Novel(common.FileLoaderMixin):
                 i += 1
 
         return sep.join(out).strip()
-      
+
     def get_tokenized_text(self):
         """
         Tokenizes the text and returns it as a list of tokens
