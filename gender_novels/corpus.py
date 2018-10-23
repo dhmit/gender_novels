@@ -255,6 +255,97 @@ class Corpus(common.FileLoaderMixin):
             corpus_counter += novel_counter
         return corpus_counter
 
+    def get_corpus_metadata(self):
+        """
+        This function returns a sorted list of all metadata fields
+        in the corpus as strings. This is different from the get_metadata_fields;
+        this returns the fields which are specific to the corpus it is being called on.
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_corpus_metadata()
+        ['author', 'author_gender', 'corpus_name', 'country_publication', 'date', 'filename', 'notes', 'title']
+
+        :return: list
+        """
+        metadata_fields = set()
+        for novel in self.novels:
+            for field in getmembers(novel):
+                metadata_fields.add(field)
+        return sorted(list(metadata_fields))
+
+    def get_field_vals(self,field):
+        """
+        This function returns a sorted list of all values for a
+        particular metadata field as strings.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_field_vals('corpus_name')
+        ['sample_novels']
+
+        :param field: str
+        :return: list
+        """
+        metadata_fields = self.get_corpus_metadata()
+
+        if field not in metadata_fields:
+            raise ValueError(
+                f'\'{field}\' is not a valid metadata field for this corpus'
+            )
+
+        values = set()
+        for novel in self.novels:
+            values.add(getattr(novel,field))
+
+        return sorted(list(values))
+
+    def subcorpus(self,metadata_field,field_value):
+        """
+        This method takes a metadata field and value of that field and returns
+        a new Corpus object which includes the subset of movels in the original
+        Corpus that have the specified value for the specified field.
+
+        :param metadata_field: str
+        :param field_value: str
+        :return: Corpus
+        """
+        pass
+
+    def multi_filter(self,characteristic_dict):
+        """
+        This method takes a dictionary of metadata fields and corresponding values
+        and returns a Corpus object which is the subcorpus of the input corpus which
+        satisfies all the specified constraints.
+
+        #>>> from gender_novels.corpus import Corpus
+        #>>> c = Corpus('sample_novels')
+        #>>> characteristics = {'author':'female',
+                                'country_publication':'England'}
+        #>>> subcorpus_multi_filtered = c.multi_filter(characteristics)
+        #>>> female_subcorpus = c.filter_by_gender('female')
+        #>>> subcorpus_repeated_method = female_subcorpus.Subcorpus('country_publication','England')
+        #>>> subcorpus_multi_filtered == subcorpus_repeated_method
+        True
+
+        :param characteristic_dict: dict
+        :return: Corpus
+        """
+
+        new_corp = self.copy()
+        metadata_fields = self.get_corpus_metadata()
+
+        for field in dict:
+            if field not in metadata_fields:
+                raise ValueErro(
+                    f'\'{field}\' is not a valid metadata field for this corpus'
+                )
+                new_corp.subcorpus(field,characteristic_dict[field])
+
+        return new_corp
+
+        #TODO: add date range support
+        #TODO: apply all filters at once instead of recursing Subcorpus method
+
 def get_metadata_fields(corpus_name):
     """
     Gives a list of all metadata fields for corpus
@@ -269,6 +360,9 @@ def get_metadata_fields(corpus_name):
         return ['author', 'date', 'title', 'country_publication', 'author_gender', 'filename', 'notes']
     else:
         return common.METADATA_LIST
+
+
+
 
 
 if __name__ == '__main__':
