@@ -125,3 +125,9 @@ gender_novels/analysis/assets/stanford-parser-3.9.1-models.jar
 # Corpus generator testing
 gender_novels/test_corpus/
 gender_novels/corpora/test_books_30/
+
+# The gutenberg corpus will be downloaded and initialized as a whole outside of version control.
+gender_novels/corpora/gutenberg/
+
+# Line profiler files
+*.lprof
