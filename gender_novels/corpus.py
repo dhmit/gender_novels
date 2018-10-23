@@ -105,7 +105,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> len(c)
-        94
+        99
 
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
@@ -240,7 +240,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
-        38
+        39
 
         Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
         but no abbreviations.
@@ -266,13 +266,13 @@ class Corpus(common.FileLoaderMixin):
         >>> c = Corpus('sample_novels')
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
-        38
+        39
         >>> female_corpus.novels[0].title
         'The Indiscreet Letter'
 
         >>> male_corpus = c.filter_by_gender('male')
         >>> len(male_corpus)
-        55
+        59
 
         >>> male_corpus.novels[0].title
         'Lisbeth Longfrock'
@@ -310,7 +310,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.get_wordcount_counter()['fire']
-        2069
+        2269
 
         """
         c = Corpus('sample_novels')
@@ -410,6 +410,83 @@ class Corpus(common.FileLoaderMixin):
 
         #TODO: add date range support
         #TODO: apply all filters at once instead of recursing Subcorpus method
+
+
+    def get_novel(self, metadata_field, field_val):
+        """
+        Returns a specific Novel object from self.novels that has metadata matching field_val for
+        metadata_field.  Otherwise raises a ValueError.
+        N.B. This function will only return the first novel in the self.novels (which is sorted as
+        defined by the Novel.__lt__ function).  It should only be used if you're certain there is
+        only one match in the Corpus or if you're not picky about which Novel you get.  If you want
+        more selectivity use get_novel_multiple_fields, or if you want multiple novels use the subcorpus
+        function.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_novel("author", "Dickens, Charles")
+        <Novel (dickens_twocities)>
+        >>> c.get_novel("date", '1857')
+        <Novel (bronte_professor)>
+        >>> try:
+        ...     c.get_novel("meme_quality", "over 9000")
+        ... except AttributeError as exception:
+        ...     print(exception)
+        Metadata field meme_quality invalid for this corpus
+
+        :param metadata_field: str
+        :param field_val: str/int
+        :return: Novel
+        """
+
+        if metadata_field not in get_metadata_fields(self.corpus_name):
+            raise AttributeError(f"Metadata field {metadata_field} invalid for this corpus")
+        # TODO: change this to work with Charlotte's functions once she adds them
+
+        if (metadata_field == "date" or metadata_field == "gutenberg_id"):
+            field_val = int(field_val)
+
+        for novel in self.novels:
+            if getattr(novel, metadata_field) == field_val:
+                return novel
+
+        raise ValueError("Novel not found")
+
+    def get_novel_multiple_fields(self, metadata_dict):
+        """
+        Returns a specific Novel object from self.novels that has metadata that matches a partial
+        dict of metadata.  Otherwise raises a ValueError.
+        N.B. This method will only return the first novel in the self.novels (which is sorted as
+        defined by the Novel.__lt__ function).  It should only be used if you're certain there is
+        only one match in the Corpus or if you're not picky about which Novel you get.  If you want
+        multiple novels use the subcorpus function.
+
+        >>> from gender_novels.corpus import Corpus
+        >>> c = Corpus('sample_novels')
+        >>> c.get_novel_multiple_fields({"author": "Dickens, Charles", "author_gender": "male"})
+        <Novel (dickens_twocities)>
+        >>> c.get_novel_multiple_fields({"author": "Chopin, Kate", "title": "The Awakening"})
+        <Novel (chopin_awakening)>
+
+        :param metadata_dict: dict
+        :return: Novel
+        """
+
+        for field in metadata_dict.keys():
+            if field not in get_metadata_fields(self.corpus_name):
+                raise AttributeError(f"Metadata field {field} invalid for this corpus")
+            # TODO: change this to work with Charlotte's functions once she adds them
+
+        for novel in self.novels:
+            match = True
+            for field, val in metadata_dict.items():
+                if getattr(novel, field) != val:
+                    match = False
+            if match:
+                return novel
+
+        raise ValueError("Novel not found")
+
 
 def get_metadata_fields(corpus_name):
     """

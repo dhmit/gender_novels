@@ -11,5 +11,6 @@ nltk
 pywikibot
 chardet
 pandas
+scipy
 more-itertools
 seaborn
