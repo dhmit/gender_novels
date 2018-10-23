@@ -177,6 +177,7 @@ def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
 def male_VS_female_analysis_dunning(corpus_name):
     '''
     tests word distinctiveness of shared words between male and female corpora using dunning
+    Prints out the most distinctive terms overall as well as grouped by verbs, adjectives etc.
 
     :return: dict
     '''
