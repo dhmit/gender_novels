@@ -17,7 +17,7 @@ def get_parser(path_to_jar, path_to_models_jar):
     if not os.path.isfile(path_to_models_jar):
         urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
 
-    parser = StanfordDependencyParser(url_to_jar, url_to_models_jar)
+    parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
     return parser
 
 
