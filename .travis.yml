@@ -1,0 +1,5 @@
+language: python
+
+script:
+  #- python testing/travis.py
+  - python -c 'from gender_novels.testing.travis import test as test; test()'
