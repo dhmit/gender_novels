@@ -105,7 +105,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> len(c)
-        94
+        99
 
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
@@ -240,7 +240,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.count_authors_by_gender('female')
-        38
+        39
 
         Accepted inputs are 'male', 'female', 'non-binary' and 'unknown'
         but no abbreviations.
@@ -266,13 +266,13 @@ class Corpus(common.FileLoaderMixin):
         >>> c = Corpus('sample_novels')
         >>> female_corpus = c.filter_by_gender('female')
         >>> len(female_corpus)
-        38
+        39
         >>> female_corpus.novels[0].title
         'The Indiscreet Letter'
 
         >>> male_corpus = c.filter_by_gender('male')
         >>> len(male_corpus)
-        55
+        59
 
         >>> male_corpus.novels[0].title
         'Lisbeth Longfrock'
@@ -310,7 +310,7 @@ class Corpus(common.FileLoaderMixin):
         >>> from gender_novels.corpus import Corpus
         >>> c = Corpus('sample_novels')
         >>> c.get_wordcount_counter()['fire']
-        2069
+        2269
 
         """
         c = Corpus('sample_novels')
