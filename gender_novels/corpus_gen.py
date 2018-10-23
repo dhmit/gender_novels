@@ -3,6 +3,7 @@ import os
 import re
 import time
 from pathlib import Path
+from shutil import copyfile
 
 import gender_guesser.detector as gender_guesser
 import pywikibot
@@ -11,12 +12,10 @@ from gutenberg.cleanup import strip_headers
 from gutenberg.query import get_metadata
 
 from gender_novels import common
-from gender_novels.common import AUTHOR_NAME_REGEX, BASE_PATH
+from gender_novels.common import AUTHOR_NAME_REGEX, BASE_PATH, METADATA_LIST
 
 # TODO: A lot of things
 
-METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
-                 'subject', 'corpus_name', 'notes']
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
@@ -394,6 +393,7 @@ def get_novel_text_gutenberg(gutenberg_id):
     >>> text[:7]
     'HERLAND'
 
+    :param gutenberg_id: int
     :return: str
     """
     return strip_headers(get_novel_text_gutenberg_with_boilerplate(gutenberg_id)).strip()
@@ -409,8 +409,7 @@ def get_novel_text_gutenberg_with_boilerplate(gutenberg_id):
     >>> text.split()[:3]
     ['The', 'Project', 'Gutenberg']
 
-    TODO: wait, why is is it still removing boilerplate
-
+    :param gutenberg_id: int
     :return: str
     """
 
