@@ -4,9 +4,7 @@ from nltk.tokenize import sent_tokenize
 from gender_novels.corpus import Corpus
 import os.path
 
-dependency_parser = None
-
-def load_jars(path_to_jar, path_to_models_jar):
+def get_parser(path_to_jar, path_to_models_jar):
     """
     The jar files are too big to commit directly, so download them
     :param path_to_jar: local path to stanford-parser.jar
@@ -18,6 +16,9 @@ def load_jars(path_to_jar, path_to_models_jar):
         urllib.request.urlretrieve(url_to_jar, path_to_jar)
     if not os.path.isfile(path_to_models_jar):
         urllib.request.urlretrieve(url_to_models_jar, path_to_models_jar)
+
+    parser = StanfordDependencyParser(url_to_jar, url_to_models_jar)
+    return parser
 
 
 def count_gender_subj_obj(triples):
@@ -31,12 +32,9 @@ def count_gender_subj_obj(triples):
     :param triples: A list of dependency triples
     :return: the counts of male and female subject and object occurrences as a tuple of 4
 
-    >>> path_to_jar = "assets/stanford-parser.jar"
-    >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
-    >>> load_jars(path_to_jar, path_to_models_jar)
-    >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+    >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> sentence = "She hit him first"
-    >>> result = dependency_parser.raw_parse(sentence.lower())
+    >>> result = parser.raw_parse(sentence.lower())
     >>> parse = next(result)
     >>> triples = list(parse.triples())
     >>> count_gender_subj_obj(triples)
@@ -57,7 +55,7 @@ def count_gender_subj_obj(triples):
     return (male_subj_count, male_obj_count, female_subj_count, female_obj_count)
 
 
-def parse_sentence(sentence):
+def parse_sentence(sentence, parser):
     """
     This function does all sentence parsing (we cannot split this up into separate functions for
     performance reasons (each additional function will require iterating over the entire list again)
@@ -65,17 +63,13 @@ def parse_sentence(sentence):
     :return: the counts of male and female subject and object occurrences as a tuple of 4
     (this should later return more info about adjectives and verbs related to gendered pronouns)
 
-    >>> path_to_jar = "assets/stanford-parser.jar"
-    >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
-    >>> load_jars(path_to_jar, path_to_models_jar)
-    >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+    >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> sentence = "She hit him first"
-    >>> parse_sentence(sentence)
+    >>> parse_sentence(sentence, parser)
     (0, 1, 1, 0)
     """
 
-    global dependency_parser
-    result = dependency_parser.raw_parse(sentence.lower())
+    result = parser.raw_parse(sentence.lower())
     parse = next(result)
     # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
     # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
@@ -83,26 +77,24 @@ def parse_sentence(sentence):
     return count_gender_subj_obj(triples)
 
 
-def parse_novel(novel):
+def parse_novel(novel, parser):
     """
     This function calls the parse_sentence function for all sentences in the novel
     :param novel: Novel object we want to analyze
     :return: the counts of male and female subject and object occurrences as a tuple of 4
 
-    >>> path_to_jar = "assets/stanford-parser.jar"
-    >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
-    >>> load_jars(path_to_jar, path_to_models_jar)
-    >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+    >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> novels = Corpus('sample_novels').novels
     >>> novel = novels[0]
-    >>> parse_novel(novel)
+    >>> parse_novel(novel, parser)
 
     """
 
     sentences = sent_tokenize(novel.text.replace("\n", " "))
     t_male_subj_count = t_male_obj_count = t_female_subj_count = t_female_obj_count = 0
     for sentence in sentences:
-        (male_subj_count, male_obj_count, female_subj_count, female_obj_count) = parse_sentence(sentence)
+        (male_subj_count, male_obj_count, female_subj_count, female_obj_count) = parse_sentence(
+            sentence, parser)
         t_male_subj_count += male_subj_count
         t_male_obj_count += male_obj_count
         t_female_subj_count += female_subj_count
@@ -117,21 +109,17 @@ def test_analysis():
     """
     This function contains all analysis code to be run (previously in main function)
     """
-    # create dependency parser
-    path_to_jar = "assets/stanford-parser.jar"
-    path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
-    load_jars(path_to_jar, path_to_models_jar)
-    global dependency_parser
-    dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+
+    parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
 
     novels = Corpus('sample_novels').novels
     novel = novels[0]
-    # print(parse_novel(novel))
+    # print(parse_novel(novel, parser))
 
     sentences = {"She told him before he could tell her"}
 
     for sentence in sentences:
-        result = parse_sentence(sentence)
+        result = parse_sentence(sentence, parser)
         print(result)
 
 
