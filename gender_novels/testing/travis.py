@@ -1,4 +1,8 @@
 def test():
+    """
+    tests simple addition that we know is false
+    :return: nothing, exits
+    """
     if 2 + 2 == 5:
         exit(0)
     else:
