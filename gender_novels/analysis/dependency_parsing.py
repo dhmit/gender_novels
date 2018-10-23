@@ -34,7 +34,6 @@ def count_gender_subj_obj(triples):
     >>> path_to_jar = "assets/stanford-parser.jar"
     >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
     >>> load_jars(path_to_jar, path_to_models_jar)
-    >>> global dependency_parser
     >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
     >>> sentence = "She hit him first"
     >>> result = dependency_parser.raw_parse(sentence.lower())
@@ -69,7 +68,6 @@ def parse_sentence(sentence):
     >>> path_to_jar = "assets/stanford-parser.jar"
     >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
     >>> load_jars(path_to_jar, path_to_models_jar)
-    >>> global dependency_parser
     >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
     >>> sentence = "She hit him first"
     >>> parse_sentence(sentence)
@@ -94,7 +92,6 @@ def parse_novel(novel):
     >>> path_to_jar = "assets/stanford-parser.jar"
     >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
     >>> load_jars(path_to_jar, path_to_models_jar)
-    >>> global dependency_parser
     >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
     >>> novels = Corpus('sample_novels').novels
     >>> novel = novels[0]
