@@ -20,6 +20,7 @@ except ImportError:
     gutenberg_imported = False
 from gender_novels.common import TEXT_END_MARKERS, TEXT_START_MARKERS, LEGALESE_END_MARKERS, LEGALESE_START_MARKERS
 
+
 class Novel(common.FileLoaderMixin):
     """ The Novel class loads and holds the full text and
     metadata (author, title, publication date) of a novel
@@ -48,10 +49,12 @@ class Novel(common.FileLoaderMixin):
                                  f'metadata: {novel_metadata_dict}')
 
         # check that the author starts with a capital letter
-        if not novel_metadata_dict['author'][0].isupper():
-            raise ValueError('The last name of the author should be upper case.',
-                             f'{novel_metadata_dict["author"]} is likely incorrect in',
-                             f'{novel_metadata_dict}.')
+        # TODO: Currently deactivated because gutenberg authors are lists
+        # TODO: reimplement with lists in mind.
+        #if not novel_metadata_dict['author'][0].isupper():
+        #    raise ValueError('The last name of the author should be upper case.',
+        #                     f'{novel_metadata_dict["author"]} is likely incorrect in',
+        #                     f'{novel_metadata_dict}.')
 
         # Check that the date is a year (4 consecutive integers)
         if 'date' in novel_metadata_dict:
@@ -289,6 +292,12 @@ class Novel(common.FileLoaderMixin):
         TODO: so apparently neither version of remove_boilerplate_text works on Persuasion, and it doesn't look like it's
         easily fixable/worth fixing
         """
+
+        # the gutenberg books are stored locally with the boilerplate already removed
+        # (removing the boilerplate is slow and would mean that just loading the corpus would take
+        # up to 5 minutes
+        if self.corpus_name == 'gutenberg':
+            return text
 
         if gutenberg_imported:
             return strip_headers(text).strip()
