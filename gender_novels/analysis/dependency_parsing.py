@@ -66,6 +66,7 @@ def parse_sentence(sentence, parser):
     This function does all sentence parsing (we cannot split this up into separate functions for
     performance reasons (each additional function will require iterating over the entire list again)
     :param sentence: sentence (string) we want to parse
+    :param parser: Stanford dependency parser
     :return: the counts of male and female subject and object occurrences as a tuple of 4
     (this should later return more info about adjectives and verbs related to gendered pronouns)
 
@@ -87,6 +88,7 @@ def parse_novel(novel, parser):
     """
     This function calls the parse_sentence function for all sentences in the novel
     :param novel: Novel object we want to analyze
+    :param parser: Stanford dependency parser
     :return: the counts of male and female subject and object occurrences as a tuple of 4
 
     >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
