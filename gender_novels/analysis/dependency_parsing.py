@@ -10,7 +10,12 @@ def get_parser(path_to_jar, path_to_models_jar):
     The jar files are too big to commit directly, so download them
     :param path_to_jar: local path to stanford-parser.jar
     :param path_to_models_jar: local path to stanford-parser-3.9.1-models.jar
+
+    >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
+    >>> parser == None
+    False
     """
+
     url_to_jar = "http://www.trecento.com/dh_lab/nltk_jar/stanford-parser.jar"
     url_to_models_jar = "http://www.trecento.com/dh_lab/nltk_jar/stanford-parser-3.9.1-models.jar"
     if not os.path.isfile(path_to_jar):
