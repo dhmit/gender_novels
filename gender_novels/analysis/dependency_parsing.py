@@ -87,11 +87,22 @@ def parse_novel(novel, dependency_parser):
     This function calls the parse_sentence function for all sentences in the novel
     :param novel: Novel object we want to analyze
     :return: the counts of male and female subject and object occurrences as a tuple of 4
+
+    >>> path_to_jar = "assets/stanford-parser.jar"
+    >>> path_to_models_jar = "assets/stanford-parser-3.9.1-models.jar"
+    >>> load_jars(path_to_jar, path_to_models_jar)
+    >>> dependency_parser = StanfordDependencyParser(path_to_jar, path_to_models_jar)
+    >>> novels = Corpus('sample_novels').novels
+    >>> novel = novels[0]
+    >>> parse_novel(novel)
+
     """
+
     sentences = sent_tokenize(novel.text.replace("\n", " "))
     t_male_subj_count = t_male_obj_count = t_female_subj_count = t_female_obj_count = 0
     for sentence in sentences:
-        (male_subj_count, male_obj_count, female_subj_count, female_obj_count) = parse_sentence(sentence)
+        (male_subj_count, male_obj_count, female_subj_count, female_obj_count) = parse_sentence(
+            sentence, dependency_parser)
         t_male_subj_count += male_subj_count
         t_male_obj_count += male_obj_count
         t_female_subj_count += female_subj_count
@@ -116,7 +127,7 @@ def test_analysis():
     novel = novels[0]
     # print(parse_novel(novel))
 
-    sentences = {"She told him first"}
+    sentences = {"She told him before he could tell her"}
 
     for sentence in sentences:
         result = parse_sentence(sentence, dependency_parser)
