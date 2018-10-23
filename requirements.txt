@@ -8,7 +8,6 @@ numpy
 pylint
 wordcloud
 nltk
-gutenberg
 pywikibot
 chardet
 pandas
