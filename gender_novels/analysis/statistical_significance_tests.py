@@ -6,42 +6,49 @@ from gender_novels.analysis import gender_pronoun_freq_analysis
 from gender_novels.corpus import Corpus
 
 
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html#scipy.stats.ttest_ind
 def ind_ttest(array1, array2, pvalue_target=0.05):
     '''
-    independent t test for two independent variables
-    array1, array2: two array_like objects that represent data points for two categories
-        for example, array1 could be he/she distance in novels authored by women, and array2 could containe he/she distance for novels authored by men
-    pvalue_target: the largest p-value for which we consider the test statistic significant
-    returns True if the difference in the means of the two datasets are statistically significant
-    returns False if the difference in means can be explained by chance
+    independent t-test for two independent variables
+    :param array1: array-like, data for one category. e.g. he/she distance in novels authored by
+    women
+    :param array2: array-like, data for second category. e.g. he/she distance in novels authored
+    by men
+    :param pvalue_target: largest p-value for which we consider the test statistically significant
+    :return: True if the difference in the means of the two arrays are significant, False otherwise
     '''
 
     # don't assume that the two variables have equal standard deviation
-    # pvalue = stats.ttest_ind(array1, array2, equal_var=False, nan_policy='omit')[1]
     pvalue = stats.ttest_ind(array1, array2, equal_var=False)[1]
 
     return pvalue < pvalue_target
 
 
-# simple regression
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.linregress.html#scipy.stats.linregress
 def linear_regression(array1, array2, pvalue_target=0.05):
+    '''
+    linear regression on two continuous variables that may or may not be correlated
+    :param array1: array-like, one set of continuous data to be compared to array2. e.g. list of
+    publication years in a certain order of novels
+    :param array2: array-like, second set of continuous data to be compared to array1, should be
+    the same size as array1. e.g. he/she distance in the same order of novels as array1
+    :param pvalue_target: largest p-value for which we consider the correlation statistically
+    significant
+    :return: True if the correlation is significant, False otherwise
+    '''
     pvalue = stats.linregress(array1, array2)[3]
     return pvalue < pvalue_target
 
 
-# multiple regression
-
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html#scipy.stats.pearsonr
 def pearson_correlation(array1, array2, pvalue_target=0.05):
     '''
     pearson correlation test of two continuous variables for correlation
-    array1, array2: two array_like objects that represent data points for two continuous variables
-    pvalue_target: the largest p-value for which we consider the correlation coefficient statistically significant
-    returns True if there is a significant correlation
-    returns False otherwise
+    :param array1: array-like, one set of continuous data to be compared to array2
+    :param array2: array-like, second set of continuous data to be compared to array1, should be
+    the same size as array1
+    :param pvalue_target: largest p-value for which we consider the correlation statistically
+    significant
+    :return: True if the correlation is significant, False otherwise
     '''
+
     pvalue = stats.pearsonr(array1, array2)[1]
 
     return pvalue < pvalue_target
@@ -80,6 +87,7 @@ for novel in corp:
     subject_female_pronoun_list.append(subject_female_pronoun_dict[novel])
 
 # split the subject_female_pronoun_list into a list for male authors and a list for female authors
+# used for independent t-test
 male_subject_pronoun_list = []
 female_subject_pronoun_list = []
 for novel in novel_list:
@@ -96,20 +104,21 @@ print("Independent t-test on frequency of female pronouns as subjects in male-au
       "novels")
 for index in range(10):
     pvalue = (index+1)*0.05
-    print("p-value target = " + str(pvalue) + ": " + str(ind_ttest(np.array(
+    print("p-value target = " + str(round(pvalue, 2)) + ": " + str(ind_ttest(np.array(
         male_subject_pronoun_list), np.array(female_subject_pronoun_list),
                     pvalue)))
 
+# tests for the correlation between publication year and frequency of female pronouns as subjects
 print()
 print("Linear regression on publication year and frequency of female pronouns as subjects")
 for index in range(10):
     pvalue = (index+1)*0.05
-    print("p-value target = " + str(pvalue) + ": " + str(linear_regression(np.array(
+    print("p-value target = " + str(round(pvalue, 2)) + ": " + str(linear_regression(np.array(
         novel_year_list), np.array(subject_female_pronoun_list), pvalue)))
 
 print()
 print("Pearson correlation on publication year and frequency of female pronouns as subjects")
 for index in range(10):
     pvalue = (index+1)*0.05
-    print("p-value target = " + str(pvalue) + ": " + str(pearson_correlation(np.array(
+    print("p-value target = " + str(round(pvalue, 2)) + ": " + str(pearson_correlation(np.array(
         novel_year_list), np.array(subject_female_pronoun_list), pvalue)))
