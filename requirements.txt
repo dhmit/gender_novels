@@ -8,9 +8,9 @@ numpy
 pylint
 wordcloud
 nltk
-gutenberg
 pywikibot
 chardet
 pandas
+scipy
 more-itertools
 seaborn

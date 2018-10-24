@@ -128,3 +128,6 @@ gender_novels/corpora/test_books_30/
 
 # The gutenberg corpus will be downloaded and initialized as a whole outside of version control.
 gender_novels/corpora/gutenberg/
+
+# Line profiler files
+*.lprof
