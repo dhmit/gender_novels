@@ -16,7 +16,10 @@ p {
     word-wrap: break-word;
 }
 
-table {
+/* Base Bootstrap elements */
+
+.display-6 {
+    text-align: center;
 }
 
 /* Custom classes */
@@ -34,6 +37,19 @@ table {
 
 .content {
     background-color: #EAD3A8;
+}
+
+.portrait {
+    height: 30vh;
+    width: 15vw;
+}
+
+.rotate-90 {
+    transform: rotate(90deg);
+}
+
+.rotate-neg-90 {
+    transform: rotate(-90deg);
 }
 
 /* Navbar */

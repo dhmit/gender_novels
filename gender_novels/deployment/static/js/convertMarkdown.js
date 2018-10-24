@@ -9,7 +9,7 @@ function loadPageContent() {
     content_dict["copyright"] = "copyright_info";
     content_dict["topic-one"] = "gender_novels_analysis";
     content_dict["testing-tutorial"] = "testing_tutorial";
-    content_dict["test-page"] = "test";
+    content_dict["test-page"] = "";
 
     for (let id in content_dict) {
         try {

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Corpora{% endblock %}
+{% block title %}Our Team{% endblock %}
 
 {% block head %}
 {% endblock %}
@@ -8,14 +8,66 @@
 {% block content %}
     <!-- Page content -->
     <div class="container-fluid content">
-        <div class="row justify-content-start">
-            <div class="col-2">
+        <!-- Data -->
+        <h1 class="display-6">Data</h1>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <img class="portrait" src="{{url_for('static',
+                filename='graphics/portraits/Ademolu-Odeneye_Ife.jpg')}}" />
             </div>
-            <div class="col-8" align="center">
-                <div class="topic-content">
-                    <!-- Topic content assigned in convertMarkdown.js -->
-                    <div id=""></div>
-                </div>
+            <div class="col-3">
+                <img class="portrait" src="{{url_for('static',
+                filename='graphics/portraits/Atia_Dina.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait" src="{{url_for('static',
+                filename='graphics/portraits/Chen_Susanna.jpeg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait" src="{{url_for('static',
+                filename='graphics/portraits/Gallegos_Maritza.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <img class="portrait rotate-90" src="{{url_for('static',
+                filename='graphics/portraits/Murray_Keith.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait" src="{{url_for('static',
+                filename='graphics/portraits/Tran_Felix.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait" src="{{url_for('static',
+                filename='graphics/portraits/Yen_Derek.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rotate-neg-90" src="{{url_for('static',
+                filename='graphics/portraits/Zhi_Sophia.jpg')}}" />
+            </div>
+        </div>
+        <!-- Analysis -->
+        <h1 class="display-6">Analysis</h1>
+        <div class="row justify-content-center">
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+            </div>
+        </div>
+        <!-- Deployment -->
+        <h1 class="display-6">Deployment</h1>
+        <div class="row justify-content-center">
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+            </div>
+            <div class="col-3">
             </div>
         </div>
     </div>
