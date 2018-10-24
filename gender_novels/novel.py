@@ -43,7 +43,7 @@ class Novel(common.FileLoaderMixin):
                 'novel_metadata_dict must be a dictionary or support .items()')
 
         # Check that the essential attributes for the novel exists.
-        for key in ('author', 'title', 'corpus_name'):
+        for key in ('author', 'date', 'title', 'corpus_name'):
             if key not in novel_metadata_dict:
                 raise ValueError(f'novel_metadata_dict must have an entry for "{key}". Full ',
                                  f'metadata: {novel_metadata_dict}')
