@@ -204,11 +204,56 @@ def male_VS_female_analysis_dunning(corpus_name):
                                  part_of_speech_to_include=group)
 
 
+def word_association_analysis_dunning(word1, word2, corpus = None, corpus_name = None):
+    """
+    Uses Dunning analysis to compare words associated with word1 vs words associated with word2 in
+    the Corpus passed in as the parameter.  If a corpus and corpus_name are passsed in, then the
+    analysis will use the corpus but name the file after corpus_name.  If no corpus is passed in but
+    a corpus_name is, then the method will try to create a Corpus by corpus = Corpus(corpus_name).
+    If neither a corpus nor a corpus_name is passed in, analysis is simply done on the Gutenberg
+    corpus.
+
+    :param word1: str
+    :param word2: str
+    :param corpus: Corpus
+    :param corpus_name: str
+    :return: dict
+    """
+
+    if corpus:
+        if not corpus_name:
+            corpus_name = corpus.corpus_name
+    else:
+        if not corpus_name:
+            corpus_name = "gutenberg"
+        corpus = Corpus(corpus_name)
+
+    pickle_filename = f'dunning_{word1}_vs_{word2}_associated_words_{corpus_name}'
+    try:
+        results = load_pickle(pickle_filename)
+    except IOError:
+        try:
+            pickle_filename = f'dunning_{word2}_vs_{word1}_associated_words_{corpus_name}'
+            results = load_pickle(pickle_filename)
+        except:
+            word1_counter = Counter()
+            word2_counter = Counter()
+            for novel in corpus.novels:
+                word1_counter.update(novel.words_associated(word1))
+                word2_counter.update(novel.words_associated(word2))
+            results = dunning_total(word1_counter, word2_counter, filename_to_pickle=pickle_filename)
+
+    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+        dunning_result_displayer(results, number_of_terms_to_display=50,
+                                 part_of_speech_to_include=group)
+
+    return results
+
 def he_vs_she_associations_analysis_dunning(corpus, corpus_name = None):
     """
     Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
     the Corpus passed in as the parameter.  The corpus_name parameter is if you want to name the file
-    somethind other than Gutenberg (e.g., Gutenberg_female_authors)
+    something other than Gutenberg (e.g. Gutenberg_female_authors)
     :param corpus: Corpus
     :param corpus_name: str
     :return: dict
