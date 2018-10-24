@@ -1,8 +1,12 @@
+import gzip
 import os
+import pickle
 import urllib.request
 
 from pathlib import Path
 import codecs
+
+import seaborn as sns
 
 DEBUG = False
 
@@ -10,7 +14,9 @@ BASE_PATH = Path(os.path.abspath(os.path.dirname(__file__)))
 METADATA_LIST = ['gutenberg_id', 'author', 'date', 'title', 'country_publication', 'author_gender',
                  'subject', 'corpus_name', 'notes']
 # books from gutenberg downloaded from Dropbox folder shared by Keith
-INITIAL_BOOK_STORE = r'corpora/test_books_30' #TODO: change to actual directory when generating corpus
+INITIAL_BOOK_STORE = r'corpora/test_books_30'
+#TODO: change to actual directory when generating corpus
+
 # plus some extras
 AUTHOR_NAME_REGEX = r"(?P<last_name>(\w+ )*\w*)\, (?P<first_name>(\w+\.* )*(\w\.*)*)(?P<suffix>\, \w+\.)*(\((?P<real_name>(\w+ )*\w*)\))*"
 outputDir = 'converted'
@@ -100,7 +106,8 @@ TEXT_END_MARKERS = frozenset((
 LEGALESE_START_MARKERS = frozenset(("<<THIS ELECTRONIC VERSION OF",))
 LEGALESE_END_MARKERS = frozenset(("SERVICE THAT CHARGES FOR DOWNLOAD",))
 
-# TODO(elsa): Investigate doctest errors in this file, may be a result of my own system, not actual code errors
+# TODO(elsa): Investigate doctest errors in this file, may be a result of
+# my own system, not actual code errors
 
 class FileLoaderMixin:
     """ The FileLoaderMixin loads files either locally or
@@ -239,6 +246,48 @@ class FileLoaderMixin:
             return text.replace('\r\n', '\n')
 
 
+def store_pickle(obj, filename):
+    """
+    Store a compressed "pickle" of the object in the "pickle_data" directory
+    and return the full path to it.
+
+    The filename should not contain a directory or suffix.
+
+    Example in lieu of Doctest to avoid writing out a file.
+
+        my_object = {'a': 4, 'b': 5, 'c': [1, 2, 3]}
+        gender_novels.common.store_pickle(my_object, 'example_pickle')
+
+    :param obj: Any Python object to be pickled
+    :param filename: str | Path
+    :return: Path
+    """
+    filename = BASE_PATH / 'pickle_data' / (str(filename) + '.pgz')
+    with gzip.GzipFile(filename, 'w') as fileout:
+        pickle.dump(obj, fileout)
+    return filename
+
+
+def load_pickle(filename):
+    """
+    Load the pickle stored at filename where filename does not contain a
+    directory or suffix.
+
+    Example in lieu of Doctest to avoid writing out a file.
+
+        my_object = gender_novels.common.load_pickle('example_pickle')
+        my_object
+        {'a': 4, 'b': 5, 'c': [1, 2, 3]}
+
+    :param filename: str | Path
+    :return: object
+    """
+    filename = BASE_PATH / 'pickle_data' / (str(filename) + '.pgz')
+    with gzip.GzipFile(filename, 'r') as filein:
+        obj = pickle.load(filein)
+    return obj
+
+
 def get_text_file_encoding(filepath):
     """
     For text file at filepath returns the text encoding as a string (e.g. 'utf-8')
@@ -262,14 +311,14 @@ def get_text_file_encoding(filepath):
     :param filepath: fstr
     :return: str
     """
-
     from chardet.universaldetector import UniversalDetector
     detector = UniversalDetector()
 
     with open(filepath, 'rb') as file:
         for line in file:
             detector.feed(line)
-            if detector.done: break
+            if detector.done:
+                break
         detector.close()
     return detector.result['encoding']
 
@@ -329,7 +378,20 @@ def convert_text_file_to_new_encoding(source_path, target_path, target_encoding)
     with codecs.open(target_path, 'w', encoding=target_encoding) as target_file:
         target_file.write(text)
 
+def load_graph_settings(show_grid_lines=True):
+    '''
+    This function sets the seaborn graph settings to the defaults for our project.
+    Defaults to displaying gridlines. To remove gridlines, call with False.
+    :return:
+    '''
+    show_grid_lines_string = str(show_grid_lines)
+    palette = "colorblind"
+    style_name = "white"
+    style_list = {'axes.edgecolor': '.6', 'grid.color': '.9', 'axes.grid': show_grid_lines_string,
+                  'font.family': 'serif'}
+    sns.set_color_codes(palette)
+    sns.set_style(style_name, style_list)
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
-    main_test(import_plus_relative=True) # this allows for relative calls in the import.
+    main_test(import_plus_relative=True)  # this allows for relative calls in the import.
