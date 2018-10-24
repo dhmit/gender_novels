@@ -16,12 +16,12 @@ def plt_pubyears(pub_years,corpus_name):
     plt.figure(figsize=(10,6))
     bins=[num for num in range(min(pub_years),max(pub_years)+4,5)]
     plt.hist(pub_years,bins,histtype='bar',rwidth=.8,color='c')
-    plt.xlabel('Year', size=13,weight='bold',color='k')
-    plt.ylabel('Frequency',size=13,weight='bold',color='k')
-    plt.title('Publication Year Concentration for '+corpus_name.title(),size=15,weight='bold',
+    plt.xlabel('Year', size=15,weight='bold',color='k')
+    plt.ylabel('Frequency',size=15,weight='bold',color='k')
+    plt.title('Publication Year Concentration for '+corpus_name.title(),size=18,weight='bold',
               color='k')
-    plt.yticks(size=13,color='k')
-    plt.xticks([i for i in range(min(pub_years),max(pub_years)+9,10)],size=13,color='k')
+    plt.yticks(size=15,color='k')
+    plt.xticks([i for i in range(min(pub_years),max(pub_years)+9,10)],size=15,color='k')
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(60)
     plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
@@ -54,12 +54,12 @@ def plt_pubcountries(pub_country,corpus_name):
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(15)
     plt.bar(x,y,color='c')
-    plt.xlabel('Countries',size=13,weight='bold',color='k')
-    plt.ylabel('Frequency',size=13,weight='bold',color='k')
-    plt.title('Country of Publication for '+corpus_name.title(),size=15,color='k',
+    plt.xlabel('Countries',size=15,weight='bold',color='k')
+    plt.ylabel('Frequency',size=15,weight='bold',color='k')
+    plt.title('Country of Publication for '+corpus_name.title(),size=18,color='k',
               weight='bold')
-    plt.xticks(color='k',size=13)
-    plt.yticks(color='k',size=13)
+    plt.xticks(color='k',size=15)
+    plt.yticks(color='k',size=15)
     plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
     plt.savefig('country_of_pub_for_'+corpus_name+'.png')
 
@@ -88,7 +88,7 @@ def plt_gender_breakdown(pub_gender,corpus_name):
     colors=['c','b','g']
     plt.figure(figsize=(10,6))
     plt.pie(slices,colors=colors,labels=labelgenders,textprops={'fontsize':15})
-    plt.title('Gender Breakdown for '+corpus_name.title(),size=15,color='k',weight='bold')
+    plt.title('Gender Breakdown for '+corpus_name.title(),size=18,color='k',weight='bold')
     plt.legend()
     plt.subplots_adjust(left=.1,bottom=.1,right=.9,top=.9)
     plt.savefig('gender_breakdown_for_'+corpus_name+'.png')
