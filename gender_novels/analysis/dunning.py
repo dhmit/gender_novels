@@ -235,6 +235,15 @@ def he_vs_she_associations_analysis_dunning(corpus, corpus_name = None):
     return results
 
 
+def he_vs_she_associations_analysis_dunning_gutenberg():
+    """
+    Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
+    the Gutenberg corpus.
+    :return: dict
+    """
+    gutenberg = Corpus("gutenberg")
+    return he_vs_she_associations_analysis_dunning(gutenberg, "gutenberg")
+
 if __name__ == '__main__':
 
     male_VS_female_analysis_dunning('gutenberg')
