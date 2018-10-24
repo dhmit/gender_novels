@@ -441,7 +441,7 @@ def find_gender_adj(novel, female):
             words[index] = word.lower()
         tags = nltk.pos_tag(words)
         for tag_index, tag in enumerate(tags):
-            if tags[tag_index][1] == "JJ":
+            if tags[tag_index][1] == "JJ" or tags[tag_index][1] == "JJR" or tags[tag_index][1] == "JJS":
                 word = words[tag_index]
                 if word in output.keys():
                     output[word] += 1
