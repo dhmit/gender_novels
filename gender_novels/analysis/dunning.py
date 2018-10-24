@@ -19,11 +19,12 @@ def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_wo
     :param m_corpus: c.filter_by_gender('male')
     :param f_corpus: c. filter_by_gender('female')
     :return: log likelihoods and p value
-    >>> total_words_m_corpus = 8648489
-    >>> total_words_f_corpus = 8700765
-    >>> wordcount_female = 1000
-    >>> wordcount_male = 50
+    >>> total_words_m_corpus = 1000000
+    >>> total_words_f_corpus = 1000000
+    >>> wordcount_female = 10
+    >>> wordcount_male = 0.0000000000000000001
     >>> dunn_individual_word(total_words_m_corpus,total_words_f_corpus,wordcount_male,wordcount_female)
+    -169.8990367953973
 
     '''
     a = count_of_word_corpus_1
@@ -42,6 +43,7 @@ def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_wo
     p = 1 - chi2.cdf(abs(dunning_log_likelihood),1)
 
     return dunning_log_likelihood
+
 
 def dunning_total(counter1, counter2, filename_to_pickle=None):
     '''
@@ -97,6 +99,7 @@ def dunning_total(counter1, counter2, filename_to_pickle=None):
 
             dunning_word = dunn_individual_word( total_words_counter1,  total_words_counter2,
                                                  counter1_wordcount,counter2_wordcount)
+
             dunning_result[word] = {
                 'dunning': dunning_word,
                 'count_total': counter1_wordcount + counter2_wordcount,
@@ -115,6 +118,7 @@ def dunning_total(counter1, counter2, filename_to_pickle=None):
 
 
 def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
+                             corpus1_display_name=None, corpus2_display_name=None,
                              part_of_speech_to_include=None):
     """
     Convenience function to display dunning results as tables.
@@ -122,10 +126,13 @@ def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
     part_of_speech_to_include can either be a list of POS tags or a 'adjectives, 'adverbs',
     'verbs', or 'pronouns'. If it is None, all terms are included.
 
+    :param dunning_result:              Dunning result dict to display
+    :param number_of_terms_to_display:  Number of terms for each corpus to display
+    :param corpus1_display_name:        Name of corpus 1 (e.g. "Female Authors")
+    :param corpus2_display_name:        Name of corpus 2 (e.g. "Male Authors")
+    :param part_of_speech_to_include:   e.g. 'adjectives', or 'verbs'
     :return:
     """
-    #TODO: heading says Corpus 1 and Corpus 2 which is confusing when the two counters are for different words from the
-    # same corpus.  fix this
 
     pos_names_to_tags = {
         'adjectives':   ['JJ', 'JJR', 'JJS'],
@@ -136,20 +143,26 @@ def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
     if part_of_speech_to_include in pos_names_to_tags:
         part_of_speech_to_include = pos_names_to_tags[part_of_speech_to_include]
 
+    if not corpus1_display_name:
+        corpus1_display_name = 'Corpus 1'
+    if not corpus2_display_name:
+        corpus2_display_name = 'Corpus 2'
 
     headings = ['term', 'dunning', 'count_total', 'count_corp1', 'count_corp2', 'freq_total',
                 'freq_corp1', 'freq_corp2']
 
     output = f'\nDisplaying Part of Speech: {part_of_speech_to_include}\n'
-    for i in range(1,3):
-        output += f'\nDunning Log-Likelihood results for Corpus {i}\n|'
+    for i, corpus_name in enumerate([corpus1_display_name, corpus2_display_name]):
+        output += f'\nDunning Log-Likelihood results for {corpus_name}\n|'
 
         for heading in headings:
-            output += '  {:13s}|'.format(heading)
-        output += '\n' + 8 * 16 * '_' + '\n'
+            heading = heading.replace('_corp1', ' ' + corpus1_display_name).replace('_corp2',
+                                                                       ' ' + corpus2_display_name)
+            output += '  {:18s}|'.format(heading)
+        output += '\n' + 8 * 21 * '_' + '\n'
 
         reverse = False
-        if i == 2: reverse = True
+        if i == 1: reverse = True
         sorted_results = sorted(dunning_result.items(), key=lambda x: x[1]['dunning'],
                                 reverse=reverse)
         count_displayed = 0
@@ -161,20 +174,195 @@ def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
             if part_of_speech_to_include and term_pos not in part_of_speech_to_include:
                 continue
 
-            output += '|  {:13s}|'.format(result[0])
+            output += '|  {:18s}|'.format(result[0])
             for heading in headings[1:]:
 
                 if heading in ['freq_total', 'freq_corp1', 'freq_corp2']:
-                    output += '  {:11.4f}% |'.format(result[1][heading] * 100)
+                    output += '  {:16.4f}% |'.format(result[1][heading] * 100)
                 elif heading in ['dunning']:
-                    output += '  {:12.2f} |'.format(result[1][heading])
+                    output += '  {:17.2f} |'.format(result[1][heading])
                 else:
-                    output += '  {:12.0f} |'.format(result[1][heading])
+                    output += '  {:17.0f} |'.format(result[1][heading])
             output += '\n'
             count_displayed += 1
 
     print(output)
 
+
+def compare_word_association_in_corpus_analysis_dunning(word1, word2, corpus=None,
+                                                        corpus_name=None):
+    """
+    Uses Dunning analysis to compare words associated with word1 vs words associated with word2 in
+    the Corpus passed in as the parameter.  If a corpus and corpus_name are passsed in, then the
+    analysis will use the corpus but name the file after corpus_name.  If no corpus is passed in but
+    a corpus_name is, then the method will try to create a Corpus by corpus = Corpus(corpus_name).
+    If neither a corpus nor a corpus_name is passed in, analysis is simply done on the Gutenberg
+    corpus.
+    :param word1: str
+    :param word2: str
+    :param corpus: Corpus
+    :param corpus_name: str
+    :return: dict
+    """
+
+    if corpus:
+        if not corpus_name:
+            corpus_name = corpus.corpus_name
+    else:
+        if not corpus_name:
+            corpus_name = "gutenberg"
+        corpus = Corpus(corpus_name)
+
+    pickle_filename = f'dunning_{word1}_vs_{word2}_associated_words_{corpus_name}'
+    try:
+        results = load_pickle(pickle_filename)
+    except IOError:
+        try:
+            pickle_filename = f'dunning_{word2}_vs_{word1}_associated_words_{corpus_name}'
+            results = load_pickle(pickle_filename)
+        except:
+            word1_counter = Counter()
+            word2_counter = Counter()
+            for novel in corpus.novels:
+                word1_counter.update(novel.words_associated(word1))
+                word2_counter.update(novel.words_associated(word2))
+            results = dunning_total(word1_counter, word2_counter,
+                                    filename_to_pickle=pickle_filename)
+
+    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+        dunning_result_displayer(results, number_of_terms_to_display=50,
+                                 part_of_speech_to_include=group)
+
+    return results
+
+#
+# def he_vs_she_associations_analysis_dunning(corpus, corpus_name=None):
+#     """
+#     Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
+#     the Corpus passed in as the parameter.  The corpus_name parameter is if you want to name the file
+#     something other than Gutenberg (e.g. Gutenberg_female_authors)
+#     :param corpus: Corpus
+#     :param corpus_name: str
+#     :return: dict
+#     """
+#
+#     if not corpus_name:
+#         corpus_name = corpus.corpus_name
+#
+#     pickle_filename = f'dunning_he_vs_she_associated_words_{corpus_name}'
+#     try:
+#         results = load_pickle(pickle_filename)
+#     except IOError:
+#         he_counter = Counter()
+#         she_counter = Counter()
+#         for novel in corpus.novels:
+#             he_counter.update(novel.words_associated("he"))
+#             she_counter.update(novel.words_associated("she"))
+#         results = dunning_total(he_counter, she_counter, filename_to_pickle=pickle_filename)
+#
+#     for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+#         dunning_result_displayer(results, number_of_terms_to_display=50,
+#                                  part_of_speech_to_include=group)
+#
+#     return results
+
+
+
+
+
+def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None, corpus1_name=None,
+                                                             corpus2=None, corpus2_name=None):
+    """
+    Uses Dunning analysis to compare words associated with word between corpuses.  If a corpus and corpus_name are
+    passsed in, then the analysis will use the corpus but name the file after corpus_name.  If no corpus is passed in but
+    a corpus_name is, then the method will try to create a Corpus by corpus = Corpus(corpus_name).
+    If neither a corpus nor a corpus_name is passed in, analysis is simply done on the Gutenberg
+    corpus.
+    :param word1: str
+    :param word2: str
+    :param corpus: Corpus
+    :param corpus_name: str
+    :return: dict
+    """
+
+    if corpus1:
+        if not corpus1_name:
+            corpus1_name = corpus1.corpus_name
+    else:
+        if not corpus1_name:
+            corpus1_name = "gutenberg"
+        corpus1 = Corpus(corpus1_name)
+
+    if corpus2:
+        if not corpus2_name:
+            corpus2_name = corpus2.corpus_name
+    else:
+        if not corpus2_name:
+            corpus2_name = "gutenberg"
+        corpus2 = Corpus(corpus2_name)
+
+    pickle_filename = f'dunning_{word}_associated_words_{corpus1_name}_vs_{corpus2_name}'
+    try:
+        results = load_pickle(pickle_filename)
+    except IOError:
+        try:
+            pickle_filename = f'dunning_{word}_associated_words_{corpus2_name}_vs_{corpus1_name}'
+            results = load_pickle(pickle_filename)
+        except:
+            print("Analysis starting...")
+            corpus1_counter = Counter()
+            corpus2_counter = Counter()
+            for novel in corpus1.novels:
+                corpus1_counter.update(novel.words_associated(word))
+            for novel in corpus2.novels:
+                corpus2_counter.update(novel.words_associated(word))
+            results = dunning_total(corpus1_counter, corpus2_counter,
+                                    filename_to_pickle=pickle_filename)
+
+    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+        dunning_result_displayer(results, number_of_terms_to_display=50,
+                                 part_of_speech_to_include=group)
+
+    return results
+
+
+def male_vs_female_characters_dunning(corpus_name):
+
+    # By default, try to load precomputed results. Only calculate if no stored results are
+    # available.
+    pickle_filename = f'dunning_male_vs_female_chars_{corpus_name}'
+    try:
+        results = load_pickle(pickle_filename)
+    except IOError:
+
+        c = Corpus(corpus_name)
+        m_corpus = c.filter_by_gender('male')
+        f_corpus = c.filter_by_gender('female')
+
+        from collections import Counter
+        wordcounter_male = Counter()
+        wordcounter_female = Counter()
+
+        for novel in c:
+            wordcounter_male += novel.words_associated('he')
+            wordcounter_female += novel.words_associated('she')
+
+        # for novel in m_corpus:
+        #     wordcounter_male += novel.words_associated('he')
+        #
+        # for novel in f_corpus:
+        #     wordcounter_female += novel.words_associated('he')
+
+        #        wordcounter_male = m_corpus.get_wordcount_counter()
+        #        wordcounter_female = f_corpus.get_wordcount_counter()
+        results = dunning_total(wordcounter_male, wordcounter_female,
+                                filename_to_pickle=pickle_filename)
+
+    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+        dunning_result_displayer(results, number_of_terms_to_display=20,
+                                 corpus1_display_name='Fem Char',
+                                 corpus2_display_name='Male Char',
+                                 part_of_speech_to_include=group)
 
 
 def male_VS_female_analysis_dunning(corpus_name):
@@ -188,7 +376,7 @@ def male_VS_female_analysis_dunning(corpus_name):
 
     # By default, try to load precomputed results. Only calculate if no stored results are
     # available.
-    pickle_filename = f'dunning_male_vs_female_authors_{corpus_name}'
+    pickle_filename = f'dunning_male_vs_female_chars_{corpus_name}'
     try:
         results = load_pickle(pickle_filename)
     except IOError:
@@ -196,13 +384,27 @@ def male_VS_female_analysis_dunning(corpus_name):
         c = Corpus(corpus_name)
         m_corpus = c.filter_by_gender('male')
         f_corpus = c.filter_by_gender('female')
-        wordcounter_male = m_corpus.get_wordcount_counter()
-        wordcounter_female = f_corpus.get_wordcount_counter()
+
+        from collections import Counter
+        wordcounter_male = Counter()
+        wordcounter_female = Counter()
+
+        for novel in m_corpus:
+            wordcounter_male += novel.words_associated('he')
+
+        for novel in f_corpus:
+            wordcounter_female += novel.words_associated('he')
+
+
+#        wordcounter_male = m_corpus.get_wordcount_counter()
+#        wordcounter_female = f_corpus.get_wordcount_counter()
         results = dunning_total(wordcounter_male, wordcounter_female,
                                 filename_to_pickle=pickle_filename)
 
     for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
-        dunning_result_displayer(results, number_of_terms_to_display= 50,
+        dunning_result_displayer(results, number_of_terms_to_display=20,
+                                 corpus1_display_name='Fem Author',
+                                 corpus2_display_name='Male Author',
                                  part_of_speech_to_include=group)
 
 
@@ -251,37 +453,6 @@ def compare_word_association_in_corpus_analysis_dunning(word1, word2, corpus = N
 
     return results
 
-def he_vs_she_associations_analysis_dunning(corpus, corpus_name = None):
-    """
-    Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
-    the Corpus passed in as the parameter.  The corpus_name parameter is if you want to name the file
-    something other than Gutenberg (e.g. Gutenberg_female_authors)
-    :param corpus: Corpus
-    :param corpus_name: str
-    :return: dict
-    """
-
-    if not corpus_name:
-        corpus_name = corpus.corpus_name
-
-    pickle_filename = f'dunning_he_vs_she_associated_words_{corpus_name}'
-    try:
-        results = load_pickle(pickle_filename)
-    except IOError:
-        he_counter = Counter()
-        she_counter = Counter()
-        for novel in corpus.novels:
-            he_counter.update(novel.words_associated("he"))
-            she_counter.update(novel.words_associated("she"))
-        results = dunning_total(he_counter, she_counter, filename_to_pickle=pickle_filename)
-
-    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
-        dunning_result_displayer(results, number_of_terms_to_display= 50,
-                                 part_of_speech_to_include=group)
-
-    return results
-
-
 def he_vs_she_associations_analysis_dunning_gutenberg():
     """
     Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
@@ -314,7 +485,7 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1 = Non
         if not corpus1_name:
             corpus1_name = "gutenberg"
         corpus1 = Corpus(corpus1_name)
-        
+
     if corpus2:
         if not corpus2_name:
             corpus2_name = corpus2.corpus_name
@@ -346,15 +517,95 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1 = Non
 
     return results
 
+################################################
+# Individual Analyses                          #
+################################################
+
+
+# Male Authors versus Female Authors
+###############################################
+
+def male_vs_female_authors_analysis_dunning(corpus_name):
+    '''
+    tests word distinctiveness of shared words between male and female authors using dunning
+    Prints out the most distinctive terms overall as well as grouped by verbs, adjectives etc.
+
+    :return:
+    '''
+
+
+    # By default, try to load precomputed results. Only calculate if no stored results are
+    # available.
+    pickle_filename = f'dunning_male_vs_female_authors_{corpus_name}'
+    try:
+        results = load_pickle(pickle_filename)
+    except IOError:
+
+        c = Corpus(corpus_name)
+        m_corpus = c.filter_by_gender('male')
+        f_corpus = c.filter_by_gender('female')
+        wordcounter_male = m_corpus.get_wordcount_counter()
+        wordcounter_female = f_corpus.get_wordcount_counter()
+        results = dunning_total(wordcounter_male, wordcounter_female,
+                                filename_to_pickle=pickle_filename)
+
+    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+        dunning_result_displayer(results, number_of_terms_to_display=20,
+                                 corpus1_display_name='Male Author',
+                                 corpus2_display_name='Fem Author',
+                                 part_of_speech_to_include=group)
+
+# Male Characters versus Female Characters (words following 'he' versus words following 'she')
+##############################################################################################
+
+def he_vs_she_associations_analysis_dunning(corpus_name):
+    """
+    Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
+    the Corpus passed in as the parameter.  The corpus_name parameter is if you want to name the file
+    something other than Gutenberg (e.g. Gutenberg_female_authors)
+    :param corpus: Corpus
+    :param corpus_name: str
+    :return: dict
+    """
+
+    corpus = Corpus(corpus_name)
+    pickle_filename = f'dunning_he_vs_she_associated_words_{corpus_name}'
+    try:
+        results = load_pickle(pickle_filename)
+    except IOError:
+        he_counter = Counter()
+        she_counter = Counter()
+        for novel in corpus.novels:
+            he_counter.update(novel.words_associated("he"))
+            she_counter.update(novel.words_associated("she"))
+        results = dunning_total(he_counter, she_counter, filename_to_pickle=pickle_filename)
+
+    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+        dunning_result_displayer(results, number_of_terms_to_display=20,
+                                 corpus1_display_name='she...',
+                                 corpus2_display_name='he..',
+                                 part_of_speech_to_include=group)
+
+    return results
+
+
+
 
 if __name__ == '__main__':
 
-    # male_VS_female_analysis_dunning('gutenberg')
-
-    # sample_novels = Corpus("sample_novels")
-    # he_vs_she_associations_analysis_dunning(sample_novels)
-
-    male_corpus = Corpus("sample_novels").filter_by_gender("male")
-    female_corpus = Corpus("sample_novels").filter_by_gender("female")
-    compare_word_association_between_corpus_analysis_dunning("he", corpus1=male_corpus, corpus1_name="sample_male_authors",
-                                                             corpus2=female_corpus, corpus2_name= "sample_female_authors")
+#    male_vs_female_authors_analysis_dunning('sample_novels')
+    he_vs_she_associations_analysis_dunning('gutenberg')
+#    male_vs_female_characters_dunning('gutenberg')
+#     male_corpus = Corpus("sample_novels").filter_by_gender("male")
+#     female_corpus = Corpus("sample_novels").filter_by_gender("female")
+#     compare_word_association_between_corpus_analysis_dunning(
+#         "he", corpus1=male_corpus, corpus1_name="sample_male_authors",
+#          corpus2=female_corpus, corpus2_name= "sample_female_authors")
+#
+#     # sample_novels = Corpus("sample_novels")
+#     # he_vs_she_associations_analysis_dunning(sample_novels)
+#
+#     male_corpus = Corpus("sample_novels").filter_by_gender("male")
+#     female_corpus = Corpus("sample_novels").filter_by_gender("female")
+#     compare_word_association_between_corpus_analysis_dunning("he", corpus1=male_corpus, corpus1_name="sample_male_authors",
+#                                                              corpus2=female_corpus, corpus2_name= "sample_female_authors")
