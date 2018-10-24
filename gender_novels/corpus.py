@@ -440,7 +440,6 @@ class Corpus(common.FileLoaderMixin):
 
         if metadata_field not in get_metadata_fields(self.corpus_name):
             raise AttributeError(f"Metadata field {metadata_field} invalid for this corpus")
-        # TODO: change this to work with Charlotte's functions once she adds them
 
         if (metadata_field == "date" or metadata_field == "gutenberg_id"):
             field_val = int(field_val)
@@ -474,7 +473,6 @@ class Corpus(common.FileLoaderMixin):
         for field in metadata_dict.keys():
             if field not in get_metadata_fields(self.corpus_name):
                 raise AttributeError(f"Metadata field {field} invalid for this corpus")
-            # TODO: change this to work with Charlotte's functions once she adds them
 
         for novel in self.novels:
             match = True
