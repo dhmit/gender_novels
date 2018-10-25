@@ -21,7 +21,7 @@ p {
 /* Custom classes */
 
 .header {
-    background-color: #C55E54;
+    background-color: #99BC78;
 }
 
 .header-text {
@@ -46,7 +46,7 @@ p {
 }
 
 a:hover {
-    color: #C55E54 !important;
+    color: #99BC78 !important;
 }
 
 /* Topic content */
