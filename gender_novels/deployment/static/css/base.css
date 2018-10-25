@@ -31,7 +31,7 @@ span {
 /* Custom classes */
 
 .header {
-    background-color: #D23641;
+    background-color: #99BC78;
 }
 
 .header-text {
@@ -42,7 +42,7 @@ span {
 }
 
 .content {
-    background-color: #EAD3A8;
+    background-color: #FCF5E9;
 }
 
 .portrait {
@@ -61,7 +61,7 @@ span {
 /* Navbar */
 
 .header-nav {
-    background-color: #EAD3A8;
+    background-color: #FCF5E9;
     margin-bottom: -1rem;
 }
 
@@ -70,7 +70,7 @@ span {
 }
 
 a:hover {
-    color: #D23641 !important;
+    color: #99BC78 !important;
 }
 
 /* Topic content */
