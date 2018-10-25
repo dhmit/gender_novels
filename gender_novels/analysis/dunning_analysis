@@ -1,0 +1,30 @@
+#Dunning Analysis
+
+**This markdown contains a write up of 
+the dunn_individual_word and dunning_total files**
+
+The code used for this analysis can be found in dunning.py under the 
+analysis folder.
+
+The statistical model used to analyze the distinctiveness of words
+is called Dunning Log-Likelihood, and it calculates how distinct a word
+is in its own corpus. This is a very effective way to analyze the word 
+usage of authors, as it returns words that are not only distinctive
+by sheer amount but also significantly distinctive.
+This means that words with relatively low frequencies can still receive high 
+dunning scores when compared to the rest of the words in their respective
+corpus. The function dunn_individual_word applies the mathematical formula
+used in Dunning Log-Likelihood and returns a dunning value for that specific word.
+As inputs, it takes in the total amount of words in both counter objects,
+and it also takes in the total counts of the desired word in their respective counters.
+
+**How to Use dunning_total**
+ 
+ All that is needed to run dunning_total is two counter objects (counter1
+ and counter2), mapping
+ words to the amount of times it appears. When the function is ran,
+ it will execute dunn_individual_word on all of the common words 
+ in both counters. It will then return a dictionary that maps that word to its dunning
+ score. The negative end of the spectrum denotes the distinctiveness
+ of the word in counter2, while the positive end of the spectrum does the 
+ same for counter1. 
