@@ -16,6 +16,12 @@ p {
     word-wrap: break-word;
 }
 
+span {
+    margin: auto;
+    display: table;
+    text-align: center;
+}
+
 /* Base Bootstrap elements */
 
 .display-6 {
@@ -53,6 +59,7 @@ p {
 }
 
 /* Navbar */
+
 .header-nav {
     background-color: #EAD3A8;
     margin-bottom: -1rem;
