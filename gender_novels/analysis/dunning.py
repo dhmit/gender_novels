@@ -7,6 +7,7 @@ from scipy.stats import chi2
 from gender_novels.common import store_pickle, load_pickle
 from gender_novels.corpus import Corpus
 
+# TODO: Rewrite all of this using a Dunning class in a non-messy way.
 
 def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_word_corpus_1,
                          count_of_word_corpus_2):
@@ -159,8 +160,8 @@ def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
             output += ' {:19s}|'.format(heading)
         output += '\n' + 8 * 21 * '_' + '\n'
 
-        reverse = False
-        if i == 1: reverse = True
+        reverse = True
+        if i == 1: reverse = False
         sorted_results = sorted(dunning_result.items(), key=lambda x: x[1]['dunning'],
                                 reverse=reverse)
         count_displayed = 0
@@ -350,7 +351,6 @@ def male_vs_female_authors_analysis_dunning(corpus_name):
     :return:
     '''
 
-
     # By default, try to load precomputed results. Only calculate if no stored results are
     # available.
     pickle_filename = f'dunning_male_vs_female_authors_{corpus_name}'
@@ -363,13 +363,13 @@ def male_vs_female_authors_analysis_dunning(corpus_name):
         f_corpus = c.filter_by_gender('female')
         wordcounter_male = m_corpus.get_wordcount_counter()
         wordcounter_female = f_corpus.get_wordcount_counter()
-        results = dunning_total(wordcounter_male, wordcounter_female,
+        results = dunning_total(wordcounter_female, wordcounter_male,
                                 filename_to_pickle=pickle_filename)
 
     for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
         dunning_result_displayer(results, number_of_terms_to_display=20,
-                                 corpus1_display_name='Male Author',
-                                 corpus2_display_name='Fem Author',
+                                 corpus1_display_name='Fem Author',
+                                 corpus2_display_name='Male Author',
                                  part_of_speech_to_include=group)
 
 
@@ -381,9 +381,7 @@ def he_vs_she_associations_analysis_dunning(corpus_name):
     Uses Dunning analysis to compare words associated with 'he' vs words associated with 'she' in
     the Corpus passed in as the parameter.  The corpus_name parameter is if you want to name the file
     something other than Gutenberg (e.g. Gutenberg_female_authors)
-    :param corpus: Corpus
     :param corpus_name: str
-    :return: dict
     """
 
     corpus = Corpus(corpus_name)
@@ -396,12 +394,12 @@ def he_vs_she_associations_analysis_dunning(corpus_name):
         for novel in corpus.novels:
             he_counter.update(novel.words_associated("he"))
             she_counter.update(novel.words_associated("she"))
-        results = dunning_total(he_counter, she_counter, filename_to_pickle=pickle_filename)
+        results = dunning_total(she_counter, he_counter, filename_to_pickle=pickle_filename)
 
     for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
         dunning_result_displayer(results, number_of_terms_to_display=20,
-                                 corpus1_display_name='he...',
-                                 corpus2_display_name='she..',
+                                 corpus1_display_name='she...',
+                                 corpus2_display_name='he..',
                                  part_of_speech_to_include=group)
 
 
@@ -437,14 +435,19 @@ def male_characters_author_gender_differences(corpus_name):
     male_corpus = Corpus(corpus_name).filter_by_gender('male')
     female_corpus = Corpus(corpus_name).filter_by_gender('female')
     compare_word_association_between_corpus_analysis_dunning(word='he',
-            corpus1=female_corpus, corpus1_name='male aut',
-            corpus2=male_corpus,   corpus2_name='fem aut')
+            corpus1=female_corpus, corpus1_name='female aut',
+            corpus2=male_corpus,   corpus2_name='male aut')
 
 
 if __name__ == '__main__':
 
+    #### Uncomment any of the lines below to run one of the analyses.
+    # male_vs_female_authors_analysis_dunning('gutenberg')
+    # he_vs_she_associations_analysis_dunning('gutenberg')
+    # female_characters_author_gender_differences('gutenberg')
+    # male_characters_author_gender_differences('gutenberg')
 
-#    male_vs_female_authors_analysis_dunning('gutenberg')
-#    he_vs_she_associations_analysis_dunning('gutenberg')
-#    female_characters_author_gender_differences('gutenberg')
-    male_characters_author_gender_differences('sample_novels')
+    from dh_testers.testRunner import main_test
+    main_test()
+
+
