@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from gender_novels.corpus import Corpus
 
-def plt_pubyears(years,corpus_name):
+
+def plt_pubyears(pub_years,corpus_name):
     '''
     Creates a histogram displaying the frequency of books that were published within a 20 year 
     period
@@ -10,15 +11,17 @@ def plt_pubyears(years,corpus_name):
     RETURNS a pyplot histogram
     '''
     sns.set_style('ticks')
+    sns.color_palette('colorblind')
     ax1=plt.subplot2grid((1,1),(0,0))
-    bins=[num for num in range(min(years),max(years)+5,5)]
-    plt.hist(years,bins,histtype='bar',rwidth=.8,color='plum')
-    plt.xlabel('Year', size=13,weight='bold',color='slategray')
-    plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
-    plt.title('Publication Year Concentration for '+corpus_name.title(),size=15,weight='bold',
-              color='slategray')
-    plt.yticks(size=13,color='slategray')
-    plt.xticks([i for i in range(min(years),max(years)+9,10)],size=13,color='slategray')
+    plt.figure(figsize=(10,6))
+    bins=[num for num in range(min(pub_years),max(pub_years)+4,5)]
+    plt.hist(pub_years,bins,histtype='bar',rwidth=.8,color='c')
+    plt.xlabel('Year', size=15,weight='bold',color='k')
+    plt.ylabel('Frequency',size=15,weight='bold',color='k')
+    plt.title('Publication Year Concentration for '+corpus_name.title(),size=18,weight='bold',
+              color='k')
+    plt.yticks(size=15,color='k')
+    plt.xticks([i for i in range(min(pub_years),max(pub_years)+9,10)],size=15,color='k')
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(60)
     plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
@@ -31,21 +34,32 @@ def plt_pubcountries(pub_country,corpus_name):
     RETURNS a pyplot bargraph
     '''
     sns.set_style('ticks')
+    sns.color_palette('colorblind')
+    plt.figure(figsize=(10,6))
     ax1=plt.subplot2grid((1,1),(0,0))
     country_counter={}
+    totalbooks=0
     for country in pub_country:
         country_counter[country]=country_counter.setdefault(country,0)+1
-    x=[country for country in country_counter]
-    y=[country_counter[key] for key in country_counter]
+        totalbooks+=1
+    country_counter2={}
+    for country in country_counter:
+        if country=='':
+            pass
+        elif country_counter[country]>(.001*totalbooks): #must be higher than .1% of the total books
+            #  to have its own country name otherwise it is classified under others
+            country_counter2[country]=country_counter[country]
+    x=[country for country in country_counter2]
+    y=[country_counter2[country] for country in country_counter2]
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(15)
-    plt.bar(x,y,color='plum')
-    plt.xlabel('Countries',size=13,weight='bold',color='slategray')
-    plt.ylabel('Frequency',size=13,weight='bold',color='slategray')
-    plt.title('Country of Publication for '+corpus_name.title(),size=15,color='slategray',
+    plt.bar(x,y,color='c')
+    plt.xlabel('Countries',size=15,weight='bold',color='k')
+    plt.ylabel('Frequency',size=15,weight='bold',color='k')
+    plt.title('Country of Publication for '+corpus_name.title(),size=18,color='k',
               weight='bold')
-    plt.xticks(color='slategray',size=13)
-    plt.yticks(color='slategray',size=13)
+    plt.xticks(color='k',size=15)
+    plt.yticks(color='k',size=15)
     plt.subplots_adjust(left=.1,bottom=.18,right=.95,top=.9)
     plt.savefig('country_of_pub_for_'+corpus_name+'.png')
 
@@ -56,9 +70,13 @@ def plt_gender_breakdown(pub_gender,corpus_name):
     :param name_of_data: str
     RETURNS a pie chart
     '''
+    sns.set_color_codes('colorblind')
     gendercount={}
     for i in pub_gender:
-        gendercount[i]=gendercount.setdefault(i,0)+1
+        if i=='both' or i=='unknown' or i=='Both' or i=='Unknown':
+            gendercount['Unknown']=gendercount.setdefault('Unknown',0)+1
+        else:
+            gendercount[i]=gendercount.setdefault(i,0)+1
     total=0
     for i in gendercount:
         total+=gendercount[i]
@@ -66,10 +84,11 @@ def plt_gender_breakdown(pub_gender,corpus_name):
     genders=[i for i in gendercount]
     labelgenders=[]
     for i in range(len(genders)):
-        labelgenders.append((genders[i]+': ' + str(round(slices[i],2)*100)+'%').title())
-    colors=['slateblue','mediumpurple','plum']
+        labelgenders.append((genders[i]+': ' + str(int(round(slices[i],2)*100))+'%').title())
+    colors=['c','b','g']
+    plt.figure(figsize=(10,6))
     plt.pie(slices,colors=colors,labels=labelgenders,textprops={'fontsize':15})
-    plt.title('Gender Breakdown for '+corpus_name.title(),size=15,color='slategray',weight='bold')
+    plt.title('Gender Breakdown for '+corpus_name.title(),size=18,color='k',weight='bold')
     plt.legend()
     plt.subplots_adjust(left=.1,bottom=.1,right=.9,top=.9)
     plt.savefig('gender_breakdown_for_'+corpus_name+'.png')
@@ -79,18 +98,15 @@ def create_corpus_summary_visualizations(corpus_name):
     Runs through all plt functions given a corpus name
     :param corpus_name: str
     '''
-    pubyears=[]
-    pubgender=[]
-    pubcountry=[]
     c = Corpus(corpus_name)
-    for novel in c.novels:
-        pubyears.append(novel.date)
-        pubgender.append(novel.author_gender)
-        pubcountry.append(novel.country_publication)
+    pubyears=[novel.date for novel in c.novels]
+    pubgender=[novel.author_gender for novel in c.novels]
+    pubcountry=[novel.country_publication for novel in c.novels]
     corpus_name=corpus_name.replace('_',' ')
     plt_gender_breakdown(pubgender, corpus_name)
     plt_pubyears(pubyears,corpus_name)
     plt_pubcountries(pubcountry,corpus_name)
 
 if __name__=='__main__':
+    create_corpus_summary_visualizations('gutenberg')
     create_corpus_summary_visualizations('sample_novels')
