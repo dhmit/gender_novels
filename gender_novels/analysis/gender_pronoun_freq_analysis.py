@@ -17,7 +17,11 @@ def books_pronoun_freq(corp):
     relative_freq_male = {}
     relative_freq_female = {}
 
+    count = 0
     for book in corp.novels:
+        if count%100 == 0:
+            print(count)
+        count += 1
         he = book.get_word_freq('he')
         him = book.get_word_freq('him')
         his = book.get_word_freq('his')
@@ -295,7 +299,7 @@ def freq_by_location(d):
     location_other = []
 
     for k, v in d.items():
-        if k.country_publication == 'England':
+        if k.country_publication == 'United Kingdom':
             location_England.append(v)
         elif k.country_publication == 'United States':
             location_US.append(v)
@@ -368,7 +372,36 @@ def sort_every_year(frequency_dict):
 
     return every_year_dict
 
-  
+def relative_frequency_overall(corpus):
+    #TODO: write doctest
+    '''
+    Gives the average female pronoun frequency across all novels
+    :param corpus: the corpus you want to use
+    :return: float: the average relative female frequency across all novels in corpus
+    '''
+    pronoun_freq = books_pronoun_freq(corpus)
+    dict_to_list_inside = dict_to_list(pronoun_freq)
+    return np.mean(dict_to_list_inside)
+
+
 if __name__ == '__main__':
-    from dh_testers.testRunner import main_test
-    main_test()
+#    from dh_testers.testRunner import main_test
+#    main_test()
+    #print("mean relative female freq across corpus:")
+    #print(relative_frequency_overall(Corpus('sample_novels')))
+    all_data = books_pronoun_freq(Corpus('gutenberg'))
+
+
+
+    gender = freq_by_author_gender(all_data)
+    date = freq_by_date(all_data)
+    location = freq_by_location(all_data)
+
+    print('Male/Female pronoun comparison: ')
+    print('By author gender: ')
+    print(get_mean(gender))
+    print('\n By date: ')
+    print(get_mean(date))
+    print('\n By location: ')
+    print(get_mean(location))
+
