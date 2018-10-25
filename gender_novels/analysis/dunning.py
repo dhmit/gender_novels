@@ -9,8 +9,9 @@ from gender_novels.corpus import Corpus
 
 # TODO: Rewrite all of this using a Dunning class in a non-messy way.
 
-def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_word_corpus_1,
-                         count_of_word_corpus_2):
+def dunn_individual_word(total_words_in_corpus_1, total_words_in_corpus_2,
+                         count_of_word_in_corpus_1,
+                         count_of_word_in_corpus_2):
     '''
     applies dunning log likelihood to compare individual word in two counter objects
 
@@ -24,19 +25,18 @@ def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_wo
     >>> wordcount_male = 50
     >>> dunn_individual_word(total_words_m_corpus,total_words_f_corpus,wordcount_male,wordcount_female)
     -1047.8610274053995
-
     '''
-    a = count_of_word_corpus_1
-    b = count_of_word_corpus_2
-    c = total_words_corpus_1
-    d = total_words_corpus_2
+    a = count_of_word_in_corpus_1
+    b = count_of_word_in_corpus_2
+    c = total_words_in_corpus_1
+    d = total_words_in_corpus_2
 
     e1 = c * (a + b) / (c + d)
     e2 = d * (a + b) / (c + d)
 
     dunning_log_likelihood = 2 * (a * math.log(a / e1) + b * math.log(b / e2))
 
-    if count_of_word_corpus_1 * math.log(count_of_word_corpus_1 / e1) < 0:
+    if count_of_word_in_corpus_1 * math.log(count_of_word_in_corpus_1 / e1) < 0:
         dunning_log_likelihood = -dunning_log_likelihood
 
     p = 1 - chi2.cdf(abs(dunning_log_likelihood),1)
@@ -93,6 +93,7 @@ def dunning_total(counter1, counter2, filename_to_pickle=None):
         if word in counter2:
             counter2_wordcount = counter2[word]
 
+
             if counter1_wordcount + counter2_wordcount < 10:
                 continue
 
@@ -116,6 +117,21 @@ def dunning_total(counter1, counter2, filename_to_pickle=None):
     return dunning_result
 
 
+def male_vs_female_authors_analysis_dunning():
+    '''
+    tests word distinctiveness of shared words between male and female corpora using dunning
+    :return: dictionary of coomon shared words and their distinctiveness
+    '''
+    c = Corpus('test_corpus')
+    m_corpus = c.filter_by_gender('male')
+    f_corpus = c.filter_by_gender('female')
+    wordcounter_male = m_corpus.get_wordcount_counter()
+    wordcounter_female = f_corpus.get_wordcount_counter()
+    results = dunning_total(wordcounter_male, wordcounter_female)
+    print("women's top 10: ", results[0:10])
+    print("men's top 10: ", list(reversed(results[-10:])))
+
+    
 def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
                              corpus1_display_name=None, corpus2_display_name=None,
                              part_of_speech_to_include=None):
@@ -440,7 +456,6 @@ def male_characters_author_gender_differences(corpus_name):
 
 
 if __name__ == '__main__':
-
     #### Uncomment any of the lines below to run one of the analyses.
     # male_vs_female_authors_analysis_dunning('gutenberg')
     # he_vs_she_associations_analysis_dunning('gutenberg')
@@ -449,5 +464,3 @@ if __name__ == '__main__':
 
     from dh_testers.testRunner import main_test
     main_test()
-
-
