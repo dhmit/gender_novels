@@ -77,8 +77,22 @@
     <!-- Footer -->
     <div class="container-fluid footer">
         <div class="row">
-            <div class="col-9">
+            <div class="col-2 align-self-center">
+                <img src="{{ url_for('static',
+                filename='graphics/MIT-logo-white-white-72x38.svg') }}"
+                         class="img-fluid rounded mx-auto d-block">
             </div>
+            <div class="col-2 align-self-center">
+                <img src="{{ url_for('static', filename='graphics/Dots alone White Transparent.png')
+                        }}"
+                         class="img-fluid rounded mx-auto d-block">
+            </div>
+            <div class="col"></div>
+            <div class="col-2 align-self-center">
+                <img src="{{ url_for('static', filename='graphics/Mellon_Transparent_LoRes.png') }}"
+                         class="img-fluid rounded mx-auto d-block">
+            </div>
+            <div class="col-2"></div>
             <div class="col-2 align-self-center" align="right">
                 <p class="github-text align-self-center">
                     Visit our GitHub to view and download the code we used for this project

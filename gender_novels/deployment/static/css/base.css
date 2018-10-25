@@ -88,6 +88,11 @@ a:hover {
     background-color: #34282C;
 }
 
+.footer img {
+    max-width: 100%;
+    height: auto;
+}
+
 .github-text {
     color: white;
     margin-top: 1rem;
