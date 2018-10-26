@@ -441,7 +441,12 @@ def find_gender_adj(novel, female):
         distances = male_instance_dist(novel)
         pronouns1 = ["his", "him", "he", "himself"]
         pronouns2 = ["her", "hers", "she", "herself"]
-    lower_window_bound = median(sorted(distances)[:int(len(distances) / 2)])
+    if len(distances) == 0:
+        return {}
+    elif len(distances) <= 3:
+        lower_window_bound = 5
+    else:
+        lower_window_bound = median(sorted(distances)[:int(len(distances) / 2)])
 
     if not lower_window_bound >= 5:
         return "lower window bound less than 5"
