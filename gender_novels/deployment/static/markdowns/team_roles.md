@@ -1,13 +1,3 @@
-# Computational Reading of Gender in Novels, 1770–1922
-
-The first project of the MIT Digital Humanities Lab 
-analyzed the description of gender and gender roles across 
-a large repertory of novels in the English language, 
-primarily from the nineteenth century and early twentieth century. 
-Our goal was to build computational tools that helped us understand 
-how conceptions of gender were expressed and changed through 
-distant reading of thousands of books.
-
 **Project Groups and Roles**
 
 _Specific groups and roles were assigned in order to 
