@@ -457,15 +457,13 @@ class Corpus(common.FileLoaderMixin):
         :return: Corpus
         """
 
-        new_corp = self.copy()
+        new_corp = self.clone()
         metadata_fields = self.get_corpus_metadata()
 
-        for field in dict:
+        for field in characteristic_dict:
             if field not in metadata_fields:
-                raise ValueErro(
-                    f'\'{field}\' is not a valid metadata field for this corpus'
-                )
-                new_corp.subcorpus(field,characteristic_dict[field])
+                raise ValueError(f'\'{field}\' is not a valid metadata field for this corpus')
+            new_corp = new_corp.subcorpus(field, characteristic_dict[field])
 
         return new_corp
 
