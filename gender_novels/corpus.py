@@ -366,14 +366,76 @@ class Corpus(common.FileLoaderMixin):
     def subcorpus(self,metadata_field,field_value):
         """
         This method takes a metadata field and value of that field and returns
-        a new Corpus object which includes the subset of movels in the original
+        a new Corpus object which includes the subset of novels in the original
         Corpus that have the specified value for the specified field.
+
+        Supported metadata fields are 'author', 'author_gender', 'corpus_name',
+        'country_publication', 'date'
+
+        >>> from gender_novels.corpus import Corpus
+
+        >>> corp = Corpus('sample_novels')
+        >>> female_corpus = corp.subcorpus('author_gender','female')
+        >>> len(female_corpus)
+        39
+        >>> female_corpus.novels[0].title
+        'The Indiscreet Letter'
+
+        >>> male_corpus = corp.subcorpus('author_gender','male')
+        >>> len(male_corpus)
+        59
+        >>> male_corpus.novels[0].title
+        'Lisbeth Longfrock'
+
+        >>> eighteen_fifty_corpus = corp.subcorpus('date','1850')
+        >>> len(eighteen_fifty_corpus)
+        1
+        >>> eighteen_fifty_corpus.novels[0].title
+        'The Scarlet Letter'
+
+        >>> jane_austen_corpus = corp.subcorpus('author','Austen, Jane')
+        >>> len(jane_austen_corpus)
+        2
+        >>> jane_austen_corpus.novels[0].title
+        'Emma'
+
+        >>> england_corpus = corp.subcorpus('country_publication','England')
+        >>> len(england_corpus)
+        51
+        >>> england_corpus.novels[0].title
+        'Flatland'
 
         :param metadata_field: str
         :param field_value: str
         :return: Corpus
         """
-        pass
+
+        supported_metadata_fields = ('author', 'author_gender', 'corpus_name',
+                                     'country_publication', 'date')
+        if metadata_field not in supported_metadata_fields:
+            raise ValueError(
+                f'Metadata field must be {", ".join(supported_metadata_fields)} '
+                + f'but not {metadata_field}.')
+
+        corpus_copy = self.clone()
+        corpus_copy.novels = []
+
+        #adds novels to corpus_copy
+        if metadata_field == 'date':
+            for this_novel in self.novels:
+                if this_novel.date == int(field_value):
+                    corpus_copy.novels.append(this_novel)
+        else:
+            for this_novel in self.novels:
+                if getattr(this_novel,metadata_field) == field_value:
+                    corpus_copy.novels.append(this_novel)
+
+        if not corpus_copy:
+            #displays for possible errors in field.value
+            err = f'This corpus is empty. You may have mistyped something.'
+            raise AttributeError(err)
+
+        return corpus_copy
 
     def multi_filter(self,characteristic_dict):
         """
@@ -395,15 +457,13 @@ class Corpus(common.FileLoaderMixin):
         :return: Corpus
         """
 
-        new_corp = self.copy()
+        new_corp = self.clone()
         metadata_fields = self.get_corpus_metadata()
 
-        for field in dict:
+        for field in characteristic_dict:
             if field not in metadata_fields:
-                raise ValueErro(
-                    f'\'{field}\' is not a valid metadata field for this corpus'
-                )
-                new_corp.subcorpus(field,characteristic_dict[field])
+                raise ValueError(f'\'{field}\' is not a valid metadata field for this corpus')
+            new_corp = new_corp.subcorpus(field, characteristic_dict[field])
 
         return new_corp
 
@@ -440,7 +500,6 @@ class Corpus(common.FileLoaderMixin):
 
         if metadata_field not in get_metadata_fields(self.corpus_name):
             raise AttributeError(f"Metadata field {metadata_field} invalid for this corpus")
-        # TODO: change this to work with Charlotte's functions once she adds them
 
         if (metadata_field == "date" or metadata_field == "gutenberg_id"):
             field_val = int(field_val)
@@ -474,7 +533,6 @@ class Corpus(common.FileLoaderMixin):
         for field in metadata_dict.keys():
             if field not in get_metadata_fields(self.corpus_name):
                 raise AttributeError(f"Metadata field {field} invalid for this corpus")
-            # TODO: change this to work with Charlotte's functions once she adds them
 
         for novel in self.novels:
             match = True
