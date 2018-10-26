@@ -5,6 +5,7 @@ from gender_novels.common import load_graph_settings
 load_graph_settings(False)
 from gender_novels.analysis.dunning import male_vs_female_authors_analysis_dunning, dunning_result_to_dict
 
+
 def score_plot_to_show(results):
     results_dict = dict(results)
     words = []
