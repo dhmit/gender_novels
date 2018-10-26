@@ -253,7 +253,7 @@ def compare_word_association_in_corpus_analysis_dunning(word1, word2, corpus=Non
 
 
 def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None, corpus1_name=None,
-                                                             corpus2=None, corpus2_name=None):
+                                                             corpus2=None, corpus2_name=None, use_word_window=False, word_window=None):
     """
     Uses Dunning analysis to compare words associated with word between corpuses.  If a corpus and corpus_name are
     passsed in, then the analysis will use the corpus but name the file after corpus_name.  If no corpus is passed in but
@@ -282,10 +282,10 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None,
         if not corpus2_name:
             corpus2_name = "gutenberg"
         corpus2 = Corpus(corpus2_name)
-
     pickle_filename = (f'dunning_{word}_associated_words_{corpus1_name}_vs_{corpus2_name}_in_'
                        f'{corpus1.corpus_name}')
-
+    if use_word_window:
+        pickle_filename+= f'_word_window_{word_window}'
     try:
         results = load_pickle(pickle_filename)
     except IOError:
@@ -293,9 +293,15 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None,
         corpus1_counter = Counter()
         corpus2_counter = Counter()
         for novel in corpus1.novels:
-            corpus1_counter.update(novel.words_associated(word))
+            if use_word_window:
+                get_word_windows(self, search_terms, window_size=word_window)
+            else:
+                corpus1_counter.update(novel.words_associated(word))
         for novel in corpus2.novels:
-            corpus2_counter.update(novel.words_associated(word))
+            if use_word_window:
+                get_word_windows(self, search_terms, window_size=word_window)
+            else:
+                corpus2_counter.update(novel.words_associated(word))
         results = dunning_total(corpus1_counter, corpus2_counter,
                                 filename_to_pickle=pickle_filename)
 
@@ -520,6 +526,20 @@ def god_author_gender_differences(corpus_name):
     compare_word_association_between_corpus_analysis_dunning(word='God',
             corpus1=female_corpus, corpus1_name='female aut',
             corpus2=male_corpus,   corpus2_name='male aut')
+def money_author_gender_differences(corpus_name):
+    """
+    Compares how male authors versus female authors refer to money by looking at the words
+   before and after money'
+
+    :param corpus_name:
+    :return:
+    """
+    male_corpus = Corpus(corpus_name).filter_by_gender('male')
+    female_corpus = Corpus(corpus_name).filter_by_gender('female')
+    compare_word_association_between_corpus_analysis_dunning(word=['money','dollars', 'pounds', 'euros', 'dollar', 'pound','euro', 'wealth', 'income'],
+            corpus1=female_corpus, corpus1_name='female aut',
+            corpus2=male_corpus,   corpus2_name='male aut')
+
 
 # America as written by Male Authors versus Female Authors
 ####################################################################
@@ -545,7 +565,7 @@ if __name__ == '__main__':
     # female_characters_author_gender_differences('gutenberg')
     # male_characters_author_gender_differences('gutenberg')
     # god_author_gender_differences('gutenberg')
-    
+    # money_author_gender_differences('gutenberg')
     # dunning_result_to_dict(male_vs_female_authors_analysis_dunning('gutenberg'))
 
     from dh_testers.testRunner import main_test
