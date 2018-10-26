@@ -257,21 +257,21 @@ def dunning_total(m_corpus, f_corpus):
 
     :return: dictionary of common word with dunning value and p value
 
-    >>> c = Corpus('sample_novels')
-    >>> m_corpus = c.filter_by_gender('male')
-    >>> f_corpus = c.filter_by_gender('female')
-    >>> result = dunning_total(m_corpus, f_corpus)
-    >>> print(result[0:10])
-    [('she', (-12292.762338290115, 29042, 45509)),
-    ('her', (-11800.614222528242, 37517, 53463)),
-    ('jo', (-3268.940103481869, 1, 1835)),
-    ('carlyle', (-2743.3204833572668, 3, 1555)),
-    ('mrs', (-2703.877430262923, 3437, 6786)),
-    ('amy', (-2221.449213948045, 36, 1408)),
-    ('laurie', (-1925.9408323278521, 2, 1091)),
-    ('adeline', (-1896.0496657740907, 13, 1131)),
-    ('alessandro', (-1804.1775207769476, 3, 1029)),
-    ('mr', (-1772.0584351647658, 7900, 10220))]
+         >>> c = Corpus('sample_novels')
+         >>> m_corpus = c.filter_by_gender('male')
+         >>> f_corpus = c.filter_by_gender('female')
+         >>> result = dunning_total(m_corpus, f_corpus)
+         >>> print(result[0:10])
+        [('she', (-12292.762338290115, 29042, 45509)),
+        ('her', (-11800.614222528242, 37517, 53463)),
+        ('jo', (-3268.940103481869, 1, 1835)),
+        ('carlyle', (-2743.3204833572668, 3, 1555)),
+        ('mrs', (-2703.877430262923, 3437, 6786)),
+        ('amy', (-2221.449213948045, 36, 1408)),
+        ('laurie', (-1925.9408323278521, 2, 1091)),
+        ('adeline', (-1896.0496657740907, 13, 1131)),
+        ('alessandro', (-1804.1775207769476, 3, 1029)),
+        ('mr', (-1772.0584351647658, 7900, 10220))]
 
 
     '''
