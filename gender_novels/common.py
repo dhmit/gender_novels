@@ -387,8 +387,10 @@ def load_graph_settings(show_grid_lines=True):
     show_grid_lines_string = str(show_grid_lines)
     palette = "colorblind"
     style_name = "white"
+    background_color = (252/255,245/255,233/255,0.4)
     style_list = {'axes.edgecolor': '.6', 'grid.color': '.9', 'axes.grid': show_grid_lines_string,
-                  'font.family': 'serif'}
+                  'font.family': 'serif', 'axes.facecolor':background_color,
+                  'figure.facecolor':background_color}
     sns.set_color_codes(palette)
     sns.set_style(style_name, style_list)
 

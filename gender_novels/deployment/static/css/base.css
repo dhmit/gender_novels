@@ -21,7 +21,7 @@ p {
 /* Custom classes */
 
 .header {
-    background-color: #D23641;
+    background-color: #99BC78;
 }
 
 .header-text {
@@ -32,12 +32,12 @@ p {
 }
 
 .content {
-    background-color: #EAD3A8;
+    background-color: #FCF5E9;
 }
 
 /* Navbar */
 .header-nav {
-    background-color: #EAD3A8;
+    background-color: #FCF5E9;
     margin-bottom: -1rem;
 }
 
@@ -46,7 +46,7 @@ p {
 }
 
 a:hover {
-    color: #D23641 !important;
+    color: #99BC78 !important;
 }
 
 /* Topic content */
@@ -75,4 +75,3 @@ a:hover {
     max-height: 60px;
     max-width: 60px;
 }
-
