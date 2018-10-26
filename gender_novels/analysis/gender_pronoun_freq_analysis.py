@@ -1,10 +1,10 @@
 from gender_novels.corpus import Corpus
 from gender_novels.analysis.analysis import get_comparative_word_freq
 import numpy as np
+from gender_novels import common
 
 
 def books_pronoun_freq(corp):
-    #TODO: add doctests
     '''
     Counts male and female pronouns for every book and finds their relative frequencies per book
     Outputs dictionary mapping novel object to the relative frequency
@@ -12,16 +12,23 @@ def books_pronoun_freq(corp):
 
     :param: Corpus object
     :return: dictionary with data organized by groups
+
+    >>> books_pronoun_freq(Corpus('test_corpus'))
+    {<Novel (aanrud_longfrock)>: 0.7623169107856191, <Novel (abbott_flatlandromance)>: 0.14321608040201003, <Novel (abbott_indiscreetletter)>: 0.4166666666666667, <Novel (adams_fighting)>: 0.1898395721925134, <Novel (alcott_josboys)>: 0.42152086422368146, <Novel (alcott_littlemen)>: 0.3111248200699157, <Novel (alcott_littlewomen)>: 0.6196978175713487, <Novel (alden_chautauqua)>: 0.7518623169791935, <Novel (austen_emma)>: 0.5662100456621004, <Novel (austen_persuasion)>: 0.5305111461382571}
     '''
+
+    try:
+        if (not corp.load_test_corpus):
+            relative_freq_male = common.load_pickle(f'{corp.corpus_name}_pronoun_freq_male')
+            relative_freq_female = common.load_pickle(f'{corp.corpus_name}_pronoun_freq_female')
+            return relative_freq_female
+    except IOError:
+        pass
 
     relative_freq_male = {}
     relative_freq_female = {}
 
-    count = 0
     for book in corp.novels:
-        if count%100 == 0:
-            print(count)
-        count += 1
         he = book.get_word_freq('he')
         him = book.get_word_freq('him')
         his = book.get_word_freq('his')
@@ -38,7 +45,15 @@ def books_pronoun_freq(corp):
         relative_freq_male[book] = temp_dict['male']
         relative_freq_female[book] = temp_dict['female']
 
+    book.text = ''
+    book._word_counts_counter = None
+
+    if (not corp.load_test_corpus):
+        common.store_pickle(relative_freq_male, f'{corp.corpus_name}_pronoun_freq_male')
+        common.store_pickle(relative_freq_female, f'{corp.corpus_name}_pronoun_freq_female')
+
     return (relative_freq_female)
+
 
 def subject_vs_object_pronoun_freqs(corp):
     '''
@@ -51,7 +66,20 @@ def subject_vs_object_pronoun_freqs(corp):
 
     :param corp: Corpus
     :return: tuple of two dictionaries (male, female)
+
+    >>> subject_vs_object_pronoun_freqs(Corpus('test_corpus'))
+    ({<Novel (aanrud_longfrock)>: 0.793233082706767, <Novel (abbott_flatlandromance)>: 0.6741573033707865, <Novel (abbott_indiscreetletter)>: 0.7906976744186047, <Novel (adams_fighting)>: 0.7184527584020292, <Novel (alcott_josboys)>: 0.6330049261083744, <Novel (alcott_littlemen)>: 0.6451612903225807, <Novel (alcott_littlewomen)>: 0.6577563540753725, <Novel (alden_chautauqua)>: 0.7577030812324931, <Novel (austen_emma)>: 0.7086120401337792, <Novel (austen_persuasion)>: 0.6739130434782609}, {<Novel (aanrud_longfrock)>: 0.5376532399299474, <Novel (abbott_flatlandromance)>: 0.17543859649122806, <Novel (abbott_indiscreetletter)>: 0.4424242424242424, <Novel (adams_fighting)>: 0.43485915492957744, <Novel (alcott_josboys)>: 0.3862487360970678, <Novel (alcott_littlemen)>: 0.4343501326259947, <Novel (alcott_littlewomen)>: 0.4124569980083288, <Novel (alden_chautauqua)>: 0.5461432506887053, <Novel (austen_emma)>: 0.4836730221345606, <Novel (austen_persuasion)>: 0.4872013651877133})
     '''
+
+    try:
+        if (not corp.load_test_corpus):
+            relative_freq_male_sub_v_ob = common.load_pickle(
+                f'{corp.corpus_name}_sub_v_ob_pronoun_freq_male')
+            relative_freq_female_sub_v_ob = common.load_pickle(
+                f'{corp.corpus_name}_sub_v_ob_pronoun_freq_female')
+            return (relative_freq_male_sub_v_ob, relative_freq_female_sub_v_ob)
+    except IOError:
+        pass
 
     relative_freq_male_subject = {}
     relative_freq_female_subject = {}
@@ -75,9 +103,19 @@ def subject_vs_object_pronoun_freqs(corp):
         relative_freq_male_object[book] = temp_dict_male['object']
         relative_freq_female_object[book] = temp_dict_female['object']
 
-        result_tuple = (relative_freq_male_subject, relative_freq_female_subject)
+    book.text = ''
+    book._word_counts_counter = None
+
+    if (not corp.load_test_corpus):
+        common.store_pickle(relative_freq_male_subject,
+                            f'{corp.corpus_name}_sub_v_ob_pronoun_freq_male')
+        common.store_pickle(relative_freq_female_subject,
+                            f'{corp.corpus_name}_sub_v_ob_pronoun_freq_female')
+
+    result_tuple = (relative_freq_male_subject, relative_freq_female_subject)
 
     return result_tuple
+
 
 def subject_pronouns_gender_comparison(corp, subject_gender):
     '''
@@ -89,10 +127,28 @@ def subject_pronouns_gender_comparison(corp, subject_gender):
     :param corp: Corpus
     :param subject_gender: string 'male' or string 'female'
     :return: dictionary
+
+    >>> subject_pronouns_gender_comparison(Corpus('test_corpus'), 'male')
+    {<Novel (aanrud_longfrock)>: 0.2557575757575758, <Novel (abbott_flatlandromance)>: 0.923076923076923, <Novel (abbott_indiscreetletter)>: 0.582857142857143, <Novel (adams_fighting)>: 0.8210144927536231, <Novel (alcott_josboys)>: 0.5736607142857142, <Novel (alcott_littlemen)>: 0.6812652068126521, <Novel (alcott_littlewomen)>: 0.39719502513892563, <Novel (alden_chautauqua)>: 0.2543488481429243, <Novel (austen_emma)>: 0.4343926191696566, <Novel (austen_persuasion)>: 0.45696623870660963}
+    >>> subject_pronouns_gender_comparison(Corpus('test_corpus'), 'female')
+    {<Novel (aanrud_longfrock)>: 0.7442424242424243, <Novel (abbott_flatlandromance)>: 0.07692307692307691, <Novel (abbott_indiscreetletter)>: 0.4171428571428572, <Novel (adams_fighting)>: 0.17898550724637682, <Novel (alcott_josboys)>: 0.4263392857142857, <Novel (alcott_littlemen)>: 0.31873479318734793, <Novel (alcott_littlewomen)>: 0.6028049748610743, <Novel (alden_chautauqua)>: 0.7456511518570758, <Novel (austen_emma)>: 0.5656073808303435, <Novel (austen_persuasion)>: 0.5430337612933904}
     '''
 
     if not(subject_gender == 'male' or subject_gender == 'female'):
         raise ValueError('subject_gender must be \'male\' or \'female\'')
+
+    try:
+        if (not corp.load_test_corpus):
+            relative_freq_male_subject = common.load_pickle(
+                f'{corp.corpus_name}_subject_pronoun_freq_male')
+            relative_freq_female_subject = common.load_pickle(
+                f'{corp.corpus_name}_subject_pronoun_freq_female')
+            if subject_gender == 'male':
+                return relative_freq_male_subject
+            else:
+                return relative_freq_female_subject
+    except IOError:
+        pass
 
     relative_freq_female_sub = {}
     relative_freq_male_sub = {}
@@ -103,6 +159,14 @@ def subject_pronouns_gender_comparison(corp, subject_gender):
 
         relative_freq_female_sub[book] = (she)/(he+she)
         relative_freq_male_sub[book] = (he)/(he+she)
+
+    book.text = ''
+    book._word_counts_counter = None
+
+    if (not corp.load_test_corpus):
+        common.store_pickle(relative_freq_female_sub,
+                            f'{corp.corpus_name}_subject_pronoun_freq_female')
+        common.store_pickle(relative_freq_male_sub, f'{corp.corpus_name}_subject_pronoun_freq_male')
 
     if subject_gender == 'male':
         return relative_freq_male_sub
@@ -385,23 +449,5 @@ def relative_frequency_overall(corpus):
 
 
 if __name__ == '__main__':
-#    from dh_testers.testRunner import main_test
-#    main_test()
-    #print("mean relative female freq across corpus:")
-    #print(relative_frequency_overall(Corpus('sample_novels')))
-    all_data = books_pronoun_freq(Corpus('gutenberg'))
-
-
-
-    gender = freq_by_author_gender(all_data)
-    date = freq_by_date(all_data)
-    location = freq_by_location(all_data)
-
-    print('Male/Female pronoun comparison: ')
-    print('By author gender: ')
-    print(get_mean(gender))
-    print('\n By date: ')
-    print(get_mean(date))
-    print('\n By location: ')
-    print(get_mean(location))
-
+    from dh_testers.testRunner import main_test
+    main_test()
