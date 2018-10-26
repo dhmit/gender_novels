@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Corpora{% endblock %}
+{% block title %}Team{% endblock %}
 
 {% block head %}
 {% endblock %}
@@ -8,14 +8,244 @@
 {% block content %}
     <!-- Page content -->
     <div class="container-fluid content">
-        <div class="row justify-content-start">
-            <div class="col-2">
+    <!-- Administration -->
+        <h1 class="display-6">Administration</h1>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/')}}" />
             </div>
-            <div class="col-8" align="center">
-                <div class="topic-content">
-                    <!-- Topic content assigned in convertMarkdown.js -->
-                    <div id=""></div>
-                </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <span>Michael Scott Cuthbert<br>Faculty Director of the Digital Humanities Lab and Associate Professor of Music</span>
+            </div>
+            <div class="col-4">
+                <span>Nicole Fountain<br>Administrative Assistant</span>
+            </div>
+            <div class="col-4">
+                <span>Bridget Johnson<br>Temporary Administrative Assistant</span>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/')}}" />
+            </div>
+            <div class="col-6">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <span>Stephan Risi<br>Postdoctoral Associate</span>
+            </div>
+            <div class="col-6">
+                <span>Lisa Tagliaferri<br>Postdoctoral Associate</span>
+            </div>
+        </div>
+        <!-- Data -->
+        <h1 class="display-6">Data</h1>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Ademolu-Odeneye_Ife.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Atia_Dina.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Chen_Susanna.jpeg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Gallegos_Maritza.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <span>Ife Ademolu-Odeneye<br>Web Acquisition Specialist</span>
+            </div>
+            <div class="col-3">
+                <span>Dina Atia<br>HathiTrust Specialist</span>
+            </div>
+            <div class="col-3">
+                <span>Susanna Chen<br>Corpus Scout</span>
+            </div>
+            <div class="col-3">
+                <span>Maritza Gallegos<br>Data Sanitization Engineer</span>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <img class="portrait rotate-90 rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Murray_Keith.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Tran_Felix.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Yen_Derek.jpg')}}" />
+            </div>
+            <div class="col-3">
+                <img class="portrait rotate-neg-90 rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Zhi_Sophia.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-3">
+                <span>Keith Murray<br>Gutenberg Specialist</span>
+            </div>
+            <div class="col-3">
+                <span>Felix Tran<br>Visualization Specialist</span>
+            </div>
+            <div class="col-3">
+                <span>Derek Yen<br>Copyright and License</span>
+            </div>
+            <div class="col-3">
+                <span>Sophia Zhi<br>Statistics Specialist</span>
+            </div>
+        </div>
+        <!-- Analysis -->
+        <h1 class="display-6">Analysis</h1>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Caragay_Emily.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/DaCosta_Howard.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Duan_Mingfei.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <span>Emily Caragay<br>Gender Studies Specialist</span>
+            </div>
+            <div class="col-4">
+                <span>Howard DaCosta<br>Statistics Specialist</span>
+            </div>
+            <div class="col-4">
+                <span>Mingfei Duan<br>Metadata Specialist</span>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Ismoldayeva_Assel.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Li_Michelle.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Merrill_Kelsey.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <span>Assel Ismoldayeva<br>Grammar Specialist</span>
+            </div>
+            <div class="col-4">
+                <span>Michelle Li<br>Regular Expressions Specialist</span>
+            </div>
+            <div class="col-4">
+                <span>Kelsey Merrill<br>History/Chronology Specialist</span>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Minsky_Charlotte.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Pan_Carol.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Sundaram_Shobhita.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <span>Charlotte Minsky<br>Analysis Project Manager</span>
+            </div>
+            <div class="col-4">
+                <span>Carol Pan<br>Visualization Specialist</span>
+            </div>
+            <div class="col-4">
+                <span>Shobita Sundaram<br>Digital Humanities Literature Specialist</span>
+            </div>
+        </div>
+        <!-- Deployment -->
+        <h1 class="display-6">Deployment</h1>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Boal_Alena.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Culbertson_Alena.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Itambo_Elsa.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <span>Elena Boal<br>Quality Assurance Engineer</span>
+            </div>
+            <div class="col-4">
+                <span>Alena Culbertson<br>Visualization Specialist</span>
+            </div>
+            <div class="col-4">
+                <span>Elsa Itambo<br>DevOps Engineer</span>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Redlon_Isaac.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/Xu_Katherine.jpg')}}" />
+            </div>
+            <div class="col-4">
+                <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
+                filename='graphics/portraits/York_Samantha.jpg')}}" />
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-4">
+                <span>Isaac Redlon<br>Front End Web Developer</span>
+            </div>
+            <div class="col-4">
+                <span>Kate Xu<br>Back End Web Developer</span>
+            </div>
+            <div class="col-4">
+                <span>Samanatha York<br>Writer/Editor</span>
             </div>
         </div>
     </div>

@@ -12,11 +12,17 @@ div {
     font-family: "Sorts Mill Goudy";
 }
 
-p {
-    word-wrap: break-word;
+span {
+    margin: auto;
+    display: table;
+    text-align: center;
 }
 
-/* Base Bootstrap classes */
+/* Base Bootstrap elements */
+
+.display-6 {
+    text-align: center;
+}
 
 /* Custom classes */
 
@@ -33,9 +39,26 @@ p {
 
 .content {
     background-color: #FCF5E9;
+    text-align: left;
+}
+
+.portrait {
+    max-width: 250px;
+    max-height: 250px;
+    width: auto;
+    height: auto;
+}
+
+.rotate-90 {
+    transform: rotate(90deg);
+}
+
+.rotate-neg-90 {
+    transform: rotate(-90deg);
 }
 
 /* Navbar */
+
 .header-nav {
     background-color: #FCF5E9;
     margin-bottom: -1rem;
@@ -56,12 +79,20 @@ a:hover {
     width: auto;
     max-height: 75%;
     max-width: 75%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Footer */
 
 .footer {
     background-color: #34282C;
+}
+
+.mit-logo {
+    height: 5vh;
+    width: 10vw;
 }
 
 .github-text {
