@@ -472,6 +472,23 @@ def god_author_gender_differences(corpus_name):
             corpus1=female_corpus, corpus1_name='female aut',
             corpus2=male_corpus,   corpus2_name='male aut')
 
+# America as written by Male Authors versus Female Authors
+####################################################################
+
+def america_author_gender_differences(corpus_name):
+    """
+    Compares how American male authors versus female authors refer to America by looking at the words
+    that follow 'America'
+
+    :param corpus_name:
+    :return:
+    """
+    male_corpus = Corpus(corpus_name).filter_by_gender('male')
+    female_corpus = Corpus(corpus_name).filter_by_gender('female')
+    compare_word_association_between_corpus_analysis_dunning(word='America',
+            corpus1=female_corpus, corpus1_name='female aut',
+            corpus2=male_corpus,   corpus2_name='male aut')
+
 if __name__ == '__main__':
     #### Uncomment any of the lines below to run one of the analyses.
     # male_vs_female_authors_analysis_dunning('gutenberg')
