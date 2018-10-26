@@ -436,18 +436,25 @@ def sort_every_year(frequency_dict):
 
     return every_year_dict
 
-def relative_frequency_overall(corpus):
-    #TODO: write doctest
+
+def overall_mean(d):
     '''
-    Gives the average female pronoun frequency across all novels
-    :param corpus: the corpus you want to use
-    :return: float: the average relative female frequency across all novels in corpus
+    Returns the average of all the values in a dictionary
+    :param dictionary with numbers as values
+    :return: float: average of all the values
+
+    >>> c = Corpus('test_corpus')
+    >>> freq_dict = books_pronoun_freq(c)
+    >>> overall_mean(freq_dict)
+    0.4712966240691306
     '''
-    pronoun_freq = books_pronoun_freq(corpus)
-    dict_to_list_inside = dict_to_list(pronoun_freq)
-    return np.mean(dict_to_list_inside)
+    l = dict_to_list(d)
+    mean = np.mean(l)
+    return mean
 
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
+
+    

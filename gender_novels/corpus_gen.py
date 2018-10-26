@@ -20,7 +20,7 @@ SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "s
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
              "textbooks", "terms and phrases", "essays", "united states. constitution", "bible", "directories",
              "songbooks", "hymns", "correspondence", "drama", "reviews", "translations into english", 'religion']
-TRUNCATORS = ["\r", "\n", r"; Or, "]
+TRUNCATORS = ["\r", "\n", r"; Or, ", r"; or, "]
 COUNTRY_ID_TO_NAME = {"Q30":  "United States", "Q145": "United Kingdom", "Q21": "United Kingdom", "Q16": "Canada",
                       "Q408": "Australia", "Q2886622": "Narnia"}
 
