@@ -16,15 +16,16 @@ stop_words = set(stopwords.words('english'))
 
 import numpy as np
 import matplotlib.pyplot as plt
+
 from more_itertools import windowed
 import unittest
 import seaborn as sns
-sns.set()
-sns.palplot(sns.color_palette(palette="pastel"))
-
-def test_function():
-    d = {"Austin": [.5, .5], "Elliot": [.8, .2], "Sam": [.14, .22]}
-    display_gender_freq(d=d, title="he_she_freq")  # made up data that works
+palette = "colorblind"
+style_name = "white"
+style_list = {'axes.edgecolor': '.6', 'grid.color': '.9', 'axes.grid': 'True',
+                           'font.family': 'serif'}
+sns.set_color_codes(palette)
+sns.set_style(style_name,style_list)
 
 
 def get_count_words(novel, words):
@@ -146,14 +147,14 @@ def display_gender_freq(d, title):
 
     index = np.arange(len(d.keys()))
     bar_width = 0.35
+    opacity = 0.4
 
     he_val = tuple(he_val)
     she_val = tuple(she_val)
     authors = tuple(authors)
 
-    rects1 = ax.bar(index, he_val, bar_width, color='cyan', label='He')
-
-    rects2 = ax.bar(index + bar_width, she_val, bar_width, color='plum', label='She')
+    rects1 = ax.bar(index, he_val, bar_width, alpha=opacity, color='b', label='He')
+    rects2 = ax.bar(index + bar_width, she_val, bar_width, alpha=opacity, color='r', label='She')
 
     ax.set_xlabel('Authors')
     ax.set_ylabel('Frequency')
@@ -440,7 +441,12 @@ def find_gender_adj(novel, female):
         distances = male_instance_dist(novel)
         pronouns1 = ["his", "him", "he", "himself"]
         pronouns2 = ["her", "hers", "she", "herself"]
-    lower_window_bound = median(sorted(distances)[:int(len(distances) / 2)])
+    if len(distances) == 0:
+        return {}
+    elif len(distances) <= 3:
+        lower_window_bound = 5
+    else:
+        lower_window_bound = median(sorted(distances)[:int(len(distances) / 2)])
 
     if not lower_window_bound >= 5:
         return "lower window bound less than 5"
@@ -504,19 +510,6 @@ def find_female_adj(novel):
        """
     return find_gender_adj(novel, True)
 
-if __name__ == '__main__':
-    test_function()
-    print("loading corpus")
-    corpus = Corpus('sample_novels')
-    print("loading novel")
-    novel = corpus._load_novels()[15]
-    print(novel.author, novel.title, novel.word_count)
-    print("running function")
-    result = find_male_adj(novel)
-    output = []
-    for key in result.keys():
-        output.append((result[key], key))
-    print(sorted(output, reverse=True))
 
 def process_medians(helst, shelst, authlst):
     """
@@ -638,18 +631,18 @@ def instance_stats(book, medians1, medians2, title):
     bar graph
     """
     fig, ax = plt.subplots()
-    plt.ylim(0, 1000)
+    plt.ylim(0, 50)
 
     index = np.arange(len(book))
     bar_width = .7
+    opacity = 0.4
 
     medians_she = tuple(medians2)
     medians_he = tuple(medians1)
     book = tuple(book)
 
-    rects1 = ax.bar(index, medians_he, bar_width, color='cyan', label='Male to Female')
-
-    rects2 = ax.bar(index, medians_she, bar_width, color='plum', label='Female to Male')
+    rects1 = ax.bar(index, medians_he, bar_width, alpha=opacity, color='b', label='Male to Female')
+    rects2 = ax.bar(index, medians_she, bar_width, alpha=opacity, color='r', label='Female to Male')
 
     ax.set_xlabel('Book')
     ax.set_ylabel('Ratio of Median Values')
@@ -703,6 +696,7 @@ def run_dist_inst(corpus):
         instance_stats(d["book"], d["he"], d["she"], "inst_dist" + str(num))
         num += 1
 
+
 class Test(unittest.TestCase):
     def test_dunning_total(self):
         c = Corpus('sample_novels')
@@ -714,6 +708,22 @@ class Test(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
-    run_dist_inst(Corpus('sample_novels'))
-    # run_gender_freq(Corpus('sample_novels'))
+    # unittest.main()
+    '''
+    print("loading corpus")
+    corpus = Corpus('sample_novels')
+    print("loading novel")
+    novel = corpus._load_novels()[15]
+    print(novel.author, novel.title, novel.word_count)
+    print("running function")
+    result = find_male_adj(novel)
+    output = []
+    for key in result.keys():
+        output.append((result[key], key))
+    print(sorted(output, reverse=True))
+    '''
+    c = Corpus('sample_novels')
+    run_dist_inst(c)
+    run_gender_freq(c)
+    print("hello")
+
