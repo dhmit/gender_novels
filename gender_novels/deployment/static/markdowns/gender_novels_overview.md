@@ -1,6 +1,7 @@
 # Over 4200 Books
 
-Our database involves over X novels sourced from the Gutenberg project and gives us a comprehensive look at the views of authors of the time period.
+Our database involves over 4200 novels sourced from the Gutenberg project and gives us a 
+comprehensive look at the views of authors of the time period.
 
 ## Our Goals
 
@@ -9,6 +10,3 @@ As the first project of the lab, we are very excited to begin our research in th
 It is the hope of the lab that by embarking on this mission, we are able to draw on the views and opinions of the past to diagnose potential causes, solutions, and sources of gender-based discrimination and stereotyping. We have asked questions and performed comparisons such as examining passive and active voice, pronoun frequencies, and much more.
 
 Use the links above to explore what we’ve been doing!
-
-
-![Better Pics needed!](http://ichef.bbci.co.uk/wwfeatures/wm/live/1280_640/images/live/p0/2v/dp/p02vdpfn.jpg "Better Picks needed!")
