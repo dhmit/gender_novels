@@ -292,15 +292,15 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None,
         corpus1_counter = Counter()
         corpus2_counter = Counter()
         for novel in corpus1.novels:
-            If use_word_window:
+            if use_word_window:
                 get_word_windows(self, search_terms, window_size=word_window)
-            else
-            corpus1_counter.update(novel.words_associated(word))
+            else:
+                corpus1_counter.update(novel.words_associated(word))
         for novel in corpus2.novels:
-            If use_word_window:
+            if use_word_window:
                 get_word_windows(self, search_terms, window_size=word_window)
-            else
-            corpus2_counter.update(novel.words_associated(word))
+            else:
+                corpus2_counter.update(novel.words_associated(word))
         results = dunning_total(corpus1_counter, corpus2_counter,
                                 filename_to_pickle=pickle_filename)
 
@@ -499,6 +499,6 @@ if __name__ == '__main__':
     # female_characters_author_gender_differences('gutenberg')
     # male_characters_author_gender_differences('gutenberg')
     # god_author_gender_differences('gutenberg')
-    # money_author_gender_differences('gutenberg')
+    money_author_gender_differences('gutenberg')
     from dh_testers.testRunner import main_test
     main_test()
