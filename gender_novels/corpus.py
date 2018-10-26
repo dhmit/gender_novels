@@ -5,9 +5,6 @@ from collections import Counter
 from gender_novels import common
 from gender_novels.novel import Novel
 
-from gender_novels.corpus import Corpus
-corpus = Corpus('gutenberg')
-
 
 class Corpus(common.FileLoaderMixin):
     """The corpus class is used to load the metadata and full
@@ -335,7 +332,7 @@ class Corpus(common.FileLoaderMixin):
         """
         metadata_fields = set()
         for novel in self.novels:
-            for field in getmembers(novel):
+            for field in self.getmembers():
                 metadata_fields.add(field)
         return sorted(list(metadata_fields))
 
