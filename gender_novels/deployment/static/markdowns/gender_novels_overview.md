@@ -1,6 +1,4 @@
-# Overview
-
-## Over 4200 Books
+# Over 4200 Books
 
 Our database involves over X novels sourced from the Gutenberg project and gives us a comprehensive look at the views of authors of the time period.
 
