@@ -5,6 +5,8 @@ from collections import Counter
 from gender_novels import common
 from gender_novels.novel import Novel
 
+from gender_novels.corpus import Corpus
+corpus = Corpus('gutenberg')
 
 
 class Corpus(common.FileLoaderMixin):
