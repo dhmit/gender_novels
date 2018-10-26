@@ -455,12 +455,30 @@ def male_characters_author_gender_differences(corpus_name):
             corpus2=male_corpus,   corpus2_name='male aut')
 
 
+# God as written by Male Authors versus Female Authors
+####################################################################
+
+def god_author_gender_differences(corpus_name):
+    """
+    Compares how male authors versus female authors refer to God by looking at the words
+    that follow 'God'
+
+    :param corpus_name:
+    :return:
+    """
+    male_corpus = Corpus(corpus_name).filter_by_gender('male')
+    female_corpus = Corpus(corpus_name).filter_by_gender('female')
+    compare_word_association_between_corpus_analysis_dunning(word='God',
+            corpus1=female_corpus, corpus1_name='female aut',
+            corpus2=male_corpus,   corpus2_name='male aut')
+
 if __name__ == '__main__':
     #### Uncomment any of the lines below to run one of the analyses.
     # male_vs_female_authors_analysis_dunning('gutenberg')
     # he_vs_she_associations_analysis_dunning('gutenberg')
     # female_characters_author_gender_differences('gutenberg')
     # male_characters_author_gender_differences('gutenberg')
+    # god_author_gender_differences('gutenberg')
 
     from dh_testers.testRunner import main_test
     main_test()
