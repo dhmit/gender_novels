@@ -3,6 +3,10 @@
 
 /* Base HTML elements */
 
+h1, h2, h3 {
+    text-align: center;
+}
+
 body {
     font-size: large;
 }
@@ -43,18 +47,8 @@ span {
 }
 
 .portrait {
-    max-width: 250px;
-    max-height: 250px;
-    width: auto;
-    height: auto;
-}
-
-.rotate-90 {
-    transform: rotate(90deg);
-}
-
-.rotate-neg-90 {
-    transform: rotate(-90deg);
+    height: 200px;
+    width: 200px;
 }
 
 /* Navbar */

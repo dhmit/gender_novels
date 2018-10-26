@@ -28,11 +28,6 @@ def render_corpora():
     return render_template('corpora.html')
 
 
-@app.route('/test_page.html')
-def render_test_page():
-    return render_template('test_page.html')
-
-
 @app.route('/team.html')
 def render_team():
     return render_template('team.html')
