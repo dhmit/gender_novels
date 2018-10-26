@@ -63,9 +63,7 @@ def merge(novel_adj_dict, full_adj_dict):
         >>> merge(novel_adj_dict, full_adj_dict)
         {'hello': 20, 'bienvenue': 3, 'hi': 30, 'hola': 9, 'bonjour': 2}
     """
-    print(novel_adj_dict)
     for adj in list(novel_adj_dict.keys()):
-        print(adj)
         adj_count = novel_adj_dict[adj]
         if adj in list(full_adj_dict.keys()):
             full_adj_dict[adj] += adj_count
