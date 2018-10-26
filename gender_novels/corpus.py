@@ -519,7 +519,9 @@ class Corpus(common.FileLoaderMixin):
 
         >>> corpus = Corpus('sample_novels')
         >>> corpus.get_sample_text_passages('he cried', 2)
-        [('james_american.txt', 'from head to foot he looked at his daughter and then at the picture “take care you don’t spoil it” he cried almost sublimely “we must go home” said mademoiselle noémie “this is a good day’s work take care how you carry'), ('james_american.txt', 'fond and his sense of helplessness only increased his irritation “well this sort of thing may be all very well” he cried at last “but i declare i don’t see it i can’t stop you perhaps but at least i can protest'), ('james_american.txt', 'i have given you up” newman gave a powerful thump with his clenched fist upon his knee “why why why” he cried “give me a reasona decent reason you are not a childyou are not a minor nor an idiot you are'), ('james_american.txt', 'flowing river” newman gave a great rap on the floor with his stick and a long grim laugh “good good” he cried “you go altogether too faryou overshoot the mark there isn’t a woman in the world as bad as you would'), ('james_american.txt', 'by side the old woman’s hand in urbain’s arm and the same cold unsociable fixedness in the eyes of each he cried out to himself that the fear was groundless there was blood in the secret at the very least he arrived'), ('james_american.txt', 'the old woman’s hand in both his own and pressed it vigorously “i thank you ever so much for that” he cried “i want to be the first i want it to be my property and no one else’s you’re the wisest'), ('james_american.txt', 'cab to fetch home m de bellegarde from his club” newman slapped his knee “she is scared she is scared” he cried exultantly “i was frightened too sir” said mrs bread “but i was also mightily vexed i took it very high')]
+        ('james_american.txt', 'flowing river” newman gave a great rap on the floor with his stick and a long grim laugh “good good” he cried “you go altogether too faryou overshoot the mark there isn’t a woman in the world as bad as you would')
+        ('james_american.txt', 'the old woman’s hand in both his own and pressed it vigorously “i thank you ever so much for that” he cried “i want to be the first i want it to be my property and no one else’s you’re the wisest')
+
         """
 
         count = 0
@@ -540,7 +542,14 @@ class Corpus(common.FileLoaderMixin):
                         output.append((novel.filename, passage))
                         count += 1
 
-        return output
+        random.shuffle(output)
+        print_count = 0
+        for entry in output:
+            if print_count == no_passages:
+                break
+            print_count += 1
+            print(entry)
+
 
     def get_novel_multiple_fields(self, metadata_dict):
         """
