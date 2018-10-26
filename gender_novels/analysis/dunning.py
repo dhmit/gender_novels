@@ -117,7 +117,7 @@ def dunning_total(counter1, counter2, filename_to_pickle=None):
     return dunning_result
 
 
-def male_vs_female_authors_analysis_dunning_worse():
+def male_vs_female_authors_analysis_dunning_lesser():
     '''
     tests word distinctiveness of shared words between male and female corpora using dunning
     :return: dictionary of common shared words and their distinctiveness
