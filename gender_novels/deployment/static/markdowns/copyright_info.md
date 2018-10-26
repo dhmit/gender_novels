@@ -63,10 +63,6 @@ copyright status to assume that it is within our search period.**
 * Project Gutenberg provides info about the copyright status of works they've uploaded, which can
  be viewed under "Bibrec." See  below:
  
- ![](images/copyright_info_gutenberg1.png "Viewing Bibrec on Project Gutenberg")
+ ![Bibliographic Record (Bibrec) location on Project Gutenberg](images/copyright_info_gutenberg1.png "Bibliographic Record (Bibrec) on Project Gutenberg")
  
- ![](images/copyright_info_gutenberg2.png 
- "Viewing Copyright Status under Bibrec
-  on 
- Project 
- Gutenberg")
+ ![Copyright Status listed under Bibrec](images/copyright_info_gutenberg2.png "Copyright Status listed under Bibrec")
