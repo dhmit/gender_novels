@@ -1,8 +1,9 @@
 import urllib
 from nltk.parse.stanford import StanfordDependencyParser
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
+from gender_novels.common import store_pickle, load_pickle
 import os.path
 import time
 
@@ -49,7 +50,7 @@ def count_gender_subj_obj(tree):
 
     male_subj_count = male_obj_count = female_subj_count = female_obj_count = 0
     for sentence in tree:
-        for triple in next(sentence).triples():
+        for triple in sentence:
             if triple[1] == "nsubj" and triple[2][0] == "he":
                 male_subj_count += 1
             if triple[1] == "dobj" and triple[2][0] == "him":
@@ -80,11 +81,34 @@ def parse_novel(novel, parser):
 
     """
 
-    sentences = sent_tokenize(novel.text.lower().replace("\n", " "))
-    result = parser.raw_parse_sents(sentences)
-    # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
-    # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
-    tree = list(result)
+    try:
+        tree = load_pickle(f'wrong_path_dep_tree_{str(novel)}')
+    except (IOError, FileNotFoundError):
+        sentences = sent_tokenize(novel.text.lower().replace("\n", " "))
+        print(len(sentences))
+        he_she_sentences = []
+        for sentence in sentences:
+            words = [word for word in word_tokenize(sentence)]
+            for word in words:
+                if word == "he" or word == "she" or word == "him" or word == "her":
+                    he_she_sentences.append(sentence)
+        sentences = he_she_sentences
+        print(len(sentences))
+        result = parser.raw_parse_sents(sentences)
+        # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
+        # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
+        tree = list(result)
+        tree_list = []
+        i = 0
+        for sentence in tree:
+            tree_list.append([])
+            triples = list(next(sentence).triples())
+            for triple in triples:
+                tree_list[i].append(triple)
+            i += 1
+        tree = tree_list
+        store_pickle(tree, f'dep_tree_{str(novel)}')
+
     counts = count_gender_subj_obj(tree)
     return counts
 
@@ -95,13 +119,14 @@ def test_analysis():
     """
 
     parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
-
     novels = Corpus('sample_novels').novels
-    novel = novels[0]
-    start = time.time()
-    print(parse_novel(novel, parser))
-    end = time.time()
-    print(end-start)
+    for novel in novels:
+        if novel.title == "A Tale of Two Cities":
+            start = time.time()
+            p = parse_novel(novel, parser)
+            print(p)
+            end = time.time()
+            print(end-start)
 
 
 if __name__ == "__main__":
