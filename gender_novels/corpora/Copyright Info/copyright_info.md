@@ -4,7 +4,7 @@ This document should hopefully provide help with copyright law and the use of ou
 repositories, Project Gutenberg and HathiTrust. The Summary should provide all the necessary 
 information for 99.9% of cases, but some edge cases are explicated under "Finer points."
 
-Let me know if you have any further questions at djwyen@mit.edu .
+Let me know if you have any further questions.
 
 —Derek Yen, Copyright and License Specialist, Data Group
 
@@ -16,11 +16,12 @@ Public Domain without requesting special permissions.
 * Any book **first published before 1923** is in the Public Domain in the United States.
 
 * As we are working in the United States, we operate entirely within US copyright law. The above "published before 1923" rule is our 
-biggest consideration. (*NB: There are some further details explained below, but this is the 
-biggest rule.*)
+biggest consideration.
 
 * Project Gutenberg and HathiTrust are both based in the United States, so the bulk of their book
- uploads are in the Public Domain in the United States. (*See below for exceptions*)
+ uploads are in the Public Domain in the United States.
+
+* See below for the exceptions to the above.
 
 
 ## Finer points
