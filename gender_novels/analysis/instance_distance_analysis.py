@@ -218,7 +218,7 @@ def analyze_raw_results(corpus_name):
 
 
 if __name__ == '__main__':
-    ##run_analysis("gutenberg")
+    run_analysis("gutenberg")
     r = common.load_pickle("instance_distance_raw_analysis_gutenberg")
     r2 = results_by_location(r, "mean")
     r3 = results_by_author_gender(r, "mean")
