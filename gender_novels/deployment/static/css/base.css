@@ -12,10 +12,6 @@ div {
     font-family: "Sorts Mill Goudy";
 }
 
-p {
-    word-wrap: break-word;
-}
-
 span {
     margin: auto;
     display: table;
@@ -43,6 +39,7 @@ span {
 
 .content {
     background-color: #FCF5E9;
+    text-align: left;
 }
 
 .portrait {
@@ -88,9 +85,9 @@ a:hover {
     background-color: #34282C;
 }
 
-.footer img {
-    max-width: 100%;
-    height: auto;
+.mit-logo {
+    height: 5vh;
+    width: 10vw;
 }
 
 .github-text {

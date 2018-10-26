@@ -5,10 +5,10 @@ window.onload = () => {
 function loadPageContent() {
     let content_dict = {};
 
-    content_dict["overview"] = "gender_novels_overview";
+    content_dict["overview"] = "team_roles";
     content_dict["copyright"] = "copyright_info";
     content_dict["topic-one"] = "gender_novels_analysis";
-    content_dict["testing-tutorial"] = "testing_tutorial";
+    content_dict["metadata"] = "metadata_acquisition";
     content_dict["test-page"] = "";
 
     for (let id in content_dict) {
