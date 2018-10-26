@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from gender_novels.analysis.analysis import find_male_adj, find_female_adj, find_gender_adj
 from gender_novels import common
+from pprint import pprint
 
 
 # import seaborn as sns
@@ -236,21 +237,22 @@ def run_analysis(corpus_name):
     print("storing results")
     store_raw_results(results, corpus_name)
 
+    r = common.load_pickle("pronoun_adj_raw_analysis"+corpus_name)
+    m = merge_raw_results(r)
+    final = get_overlapping_adjectives_raw_results(m)
+    common.store_pickle(final, "pronoun_adj_final_results"+corpus_name)
+
+    #Comment out pprint for large databases where it's not practical to print out results
+    pprint(final)
+
+    # r2 = results_by_location(r)
+    # r3 = results_by_author_gender(r, "mean")
+    # r4 = results_by_date(r, "mean")
+    # common.store_pickle(r2, "pronoun_adj_by_location")
+    # common.store_pickle(r3, "pronoun_adj_by_author_gender")
+    # common.store_pickle(r4, "pronoun_adj_by_date")
 
 
 if __name__ == '__main__':
     run_analysis("sample_novels")
-    r = common.load_pickle("pronoun_adj_raw_analysis_sample_novels")
-    m = merge_raw_results(r)
-    final = get_overlapping_adjectives_raw_results(m)
 
-    print(r)
-    print(m)
-    print(final)
-
-    #r2 = results_by_location(r)
-    #r3 = results_by_author_gender(r, "mean")
-    #r4 = results_by_date(r, "mean")
-    #common.store_pickle(r2, "pronoun_adj_by_location")
-    #common.store_pickle(r3, "pronoun_adj_by_author_gender")
-    #common.store_pickle(r4, "pronoun_adj_by_date")
