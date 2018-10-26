@@ -38,6 +38,16 @@ def run_adj_analysis(corpus):
 
     return results
 
+def store_raw_results(results, corpus_name):
+    try:
+        common.load_pickle("pronoun_adj_raw_analysis_" + corpus_name)
+        x = input("results already stored. overwrite previous analysis? (y/n)")
+        if x == 'y':
+            common.store_pickle(results, "pronoun_adj_raw_analysis_" + corpus_name)
+        else:
+            pass
+    except IOError:
+        common.store_pickle(results, "pronoun_adj_raw_analysis_" + corpus_name)
 
 def merge(novel_adj_dict, full_adj_dict):
     """
@@ -75,7 +85,7 @@ def merge_raw_results(full_results):
     return merged_results
 
 
-def adj_results_by_author_gender(full_results):
+def results_by_author_gender(full_results):
     """
        takes in the full dictionary of results, returns a dictionary that maps 'male' (male author) and 'female'
        (female author) to a dictionary of adjectives and # occurrences across novels written by an author of
@@ -209,5 +219,13 @@ def run_analysis(corpus_name):
     store_raw_results(results, corpus_name)
 
 
+
 if __name__ == '__main__':
     run_analysis("gutenberg")
+    r = common.load_pickle("pronoun_adj_raw_analysis_gutenberg")
+    r2 = results_by_location(r)
+    r3 = results_by_author_gender(r, "mean")
+    r4 = results_by_date(r, "mean")
+    common.store_pickle(r2, "pronoun_adj_by_location")
+    common.store_pickle(r3, "pronoun_adj_by_author_gender")
+    common.store_pickle(r4, "pronoun_adj_by_date")
