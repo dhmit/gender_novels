@@ -335,7 +335,7 @@ def freq_by_location(d):
         List name is mapped to the list of frequencies
 
     list names key:
-    location_England - published in England
+    location_UK - published in the United Kingdom
     location_US - published in the US
     location_other - published somewhere other than the US and England
 
@@ -345,7 +345,7 @@ def freq_by_location(d):
     >>> from gender_novels import novel
     >>> novel_metadata = {'author': 'Austen, Jane', 'title': 'Persuasion',
     ...                   'corpus_name': 'sample_novels', 'date': '1818',
-    ...                   'country_publication': 'England', 'filename': 'austen_persuasion.txt'}
+    ...                   'country_publication': 'United Kingdom', 'filename':  'austen_persuasion.txt'}
     >>> austen = novel.Novel(novel_metadata)
     >>> novel_metadata2 = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
     ...                   'corpus_name': 'sample_novels', 'date': '1900',
@@ -355,16 +355,16 @@ def freq_by_location(d):
     >>> d[scarlet] = 0.5
     >>> d[austen] = 0.3
     >>> freq_by_location(d)
-    {'location_England': [0.3], 'location_US': [0.5], 'location_other': []}
+    {'location_UK': [0.3], 'location_US': [0.5], 'location_other': []}
     '''
 
-    location_England = []
+    location_UK = []
     location_US = []
     location_other = []
 
     for k, v in d.items():
         if k.country_publication == 'United Kingdom':
-            location_England.append(v)
+            location_UK.append(v)
         elif k.country_publication == 'United States':
             location_US.append(v)
         else:
@@ -372,7 +372,7 @@ def freq_by_location(d):
 
     data = {}
 
-    data['location_England'] = location_England
+    data['location_UK'] = location_UK
     data['location_US'] = location_US
     data['location_other'] = location_other
 
