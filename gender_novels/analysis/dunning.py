@@ -495,7 +495,7 @@ if __name__ == '__main__':
     # he_vs_she_associations_analysis_dunning('gutenberg')
     # female_characters_author_gender_differences('gutenberg')
     # male_characters_author_gender_differences('gutenberg')
-    # god_author_gender_differences('gutenberg')
+    god_author_gender_differences('gutenberg')
 
-    from dh_testers.testRunner import main_test
-    main_test()
+    # from dh_testers.testRunner import main_test
+    # main_test()
