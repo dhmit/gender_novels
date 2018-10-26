@@ -19,8 +19,9 @@ def run_distance_analysis(corpus):
     Takes in a corpus of novels. Return a dictionary with each novel mapped to an array of 3 lists:
      - median, mean, min, and max distances between male pronoun instances
      - median, mean, min, and max distances between female pronoun instances
-     - for each of the above stats, the difference between male and female values. (male stat- female stat for all stats.
-        POSITIVE DIFFERENCE VALUES mean there is a HIGHER FEMALE FREQUENCY.
+     - for each of the above stats, the difference between male and female values. (male stat- female stat for all stats)
+        POSITIVE DIFFERENCE VALUES mean there is a LARGER DISTANCE BETWEEN MALE PRONOUNS and therefore
+        HIGHER FEMALE FREQUENCY.
     dict order: [male, female]
 
     :param corpus:
@@ -181,7 +182,7 @@ def results_by_location(results, metric):
     location_other = []
 
     for k in list(results.keys()):
-        if k.country_publication == 'United Kingdom' or k.country_publication == "England":
+        if k.country_publication in ["United Kingdom", "England", "Scotland", "Wales"]:
             location_UK.append(results[k]['difference'][metric])
         elif k.country_publication == 'United States':
             location_US.append(results[k]['difference'][metric])
@@ -222,8 +223,16 @@ if __name__ == '__main__':
     r = common.load_pickle("instance_distance_raw_analysis_gutenberg")
     r2 = results_by_location(r, "mean")
     r3 = results_by_author_gender(r, "mean")
-    r4 = results_by_date(r, "mean")
+    r4 = results_by_date(r, "median")
+    r5 = results_by_location(r, "median")
+    r6 = results_by_author_gender(r, "median")
+    r7 = results_by_date(r, "median")
+
     common.store_pickle(r2, "instance_distance_mean_differences_by_location")
     common.store_pickle(r3, "instance_distance_mean_differences_by_author_gender")
     common.store_pickle(r4, "instance_distance_mean_differences_by_date")
+
+    common.store_pickle(r5, "instance_distance_median_differences_by_location")
+    common.store_pickle(r6, "instance_distance_median_differences_by_author_gender")
+    common.store_pickle(r7, "instance_distance_median_differences_by_date")
 
