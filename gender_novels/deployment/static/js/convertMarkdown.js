@@ -3,12 +3,21 @@ window.onload = () => {
 };
 
 function loadPageContent() {
+    /*
+    content_dict: an object (akin to a Python dictionary) that maps HTML ID strings to markdown
+    filename strings
+
+    Result:
+    Calls convertMarkdown on each value in content_dict if there is an ID in the HTML document
+    of that value's key
+     */
+
     let content_dict = {};
 
     content_dict["overview"] = "team_roles";
     content_dict["copyright"] = "copyright_info";
-    content_dict["topic-one"] = "gender_novels_analysis";
     content_dict["metadata"] = "metadata_acquisition";
+    content_dict["web-scraping"] = "web_scraping";
     content_dict["test-page"] = "";
 
     for (let id in content_dict) {

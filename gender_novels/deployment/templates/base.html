@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 
-<!-- All pages leading away from the landing page inherit this basic page structure -->
-<!-- Custom additions to each unique page can be placed inside of [% block xyz %] tags -->
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -53,7 +50,7 @@
                           Analyses
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                          <a class="dropdown-item" href="topic_one.html">Topic One</a>
+                            <a class="dropdown-item" href="web-scraping.html">Web Scraping</a>
                             <a class="dropdown-item" href="metadata.html">Metadata</a>
                         </div>
                     </li>
@@ -71,7 +68,9 @@
         </nav>
     </div>
 
+    <!-- Unique page content -->
 {% block content %}{% endblock content %}
+
     <!-- Footer -->
     <div class="container-fluid footer">
         <div class="row">
