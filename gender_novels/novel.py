@@ -3,22 +3,26 @@ import string
 from collections import Counter
 from pathlib import Path
 import os
+from more_itertools import windowed
 
 import nltk
-#nltk as part of speech tagger, requires these two packages
-#TODO: Figure out how to put these nltk packages in setup.py, not here
+
+# nltk as part of speech tagger, requires these two packages
+# TODO: Figure out how to put these nltk packages in setup.py, not here
 nltk.download('punkt', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
 gutenberg_imported = True
 
 from gender_novels import common
 from ast import literal_eval
+
 try:
     from gutenberg.cleanup import strip_headers
 except ImportError:
     print('Cannot import gutenberg')
     gutenberg_imported = False
-from gender_novels.common import TEXT_END_MARKERS, TEXT_START_MARKERS, LEGALESE_END_MARKERS, LEGALESE_START_MARKERS
+from gender_novels.common import TEXT_END_MARKERS, TEXT_START_MARKERS, LEGALESE_END_MARKERS, \
+    LEGALESE_START_MARKERS
 
 
 class Novel(common.FileLoaderMixin):
@@ -51,7 +55,7 @@ class Novel(common.FileLoaderMixin):
         # check that the author starts with a capital letter
         # TODO: Currently deactivated because gutenberg authors are lists
         # TODO: reimplement with lists in mind.
-        #if not novel_metadata_dict['author'][0].isupper():
+        # if not novel_metadata_dict['author'][0].isupper():
         #    raise ValueError('The last name of the author should be upper case.',
         #                     f'{novel_metadata_dict["author"]} is likely incorrect in',
         #                     f'{novel_metadata_dict}.')
@@ -144,7 +148,7 @@ class Novel(common.FileLoaderMixin):
         >>> novel_string
         'austen_persuasion'
         """
-        name = self.filename[0:len(self.filename)-4]
+        name = self.filename[0:len(self.filename) - 4]
         return name
 
     def __repr__(self):
@@ -262,7 +266,6 @@ class Novel(common.FileLoaderMixin):
 
         return text
 
-
     def _remove_boilerplate_text(self, text):
         """
         Removes the boilerplate text from an input string of a novel.
@@ -303,7 +306,6 @@ class Novel(common.FileLoaderMixin):
             return strip_headers(text).strip()
         else:
             return self._remove_boilerplate_text_without_gutenberg(text)
-
 
     def _remove_boilerplate_text_without_gutenberg(self, text):
         """
@@ -559,6 +561,48 @@ class Novel(common.FileLoaderMixin):
                 check = True
         return word_count
 
+    def get_word_windows(self, search_terms, window_size=2):
+        """
+        Finds all instances of `word` and returns a counter of the words around it.
+        window_size is the number of words before and after to return, so the total window is
+        2x window_size + 1
+
+        >>> from gender_novels.novel import Novel
+        >>> summary = "She took a lighter out of her purse and handed it over to him."
+        >>> summary += " He lit his cigarette and took a deep drag from it, and then began "
+        >>> summary += "his speech which ended in a proposal. Her tears drowned the ring."
+        >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
+        ...                   'corpus_name': 'sample_novels', 'date': '2018',
+        ...                   'filename': None, 'text': summary}
+        >>> scarlett = Novel(novel_metadata)
+
+        # search_terms can be either a string...
+        >>> scarlett.get_word_windows("his", window_size=2)
+        Counter({'he': 1, 'lit': 1, 'cigarette': 1, 'and': 1, 'then': 1, 'began': 1, 'speech': 1, 'which': 1})
+
+        # ... or a list of strings
+        >>> scarlett.get_word_windows(['purse', 'tears'])
+        Counter({'her': 2, 'of': 1, 'and': 1, 'handed': 1, 'proposal': 1, 'drowned': 1, 'the': 1})
+
+        :param search_terms
+        :param window_size: int
+        :return: Counter
+        """
+
+        if isinstance(search_terms, str):
+            search_terms = [search_terms]
+
+        search_terms = set(i.lower() for i in search_terms)
+
+        counter = Counter()
+
+        for text_window in windowed(self.get_tokenized_text(), 2 * window_size + 1):
+            if text_window[window_size] in search_terms:
+                for surrounding_word in text_window:
+                    if not surrounding_word in search_terms:
+                        counter[surrounding_word] += 1
+
+        return counter
 
     def get_word_freq(self, word):
         """
@@ -581,7 +625,6 @@ class Novel(common.FileLoaderMixin):
 
         word_frequency = self.get_count_of_word(word) / self.word_count
         return word_frequency
-
 
     def get_part_of_speech_tags(self):
         """
@@ -609,4 +652,5 @@ class Novel(common.FileLoaderMixin):
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
+
     main_test()
