@@ -452,9 +452,79 @@ def overall_mean(d):
     mean = np.mean(l)
     return mean
 
+def run_all_analyses():
+    '''
+    Runs analyses for:
+        Female and Male pronoun frequency for:
+            author gender, publication date, publication, publication location
+        Female and Male Subject Object frequency Comparison for:
+            author gender, publication date, publication, publication location
+    Prints results
+    :return: None
+    '''
+    all_data = books_pronoun_freq(Corpus('gutenberg'))
+
+    gender = freq_by_author_gender(all_data)
+    date = freq_by_date(all_data)
+    location = freq_by_location(all_data)
+
+    print('Male/Female pronoun comparison: ')
+    print('By author gender: ')
+    print(get_mean(gender))
+    print('\n By date: ')
+    print(get_mean(date))
+    print('\n By location: ')
+    print(get_mean(location))
+
+    sub_v_ob = subject_vs_object_pronoun_freqs(Corpus('gutenberg'))
+
+    female_gender_sub_v_ob = freq_by_author_gender(sub_v_ob[1])
+    female_date_sub_v_ob = freq_by_date(sub_v_ob[1])
+    female_loc_sub_v_ob = freq_by_location(sub_v_ob[1])
+
+    male_gender_sub_v_ob = freq_by_author_gender(sub_v_ob[0])
+    male_date_sub_v_ob = freq_by_date(sub_v_ob[0])
+    male_loc_sub_v_ob = freq_by_location(sub_v_ob[0])
+
+    male_tot = dict_to_list(sub_v_ob[0])
+    female_tot = dict_to_list(sub_v_ob[1])
+
+    print('Subject/Object comparisons: ')
+    print('Male vs Female in the subject: ')
+    print('Male: ')
+    print(np.mean(male_tot))
+    print('Female: ')
+    print(np.mean(female_tot))
+    print('\n Female pronouns: ')
+    print('By author gender: ')
+    print(get_mean(female_gender_sub_v_ob))
+    print('By date: ')
+    print(get_mean(female_date_sub_v_ob))
+    print('By location: ')
+    print(get_mean(female_loc_sub_v_ob))
+    print('\n Male pronouns: ')
+    print('By author gender: ')
+    print(get_mean(male_gender_sub_v_ob))
+    print('By date:')
+    print(get_mean(male_date_sub_v_ob))
+    print('By location: ')
+    print(get_mean(male_loc_sub_v_ob))
+
+    sub_comp_gender = subject_pronouns_gender_comparison(Corpus('gutenberg'), 'female')
+    sub_comp_gender_list = dict_to_list(sub_comp_gender)
+
+    print('Overall comparative female freq:')
+    print(np.mean(sub_comp_gender_list))
+    print('By author gender:')
+    print(get_mean(freq_by_author_gender(sub_comp_gender)))
+    print('By date: ')
+    print(get_mean(freq_by_date(sub_comp_gender)))
+    print('By location: ')
+    print(get_mean(freq_by_location(sub_comp_gender)))
 
 if __name__ == '__main__':
     from dh_testers.testRunner import main_test
     main_test()
 
-    
+
+
