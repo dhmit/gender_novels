@@ -227,6 +227,7 @@ def dunn_individual_word(total_words_corpus_1, total_words_corpus_2, count_of_wo
     >>> wordcount_female = 1000
     >>> wordcount_male = 50
     >>> dunn_individual_word(total_words_m_corpus,total_words_f_corpus,wordcount_male,wordcount_female)
+    -800
 
     '''
     a = count_of_word_corpus_1
@@ -259,7 +260,20 @@ def dunning_total(m_corpus, f_corpus):
          >>> c = Corpus('sample_novels')
          >>> m_corpus = c.filter_by_gender('male')
          >>> f_corpus = c.filter_by_gender('female')
-         >>> dunning_total(m_corpus, f_corpus)
+         >>> result = dunning_total(m_corpus, f_corpus)
+         >>> print(result[0:10])
+        [('she', (-12292.762338290115, 29042, 45509)),
+        ('her', (-11800.614222528242, 37517, 53463)),
+        ('jo', (-3268.940103481869, 1, 1835)),
+        ('carlyle', (-2743.3204833572668, 3, 1555)),
+        ('mrs', (-2703.877430262923, 3437, 6786)),
+        ('amy', (-2221.449213948045, 36, 1408)),
+        ('laurie', (-1925.9408323278521, 2, 1091)),
+        ('adeline', (-1896.0496657740907, 13, 1131)),
+        ('alessandro', (-1804.1775207769476, 3, 1029)),
+        ('mr', (-1772.0584351647658, 7900, 10220))]
+
+
     '''
     wordcounter_male = m_corpus.get_wordcount_counter()
     wordcounter_female = f_corpus.get_wordcount_counter()
@@ -441,7 +455,7 @@ def find_gender_adj(novel, female):
             words[index] = word.lower()
         tags = nltk.pos_tag(words)
         for tag_index, tag in enumerate(tags):
-            if tags[tag_index][1] == "JJ":
+            if tags[tag_index][1] == "JJ" or tags[tag_index][1] == "JJR" or tags[tag_index][1] == "JJS":
                 word = words[tag_index]
                 if word in output.keys():
                     output[word] += 1
