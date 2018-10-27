@@ -1,4 +1,7 @@
 import csv
+import random
+import nltk
+from nltk.tokenize import word_tokenize
 from pathlib import Path
 from collections import Counter
 
@@ -509,6 +512,44 @@ class Corpus(common.FileLoaderMixin):
                 return novel
 
         raise ValueError("Novel not found")
+
+    def get_sample_text_passages(self, expression, no_passages):
+        """
+        Returns a specified number of example passages that include a certain expression.
+
+        >>> corpus = Corpus('sample_novels')
+        >>> corpus.get_sample_text_passages('he cried', 2)
+        ('james_american.txt', 'flowing river” newman gave a great rap on the floor with his stick and a long grim laugh “good good” he cried “you go altogether too faryou overshoot the mark there isn’t a woman in the world as bad as you would')
+        ('james_american.txt', 'the old woman’s hand in both his own and pressed it vigorously “i thank you ever so much for that” he cried “i want to be the first i want it to be my property and no one else’s you’re the wisest')
+
+        """
+
+        count = 0
+        output = []
+        phrase = word_tokenize(expression)
+        random.seed(expression)
+        random_novels = self.novels.copy()
+        random.shuffle(random_novels)
+
+        for novel in random_novels:
+            if count >= no_passages:
+                break
+            current_novel = novel.get_tokenized_text()
+            for index in range(len(current_novel)):
+                if current_novel[index] == phrase[0]:
+                    if current_novel[index:index+len(phrase)] == phrase:
+                        passage = " ".join(current_novel[index-20:index+len(phrase)+20])
+                        output.append((novel.filename, passage))
+                        count += 1
+
+        random.shuffle(output)
+        print_count = 0
+        for entry in output:
+            if print_count == no_passages:
+                break
+            print_count += 1
+            print(entry)
+
 
     def get_novel_multiple_fields(self, metadata_dict):
         """
