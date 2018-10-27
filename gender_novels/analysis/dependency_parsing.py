@@ -1,8 +1,9 @@
 import urllib
 from nltk.parse.stanford import StanfordDependencyParser
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
+from gender_novels.common import store_pickle, load_pickle
 import os.path
 import time
 
@@ -28,6 +29,39 @@ def get_parser(path_to_jar, path_to_models_jar):
     return parser
 
 
+def pickle(novel, parser):
+    tree = None
+    try:
+        tree = load_pickle(f'dep_tree_{str(novel)}')
+    except (IOError, FileNotFoundError):
+        sentences = sent_tokenize(novel.text.lower().replace("\n", " "))
+        he_she_sentences = []
+        for sentence in sentences:
+            add_sentence = False
+            words = [word for word in word_tokenize(sentence)]
+            for word in words:
+                if word == "he" or word == "she" or word == "him" or word == "her":
+                    add_sentence = True
+            if add_sentence:
+                he_she_sentences.append(sentence)
+        sentences = he_she_sentences
+        result = parser.raw_parse_sents(sentences)
+        # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
+        # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
+        tree = list(result)
+        tree_list = []
+        i = 0
+        for sentence in tree:
+            tree_list.append([])
+            triples = list(next(sentence).triples())
+            for triple in triples:
+                tree_list[i].append(triple)
+            i += 1
+        tree = tree_list
+        store_pickle(tree, f'dep_tree_{str(novel)}')
+    return tree
+
+
 def parse_novel(novel, parser):
     """
     This function parses all sentences in the novel
@@ -47,12 +81,7 @@ def parse_novel(novel, parser):
 
     """
 
-    sentences = sent_tokenize(novel.text.lower().replace("\n", " "))
-    result = parser.raw_parse_sents(sentences)
-    # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
-    # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
-    tree = list(result)
-
+    tree = pickle(novel, parser)
     male_subj_count = male_obj_count = female_subj_count = female_obj_count = 0
     female_adjectives = []
     male_adjectives = []
@@ -60,7 +89,7 @@ def parse_novel(novel, parser):
     male_verbs = []
 
     for sentence in tree:
-        for triple in next(sentence).triples():
+        for triple in sentence:
             if triple[1] == "nsubj" and triple[2][0] == "he":
                 male_subj_count += 1
             if triple[1] == "dobj" and triple[2][0] == "him":
@@ -102,7 +131,9 @@ def test_analysis():
                              "assets/stanford-parser-3.9.1-models.jar")
     novels = Corpus('sample_novels').novels
     novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter', 'corpus_name': 'sample_novels',
-                      'date': '1900', 'filename': None, 'text': "He told her. She was blue as she hit the red man. She "
+                      'date': '1900', 'filename': 'toy_novel.txt', 'text': "He told her. She was "
+                                                                         "blue as "
+                                                                  "she hit the red man. She "
                                                                 "ate chicken and ran. He killed "
                                                                 "her. She was killed by him. "}
     toy_novel = Novel(novel_metadata)
@@ -110,4 +141,5 @@ def test_analysis():
 
 
 if __name__ == "__main__":
+
     test_analysis()
