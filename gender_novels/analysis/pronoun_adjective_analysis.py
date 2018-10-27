@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from gender_novels.analysis.analysis import find_male_adj, find_female_adj, find_gender_adj
 from gender_novels import common
+from pprint import pprint
 
 
 # import seaborn as sns
@@ -32,9 +33,11 @@ def run_adj_analysis(corpus):
         print(novel.title, novel.author)
         novel_male_results = find_male_adj(novel)
         novel_female_results = find_female_adj(novel)
-        novel.text = ""
-        novel._word_counts_counter = None
-        results[novel] = {'male': novel_male_results, 'female': novel_female_results}
+        if (novel_male_results != "lower window bound less than 5"
+                and novel_female_results != "lower window bound less than 5"):
+            novel.text = ""
+            novel._word_counts_counter = None
+            results[novel] = {'male': novel_male_results, 'female': novel_female_results}
 
     return results
 
@@ -84,6 +87,22 @@ def merge_raw_results(full_results):
 
     return merged_results
 
+def get_overlapping_adjectives_raw_results(merged_results):
+    """
+    Looks through the male adjectives and female adjectives across the corpus and extracts adjective
+    that overlap across both and their occurrences. FORMAT - {'adjective': [male, female]}
+    :param merged_results:
+    :return:
+    """
+    overlap_results = {}
+    male_adj = list(merged_results['male'].keys())
+    female_adj = list(merged_results['female'].keys())
+
+    for a in male_adj:
+        if a in female_adj:
+            overlap_results[a] = [merged_results['male'][a], merged_results['female'][a]]
+
+    return overlap_results
 
 def results_by_author_gender(full_results):
     """
@@ -208,24 +227,32 @@ def results_by_location(full_results):
 
 
 def run_analysis(corpus_name):
-    print("loading corpus")
+    print("loading corpus", corpus_name)
     corpus = Corpus(corpus_name)
     novels = corpus.novels
 
     print("running analysis")
     results = run_adj_analysis(novels)
-    return results
+
     print("storing results")
     store_raw_results(results, corpus_name)
 
+    r = common.load_pickle("pronoun_adj_raw_analysis"+corpus_name)
+    m = merge_raw_results(r)
+    final = get_overlapping_adjectives_raw_results(m)
+    common.store_pickle(final, "pronoun_adj_final_results"+corpus_name)
+
+    #Comment out pprint for large databases where it's not practical to print out results
+    pprint(final)
+
+    # r2 = results_by_location(r)
+    # r3 = results_by_author_gender(r, "mean")
+    # r4 = results_by_date(r, "mean")
+    # common.store_pickle(r2, "pronoun_adj_by_location")
+    # common.store_pickle(r3, "pronoun_adj_by_author_gender")
+    # common.store_pickle(r4, "pronoun_adj_by_date")
 
 
 if __name__ == '__main__':
-    run_analysis("gutenberg")
-    r = common.load_pickle("pronoun_adj_raw_analysis_gutenberg")
-    r2 = results_by_location(r)
-    r3 = results_by_author_gender(r, "mean")
-    r4 = results_by_date(r, "mean")
-    common.store_pickle(r2, "pronoun_adj_by_location")
-    common.store_pickle(r3, "pronoun_adj_by_author_gender")
-    common.store_pickle(r4, "pronoun_adj_by_date")
+    run_analysis("sample_novels")
+
