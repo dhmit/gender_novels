@@ -43,7 +43,7 @@ def parse_novel(novel, parser):
     ...                   'filename': None, 'text': "He told her"}
     >>> toy_novel = Novel(novel_metadata)
     >>> parse_novel(toy_novel, parser)
-    (1, 0, 0, 1)
+    (1, 0, 0, 1, [], [], [], ['told'])
 
     """
 
