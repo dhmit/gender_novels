@@ -52,14 +52,13 @@ def parse_novel(novel, parser):
     # dependency triples of the form ((head word, head tag), rel, (dep word, dep tag))
     # link defining dependencies: https://nlp.stanford.edu/software/dependencies_manual.pdf
     tree = list(result)
-    # counts = count_gender_subj_obj(tree)
-    # return counts
 
     male_subj_count = male_obj_count = female_subj_count = female_obj_count = 0
     female_adjectives = []
     male_adjectives = []
     female_verbs = []
     male_verbs = []
+
     for sentence in tree:
         for triple in next(sentence).triples():
             if triple[1] == "nsubj" and triple[2][0] == "he":
@@ -82,7 +81,7 @@ def parse_novel(novel, parser):
                     male_verbs.append(triple[0][0])
 
     return (male_subj_count, male_obj_count, female_subj_count, female_obj_count,
-            female_adjectives, male_adjectives, female_verbs, male_verbs)
+            male_adjectives, male_verbs, female_adjectives, female_verbs)
 
 
 def test_analysis():
