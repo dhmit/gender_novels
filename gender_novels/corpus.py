@@ -9,7 +9,6 @@ from gender_novels import common
 from gender_novels.novel import Novel
 
 
-
 class Corpus(common.FileLoaderMixin):
     """The corpus class is used to load the metadata and full
     texts of all novels in a corpus
@@ -336,7 +335,7 @@ class Corpus(common.FileLoaderMixin):
         """
         metadata_fields = set()
         for novel in self.novels:
-            for field in getmembers(novel):
+            for field in novel.getmembers():
                 metadata_fields.add(field)
         return sorted(list(metadata_fields))
 
@@ -472,6 +471,43 @@ class Corpus(common.FileLoaderMixin):
 
         #TODO: add date range support
         #TODO: apply all filters at once instead of recursing Subcorpus method
+
+    def multi_filter_integrated(self,characteristic_dict):
+        """
+        This needs documentation and tests but it's 5:59! To be added after moratorium.
+        :param characteristic_dict:
+        :return:
+        """
+        supported_metadata_fields = ('author', 'author_gender', 'corpus_name',
+                                     'country_publication', 'date')
+
+        corpus_copy = self.clone()
+        corpus_copy.novels = []
+
+        for metadata_field in characteristic_dict:
+            if metadata_field not in supported_metadata_fields:
+                raise ValueError(
+                    f'Metadata field must be {", ".join(supported_metadata_fields)} '
+                    + f'but not {metadata_field}.')
+
+        for this_novel in self.novels:
+            add_novel = True
+            for metadata_field in characteristic_dict:
+                if metadata_field == 'date':
+                    if this_novel.date != int(characteristic_dict['date']):
+                        add_novel = False
+                else:
+                    if getattr(this_novel, metadata_field) != field_value:
+                        add_novel = False
+            if add_novel:
+                corpus_copy.novels.append(this_novel)
+
+        if not corpus_copy:
+            # displays for possible errors in field.value
+            err = f'This corpus is empty. You may have mistyped something.'
+            raise AttributeError(err)
+
+        return corpus_copy
 
 
     def get_novel(self, metadata_field, field_val):
