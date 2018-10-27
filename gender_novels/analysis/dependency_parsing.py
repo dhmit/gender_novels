@@ -68,7 +68,7 @@ def parse_novel(novel, parser):
     :param novel: Novel object we want to analyze
     :param parser: Stanford dependency parser
     :return: the counts of male and female subject and object occurrences + list of male/female
-    adjectives and verbs
+    adjectives and verbs as a string
 
     >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> novels = Corpus('sample_novels').novels
@@ -110,7 +110,8 @@ def parse_novel(novel, parser):
                     male_verbs.append(triple[0][0])
 
     return (male_subj_count, male_obj_count, female_subj_count, female_obj_count,
-            male_adjectives, male_verbs, female_adjectives, female_verbs)
+            " ".join(male_adjectives), " ".join(male_verbs), " ".join(female_adjectives),
+            " ".join(female_verbs))
 
 
 def test_analysis():
