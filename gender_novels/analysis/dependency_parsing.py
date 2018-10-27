@@ -5,7 +5,7 @@ from gender_novels.corpus import Corpus
 from gender_novels.novel import Novel
 from gender_novels.common import store_pickle, load_pickle
 import os.path
-import time
+import csv
 
 def get_parser(path_to_jar, path_to_models_jar):
     """
@@ -30,7 +30,6 @@ def get_parser(path_to_jar, path_to_models_jar):
 
 
 def pickle(novel, parser):
-    tree = None
     try:
         tree = load_pickle(f'dep_tree_{str(novel)}')
     except (IOError, FileNotFoundError):
@@ -109,9 +108,9 @@ def parse_novel(novel, parser):
                 elif triple[2][0] == "he":
                     male_verbs.append(triple[0][0])
 
-    return (male_subj_count, male_obj_count, female_subj_count, female_obj_count,
+    return [male_subj_count, male_obj_count, female_subj_count, female_obj_count,
             " ".join(male_adjectives), " ".join(male_verbs), " ".join(female_adjectives),
-            " ".join(female_verbs))
+            " ".join(female_verbs)]
 
 
 def test_analysis():
@@ -119,26 +118,15 @@ def test_analysis():
     This function contains all analysis code to be run (previously in main function)
     """
 
-    # parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
-    #
-    # novels = Corpus('sample_novels').novels
-    # novel = novels[0]
-    # start = time.time()
-    # print(parse_novel(novel, parser))
-    # end = time.time()
-    # print(end-start)
-
-    parser = get_parser("assets/stanford-parser.jar",
-                             "assets/stanford-parser-3.9.1-models.jar")
+    parser = get_parser("assets/stanford-parser.jar", "assets/stanford-parser-3.9.1-models.jar")
     novels = Corpus('sample_novels').novels
-    novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter', 'corpus_name': 'sample_novels',
-                      'date': '1900', 'filename': 'toy_novel.txt', 'text': "He told her. She was "
-                                                                         "blue as "
-                                                                  "she hit the red man. She "
-                                                                "ate chicken and ran. He killed "
-                                                                "her. She was killed by him. "}
-    toy_novel = Novel(novel_metadata)
-    print(parse_novel(toy_novel, parser))
+    for novel in novels:
+        row = parse_novel(novel, parser)
+        print(row)
+        with open('dependency_analysis_results.csv', mode='w') as results_file:
+            writer = csv.writer(results_file, delimiter=',', quotechar='"',
+                                         quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(row)
 
 
 if __name__ == "__main__":
