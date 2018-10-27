@@ -117,10 +117,10 @@ def dunning_total(counter1, counter2, filename_to_pickle=None):
     return dunning_result
 
 
-def male_vs_female_authors_analysis_dunning():
+def male_vs_female_authors_analysis_dunning_lesser():
     '''
     tests word distinctiveness of shared words between male and female corpora using dunning
-    :return: dictionary of coomon shared words and their distinctiveness
+    :return: dictionary of common shared words and their distinctiveness
     '''
     c = Corpus('test_corpus')
     m_corpus = c.filter_by_gender('male')
@@ -130,6 +130,7 @@ def male_vs_female_authors_analysis_dunning():
     results = dunning_total(wordcounter_male, wordcounter_female)
     print("women's top 10: ", results[0:10])
     print("men's top 10: ", list(reversed(results[-10:])))
+    return results
 
     
 def dunning_result_displayer(dunning_result, number_of_terms_to_display=10,
@@ -252,7 +253,7 @@ def compare_word_association_in_corpus_analysis_dunning(word1, word2, corpus=Non
 
 
 def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None, corpus1_name=None,
-                                                             corpus2=None, corpus2_name=None):
+                                                             corpus2=None, corpus2_name=None, use_word_window=False, word_window=None):
     """
     Uses Dunning analysis to compare words associated with word between corpuses.  If a corpus and corpus_name are
     passsed in, then the analysis will use the corpus but name the file after corpus_name.  If no corpus is passed in but
@@ -281,10 +282,10 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None,
         if not corpus2_name:
             corpus2_name = "gutenberg"
         corpus2 = Corpus(corpus2_name)
-
     pickle_filename = (f'dunning_{word}_associated_words_{corpus1_name}_vs_{corpus2_name}_in_'
                        f'{corpus1.corpus_name}')
-
+    if use_word_window:
+        pickle_filename+= f'_word_window_{word_window}'
     try:
         results = load_pickle(pickle_filename)
     except IOError:
@@ -292,9 +293,15 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None,
         corpus1_counter = Counter()
         corpus2_counter = Counter()
         for novel in corpus1.novels:
-            corpus1_counter.update(novel.words_associated(word))
+            if use_word_window:
+                get_word_windows(self, search_terms, window_size=word_window)
+            else:
+                corpus1_counter.update(novel.words_associated(word))
         for novel in corpus2.novels:
-            corpus2_counter.update(novel.words_associated(word))
+            if use_word_window:
+                get_word_windows(self, search_terms, window_size=word_window)
+            else:
+                corpus2_counter.update(novel.words_associated(word))
         results = dunning_total(corpus1_counter, corpus2_counter,
                                 filename_to_pickle=pickle_filename)
 
@@ -307,12 +314,12 @@ def compare_word_association_between_corpus_analysis_dunning(word, corpus1=None,
     return results
 
 
-def male_VS_female_analysis_dunning(corpus_name):
+def male_VS_female_analysis_dunning(corpus_name, display_data = False):
     '''
     tests word distinctiveness of shared words between male and female corpora using dunning
     Prints out the most distinctive terms overall as well as grouped by verbs, adjectives etc.
 
-    :return: dict # from Mingfei: does this function actually return anything?
+    :return: dict
     '''
 
 
@@ -342,12 +349,56 @@ def male_VS_female_analysis_dunning(corpus_name):
 #        wordcounter_female = f_corpus.get_wordcount_counter()
         results = dunning_total(wordcounter_male, wordcounter_female,
                                 filename_to_pickle=pickle_filename)
+    if display_data:
+        for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+            dunning_result_displayer(results, number_of_terms_to_display=20,
+                                     corpus1_display_name='Fem Author',
+                                     corpus2_display_name='Male Author',
+                                     part_of_speech_to_include=group)
+    return results
 
-    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
-        dunning_result_displayer(results, number_of_terms_to_display=20,
-                                 corpus1_display_name='Fem Author',
-                                 corpus2_display_name='Male Author',
-                                 part_of_speech_to_include=group)
+
+
+def dunning_result_to_dict(dunning_result, number_of_terms_to_display=10,
+                             part_of_speech_to_include=None):
+    '''
+    Receives a dictionary of results and returns a dictionary of the top
+    number_of_terms_to_display most distinctive results for each corpus that have a part of speech
+    matching part_of_speech_to_include
+    :param dunning_result:              Dunning result dict that will be sorted through
+    :param number_of_terms_to_display:  Number of terms for each corpus to display
+    :param part_of_speech_to_include:   e.g. 'adjectives', or 'verbs'
+    :return: dict
+    '''
+
+    pos_names_to_tags = {
+        'adjectives': ['JJ', 'JJR', 'JJS'],
+        'adverbs': ['RB', 'RBR', 'RBS', 'WRB'],
+        'verbs': ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'],
+        'pronouns': ['PRP', 'PRP$', 'WP', 'WP$']
+    }
+    if part_of_speech_to_include in pos_names_to_tags:
+        part_of_speech_to_include = pos_names_to_tags[part_of_speech_to_include]
+
+    final_results_dict = {}
+
+    reverse = True
+    for i in range(2):
+        sorted_results = sorted(dunning_result.items(), key=lambda x: x[1]['dunning'],
+                                    reverse=reverse)
+        count_displayed = 0
+        for result in sorted_results:
+            if count_displayed == number_of_terms_to_display:
+                break
+            term = result[0]
+            term_pos = nltk.pos_tag([term])[0][1]
+            if part_of_speech_to_include and term_pos not in part_of_speech_to_include:
+                continue
+
+            final_results_dict[result[0]]=result[1]
+            count_displayed += 1
+        reverse = False
+    return final_results_dict
 
 
 
@@ -359,12 +410,14 @@ def male_VS_female_analysis_dunning(corpus_name):
 # Male Authors versus Female Authors
 ################################################
 
-def male_vs_female_authors_analysis_dunning(corpus_name):
+def male_vs_female_authors_analysis_dunning(corpus_name, display_results=False):
     '''
     tests word distinctiveness of shared words between male and female authors using dunning
-    Prints out the most distinctive terms overall as well as grouped by verbs, adjectives etc.
+    If called with display_results=True, prints out the most distinctive terms overall as well as
+    grouped by verbs, adjectives etc.
+    Returns a dict of all terms in the corpus mapped to the dunning data for each term
 
-    :return:
+    :return:dict
     '''
 
     # By default, try to load precomputed results. Only calculate if no stored results are
@@ -382,11 +435,13 @@ def male_vs_female_authors_analysis_dunning(corpus_name):
         results = dunning_total(wordcounter_female, wordcounter_male,
                                 filename_to_pickle=pickle_filename)
 
-    for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
-        dunning_result_displayer(results, number_of_terms_to_display=20,
-                                 corpus1_display_name='Fem Author',
-                                 corpus2_display_name='Male Author',
-                                 part_of_speech_to_include=group)
+    if display_results:
+        for group in [None, 'verbs', 'adjectives', 'pronouns', 'adverbs']:
+            dunning_result_displayer(results, number_of_terms_to_display=20,
+                                     corpus1_display_name='Fem Author',
+                                     corpus2_display_name='Male Author',
+                                     part_of_speech_to_include=group)
+    return results
 
 
 # Male Characters versus Female Characters (words following 'he' versus words following 'she')
@@ -471,6 +526,37 @@ def god_author_gender_differences(corpus_name):
     compare_word_association_between_corpus_analysis_dunning(word='God',
             corpus1=female_corpus, corpus1_name='female aut',
             corpus2=male_corpus,   corpus2_name='male aut')
+def money_author_gender_differences(corpus_name):
+    """
+    Compares how male authors versus female authors refer to money by looking at the words
+   before and after money'
+
+    :param corpus_name:
+    :return:
+    """
+    male_corpus = Corpus(corpus_name).filter_by_gender('male')
+    female_corpus = Corpus(corpus_name).filter_by_gender('female')
+    compare_word_association_between_corpus_analysis_dunning(word=['money','dollars', 'pounds', 'euros', 'dollar', 'pound','euro', 'wealth', 'income'],
+            corpus1=female_corpus, corpus1_name='female aut',
+            corpus2=male_corpus,   corpus2_name='male aut')
+
+
+# America as written by Male Authors versus Female Authors
+####################################################################
+
+def america_author_gender_differences(corpus_name):
+    """
+    Compares how American male authors versus female authors refer to America by looking at the words
+    that follow 'America'
+
+    :param corpus_name:
+    :return:
+    """
+    male_corpus = Corpus(corpus_name).filter_by_gender('male')
+    female_corpus = Corpus(corpus_name).filter_by_gender('female')
+    compare_word_association_between_corpus_analysis_dunning(word='America',
+            corpus1=female_corpus, corpus1_name='female aut',
+            corpus2=male_corpus,   corpus2_name='male aut')
 
 if __name__ == '__main__':
     #### Uncomment any of the lines below to run one of the analyses.
@@ -479,6 +565,9 @@ if __name__ == '__main__':
     # female_characters_author_gender_differences('gutenberg')
     # male_characters_author_gender_differences('gutenberg')
     # god_author_gender_differences('gutenberg')
+    # money_author_gender_differences('gutenberg')
+    # dunning_result_to_dict(male_vs_female_authors_analysis_dunning('gutenberg'))
 
     from dh_testers.testRunner import main_test
     main_test()
+
