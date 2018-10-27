@@ -30,6 +30,17 @@ def get_parser(path_to_jar, path_to_models_jar):
 
 
 def pickle(novel, parser):
+    """
+    This function returns a pickled tree
+    :param novel: Novel we are interested in
+    :param parser: Stanford parser object
+    :return: tree in pickle format
+
+    >>> tree = load_pickle(f'dep_tree_aanrud_longfrock')
+    >>> tree == None
+    False
+    """
+
     try:
         tree = load_pickle(f'dep_tree_{str(novel)}')
     except (IOError, FileNotFoundError):
