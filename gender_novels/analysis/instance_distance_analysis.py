@@ -292,6 +292,12 @@ def get_p_vals(corpus_name):
 
 
 def run_analysis(corpus_name):
+    """
+    Run instance distance analyses on a particular corpus and saves results as pickle files.
+    Comment out sections of code or analyses that have already been run or are unnecessary.
+    :param corpus_name:
+    :return:
+    """
     print('loading corpus')
     corpus = Corpus(corpus_name)
     novels = corpus.novels
@@ -328,4 +334,5 @@ def run_analysis(corpus_name):
 
 if __name__ == '__main__':
     run_analysis("gutenberg")
+
 
