@@ -74,13 +74,13 @@ def get_stats(distance_results):
 
 def results_by_author_gender(results, metric):
     """
-    takes in a dictionary of results and a specified metric from run_distance_analysis, returns a dictionary that maps
-    'male' (male author) and 'female' (female author) to a list of difference values from novels written by an author of
-    that gender. The dictionary bins difference values from one of the stats (median, mean, min, max) depending on which
-    metric is specified in parameters
+    takes in a dictionary of results and a specified metric from run_distance_analysis, returns a dictionary:
+     - key = 'male' or 'female' (indicating male or female author)
+      - value  = list of lists. Each list has 3 elements: median/mean/max/min male pronoun distance, female pronoun
+       distance, and the difference (whether it is median, mean, min, or max depends on the specified metric)
+       order = [male distance, female distance, difference]
     :param results dictionary, a metric ('median', 'mean', 'min', 'max')
-    :return: list of dictionaries, each with two keys: 'male' (male author) or 'female' (female author). Each key maps
-    a list of difference stats for each novel.
+    :return: dictionary
     """
     data = {'male': [], "female": []}
     metric_indexes = {"median": 0, "mean": 2, "min": 3, "max": 4}
@@ -90,19 +90,21 @@ def results_by_author_gender(results, metric):
         print("Not valid metric name. Valid names: 'median', 'mean', 'min', 'max'")
     for novel in list(results.keys()):
         if novel.author_gender == "male":
-            data['male'].append(results[novel]['difference'][metric])
+            data['male'].append([results[novel]['male'][metric], results[novel]['female'][metric],
+                                 results[novel]['difference'][metric]])
         else:
-            data['female'].append(results[novel]['difference'][metric])
+            data['female'].append([results[novel]['male'][metric], results[novel]['female'][metric],
+                                   results[novel]['difference'][metric]])
     return data
 
 def results_by_date(results, metric):
     """
-    takes in a dictionary of results and a specified metric from run_distance_analysis, returns a dictionary that maps
-    different time periods to a list of difference values from novels written by an author of
-    that gender. The dictionary bins difference values from one of the stats (median, mean, min, max) depending on which
-    metric is specified in parameters
-    :param results:
-    :param metric: either 'median', 'mean', 'min', or 'max'
+    takes in a dictionary of results and a specified metric from run_distance_analysis, returns a dictionary:
+     - key = date range
+      - value  = list of lists. Each list has 3 elements: median/mean/max/min male pronoun distance, female pronoun
+       distance, and the difference (whether it is median, mean, min, or max depends on the specified metric)
+       order = [male distance, female distance, difference]
+    :param results dictionary, a metric ('median', 'mean', 'min', 'max')
     :return: dictionary
     """
     data = {}
@@ -126,27 +128,38 @@ def results_by_date(results, metric):
 
     for k in list(results.keys()):
         if k.date < 1810:
-            date_to_1810.append(results[k]['difference'][metric])
+            date_to_1810.append([results[k]['male'][metric], results[k]['female'][metric],
+                                 results[k]['difference'][metric]])
         elif k.date < 1820:
-            date_1810_to_1819.append(results[k]['difference'][metric])
+            date_1810_to_1819.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1830:
-            date_1820_to_1829.append(results[k]['difference'][metric])
+            date_1820_to_1829.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1840:
-            date_1830_to_1839.append(results[k]['difference'][metric])
+            date_1830_to_1839.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1850:
-            date_1840_to_1849.append(results[k]['difference'][metric])
+            date_1840_to_1849.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1860:
-            date_1850_to_1859.append(results[k]['difference'][metric])
+            date_1850_to_1859.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1870:
-            date_1860_to_1869.append(results[k]['difference'][metric])
+            date_1860_to_1869.append([results[k]['male'][metric], results[k]['female'][metric],
+                                      results[k]['difference'][metric]])
         elif k.date < 1880:
-            date_1870_to_1879.append(results[k]['difference'][metric])
+            date_1870_to_1879.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1890:
-            date_1880_to_1889.append(results[k]['difference'][metric])
+            date_1880_to_1889.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         elif k.date < 1900:
-            date_1890_to_1899.append(results[k]['difference'][metric])
+            date_1890_to_1899.append([results[k]['male'][metric], results[k]['female'][metric],
+                                        results[k]['difference'][metric]])
         else:
-            date_1900_on.append(results[k]['difference'][metric])
+            date_1900_on.append([results[k]['male'][metric], results[k]['female'][metric],
+                                 results[k]['difference'][metric]])
 
     data['date_to_1810'] = date_to_1810
     data['date_1810_to_1819'] = date_1810_to_1819
@@ -165,11 +178,13 @@ def results_by_date(results, metric):
 
 def results_by_location(results, metric):
     """
-
-    :param results:
-    :param metric:
-    :return:
-    """
+    takes in a dictionary of results and a specified metric from run_distance_analysis, returns a dictionary:
+     - key = location
+      - value  = list of lists. Each list has 3 elements: median/mean/max/min male pronoun distance, female pronoun
+       distance, and the difference (whether it is median, mean, min, or max depends on the specified metric)
+       order = [male distance, female distance, difference]
+    :param results dictionary, a metric ('median', 'mean', 'min', 'max')
+    :return: dictionary """
     data = {}
     metric_indexes = {"median": 0, "mean": 2, "min": 3, "max": 4}
     try:
@@ -183,13 +198,14 @@ def results_by_location(results, metric):
 
     for k in list(results.keys()):
         if k.country_publication in ["United Kingdom", "England", "Scotland", "Wales"]:
-            location_UK.append(results[k]['difference'][metric])
+            location_UK.append([results[k]['male'][metric], results[k]['female'][metric],
+                                 results[k]['difference'][metric]])
         elif k.country_publication == 'United States':
-            location_US.append(results[k]['difference'][metric])
+            location_US.append([results[k]['male'][metric], results[k]['female'][metric],
+                                 results[k]['difference'][metric]])
         else:
-            location_other.append(results[k]['difference'][metric])
-
-    data = {}
+            location_other.append([results[k]['male'][metric], results[k]['female'][metric],
+                                 results[k]['difference'][metric]])
 
     data['location_UK'] = location_UK
     data['location_US'] = location_US
