@@ -23,9 +23,9 @@ def render_copyright():
     return render_template('copyright.html')
 
 
-@app.route('/corpora.html')
-def render_corpora():
-    return render_template('corpora.html')
+@app.route('/corpus-data.html')
+def render_corpus_data():
+    return render_template('corpus-data.html')
 
 
 @app.route('/team.html')
@@ -41,6 +41,11 @@ def render_web_scraping():
 @app.route('/metadata.html')
 def render_metadata():
     return render_template('metadata.html')
+
+
+@app.route('/grammar.html')
+def render_grammar():
+    return render_template('grammar.html')
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ pronouns (he, she, him, his) are considered. For each of these sentences, a synt
 tree is produced. The dependency tree contains information about the relationships between pairs 
 of word in the sentence. This gave the opportunity to analyse the novels on a deeper level because we were able extract information not just from the individual word but also from the way they are positioned in the sentences. Here is an example of a dependency tree for the sentence _"Bills on ports and immigration were submitted by Senator Brownback, Republican of Kansas"_:
 
-![Sentence Diagram](images/sentence_diagram.png "Sentence Diagram")
+![Sentence Diagram](/static/markdowns/images/sentence_diagram.png "Sentence Diagram")
 
 The information from the dependency tree was used to identify how many times male and female 
 pronouns act as an active agent in the sentence versus how many time they act as a passive agent.
