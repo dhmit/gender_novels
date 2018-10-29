@@ -1,5 +1,5 @@
 # gender_novels
-Analysis of Gender and Gender Relations in English-Language Novels 1776-1922
+Analysis of Gender and Gender Relations in English-Language Novels 1770-1922
 
 A project of the MIT/SHASS Programs in Digital Humanities (specifically the Digital Humanities Lab) 
 funded by the Mellon Foundation.
