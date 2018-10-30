@@ -19,41 +19,11 @@ def render_overview():
     return render_template('home.html')
 
 
-@app.route('/copyright.html')
-def render_copyright():
-    return render_template('copyright.html')
-
-
-@app.route('/books.html')
-def render_corpus_data():
-    return render_template('books.html')
-
-
-@app.route('/team.html')
+@app.route('/info/team.html')
 def render_team():
     return render_template('team.html')
 
 
-@app.route('/web-scraping.html')
-def render_web_scraping():
-    return render_template('web-scraping.html')
-
-
-@app.route('/metadata.html')
-def render_metadata():
-    return render_template('metadata.html')
-
-
-<<<<<<< HEAD
-@app.route('/visualizations.html')
-def render_visualizations():
-    return render_template('visualizations.html')
-
-
-@app.route('/grammar.html')
-def render_grammar():
-    return render_template('grammar.html')
-=======
 @app.route('/info/<fn>')
 def render_markdown_any(fn):
     import markdown2
@@ -69,8 +39,6 @@ def render_markdown_any(fn):
     title = ' '.join([title_word.capitalize() for title_word in title_parts])
 
     return render_template('blank_markdown.html', title=title, markdown_html=markdown_html)
-
->>>>>>> upstream/master
 
 
 if __name__ == '__main__':

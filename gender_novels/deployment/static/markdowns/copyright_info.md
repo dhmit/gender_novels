@@ -66,5 +66,4 @@ copyright status to assume that it is within our search period.**
  
  ![Bibliographic Record (Bibrec) location on Project Gutenberg](/static/markdowns/images/copyright_info_gutenberg1.png "Bibliographic Record (Bibrec) on Project Gutenberg")
  
- ![Copyright Status listed under Bibrec](/static/markdowns/images/copyright_info_gutenberg2.png 
- "Copyright Status listed under Bibrec")
+ ![Copyright Status listed under Bibrec](/static/markdowns/images/copyright_info_gutenberg2.png "Copyright Status listed under Bibrec")
