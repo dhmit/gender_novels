@@ -23,9 +23,9 @@ def render_copyright():
     return render_template('copyright.html')
 
 
-@app.route('/corpus-data.html')
+@app.route('/books.html')
 def render_corpus_data():
-    return render_template('corpus-data.html')
+    return render_template('books.html')
 
 
 @app.route('/team.html')
@@ -41,6 +41,11 @@ def render_web_scraping():
 @app.route('/metadata.html')
 def render_metadata():
     return render_template('metadata.html')
+
+
+@app.route('/visualizations.html')
+def render_visualizations():
+    return render_template('visualizations.html')
 
 
 @app.route('/grammar.html')
