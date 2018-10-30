@@ -17,7 +17,7 @@ function loadPageContent() {
     content_dict["overview"] = "gender_novels_overview";
     content_dict["copyright"] = "copyright_info";
     content_dict["metadata"] = "metadata_acquisition";
-    content_dict["web-scraping"] = "web_scraping";
+    content_dict["web-scraping"] = "corpus_scraping";
     content_dict["team-roles"] = "team_roles";
     content_dict["test-page"] = "";
 
