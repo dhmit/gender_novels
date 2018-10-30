@@ -12,7 +12,6 @@ def get_parser(path_to_jar, path_to_models_jar):
     The jar files are too big to commit directly, so download them
     :param path_to_jar: local path to stanford-parser.jar
     :param path_to_models_jar: local path to stanford-parser-3.9.1-models.jar
-
     >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> parser == None
     False
@@ -113,7 +112,8 @@ def parse_novel(novel, parser):
                     female_adjectives.append(triple[0][0])
                 elif triple[2][0] == "he":
                     male_adjectives.append(triple[0][0])
-            if triple[1] == "nsubj" and triple[0][1] == "VBD":
+            if triple[1] == "nsubj" and (triple[0][1] == "VBD" or triple[0][1] == "VB" or
+                                         triple[0][1] == "VBP" or triple[0][1] == "VBZ"):
                 if triple[2][0] == "she":
                     female_verbs.append(triple[0][0])
                 elif triple[2][0] == "he":
@@ -141,7 +141,6 @@ def test_analysis():
                 writer.writerow(row)
         except OSError:
             continue
-
 
 if __name__ == "__main__":
 
