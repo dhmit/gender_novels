@@ -22,6 +22,7 @@ def render_overview():
 def render_copyright():
     return render_markdown_any('copyright_info')
 
+
 @app.route('/corpora.html')
 def render_corpora():
     return render_template('corpora.html')
@@ -46,6 +47,7 @@ def render_metadata():
 def render_markdown_any(fn, title=None):
     import markdown2
     from gender_novels.common import BASE_PATH
+
     try:
         with open(BASE_PATH / 'deployment' / 'static' / 'markdowns' / (fn + '.md')) as fh:
             md_in = fh.read()
@@ -59,6 +61,10 @@ def render_markdown_any(fn, title=None):
 
     return render_template('blank_markdown.html', title=title, markdown_html=markdown_html)
 
+
+@app.route('/markdowns/<fn>/')
+def render_no_slash(fn, title=None):
+    return render_markdown_any(fn, title)
 
 
 if __name__ == '__main__':
