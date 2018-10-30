@@ -1,5 +1,7 @@
 import doctest
 import os
+from pathlib import Path
+BASE_PATH = Path(os.path.abspath(os.path.dirname(__file__)))
 
 def test():
     """
@@ -32,7 +34,7 @@ def passes_tests():
     one fails
     """
     passes = True
-    list_of_files = os.listdir()
+    list_of_files = os.listdir(BASE_PATH)
     for file in list_of_files:
         if not file_passes(file):
             passes = False
