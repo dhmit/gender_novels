@@ -119,7 +119,7 @@ def parse_novel(novel, parser):
                 elif triple[2][0] == "he":
                     male_verbs.append(triple[0][0])
 
-    return [male_subj_count, male_obj_count, female_subj_count, female_obj_count,
+    return [novel.title, male_subj_count, male_obj_count, female_subj_count, female_obj_count,
             " ".join(male_adjectives), " ".join(male_verbs), " ".join(female_adjectives),
             " ".join(female_verbs)]
 
@@ -127,6 +127,10 @@ def parse_novel(novel, parser):
 def test_analysis():
     """
     This function contains all analysis code to be run (previously in main function)
+    - First generates a Stanford NLP parser
+    - Iterates over sample novels corpus and parses each novel (performs analysis: gender pronoun
+    count, list of adjectives, list of verbs)
+    - Writes output to dependency_analysis_results.csv
     """
 
     parser = get_parser("assets/stanford-parser.jar", "assets/stanford-parser-3.9.1-models.jar")
