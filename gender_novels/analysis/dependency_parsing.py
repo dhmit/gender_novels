@@ -76,8 +76,16 @@ def parse_novel(novel, parser):
     This function parses all sentences in the novel
     :param novel: Novel object we want to analyze
     :param parser: Stanford dependency parser
-    :return: the counts of male and female subject and object occurrences + list of male/female
-    adjectives and verbs as a string
+    :return: list containing:
+    - Title of novel
+    - Count of male pronoun subject occurrences
+    - Count of male pronoun object occurrences
+    - Count of female pronoun subject occurrences
+    - Count of female pronoun object occurrences
+    - List of adjectives describing male pronouns as one space-separated string
+    - List of verbs associated with male pronouns as one space-separated string
+    - List of adjectives describing female pronouns as one space-separated string
+    - List of verbs associated with female pronouns as one space-separated string
 
     >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> novels = Corpus('sample_novels').novels
@@ -86,7 +94,7 @@ def parse_novel(novel, parser):
     ...                   'filename': None, 'text': "He told her"}
     >>> toy_novel = Novel(novel_metadata)
     >>> parse_novel(toy_novel, parser)
-    (1, 0, 0, 1, [], [], [], ['told'])
+    ('Scarlet Letter', 1, 0, 0, 1, [], [], [], ['told'])
 
     """
 
