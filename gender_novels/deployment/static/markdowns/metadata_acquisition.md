@@ -31,7 +31,10 @@ There's also some metadata that we associate with the books to make them easy to
  - Corpus Name
  - Notes
 
-The Gutenberg ID of a novel is useful as a specific and unambiguous identifier for naming files and also looking up specific novels.  The corpus name allows us to distinguish books in our final corpus from the [initial 100 sample novels that we gathered](link%20to%20Ife%27s%20writeup).  Notes are for anything unusual about a novel, and are usually left empty.  
+The Gutenberg ID of a novel is useful as a specific and unambiguous identifier for naming files 
+and also looking up specific novels.  The corpus name allows us to distinguish books in our final
+ corpus from the [initial 100 sample novels that we gathered](/web-scraping.html).  Notes are for 
+ anything unusual about a novel, and are usually left empty.  
 
 ## Metadata Sources
 Where do we get metadata?  
@@ -75,7 +78,9 @@ One can also usually be fairly sure that an author named "Mary Istabal" is proba
 
 ## Generating the Metadata
 
-Because some metadata is needed to filter out the books, we decided to generate the corpus and metadata at the same time.  [(Read more about generating the corpus here.)](Keith/Ife's writeup(s))  
+Because some metadata is needed to filter out the books, we decided to generate the corpus and 
+metadata at the same time.  
+[(Read more about generating the corpus here.)](/web-scraping.html)  
 
 To generate the corpus, we loop through every single Gutenberg ID number from zero to 70,000.  With each ID number, the book is first tested to see if it meets our [requirements](link to our definition of novel).  Then the metadata is acquired and written to a CSV file.  
 
@@ -123,9 +128,13 @@ The `is_valid_novel()` function needs to look up the publication date, so it cal
 
 A more efficient way to do this would be to cache all the already-found metadata and novel text into a dict that would be passed to the functions.  If a value was already in the dict, then there would be no need to find it again, and all these redundant function calls could be avoided.  It should be noted that this has no effect on the resulting quality of the corpus.  
 
+### Known Bug
+
+It was discovered at the last minute that occasionally, commas in novel titles were not being escaped when written to the CSV file, leading to incorrect parsing.  Using regular expressions and Find and Replace, this was manually corrected, but it remains unclear why this occurred inconsistently.  Switching from the csv module to the [pandas](https://pandas.pydata.org/) module may rectify this.  
+
 ## Future Plans
 
-Future contributors may look into restructuring the code in this way in order to improve its efficiency.  Integrating the WorldCat and Library of Congress API's would also give a greater breadth of reliable information, allowing for an increase in the size of the corpus without compromising quality.  Other ventures could include looking to include more types of metadata: the author's country of origin, or the age of the author when the novel was written, for more diverse analyses.  
+In addition to fixing bugs, future contributors may look into restructuring the code in the manner described above in order to improve its efficiency.  Integrating the WorldCat and Library of Congress API's would also give a greater breadth of reliable information, allowing for an increase in the size of the corpus without compromising quality.  Other ventures could include looking to include more types of metadata: the author's country of origin, or the age of the author when the novel was written, for more diverse analyses.  
 
 We hope that our first effort may provide a valuable starting point for others to build off of.  
 [Check out the code on GitHub](https://github.com/dhmit/gender_novels/blob/master/gender_novels/corpus_gen.py).
