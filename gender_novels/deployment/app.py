@@ -3,6 +3,7 @@ from flask import Flask, render_template
 app = Flask(__name__)
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
 print(app.config)
@@ -43,6 +44,7 @@ def render_metadata():
     return render_template('metadata.html')
 
 
+<<<<<<< HEAD
 @app.route('/visualizations.html')
 def render_visualizations():
     return render_template('visualizations.html')
@@ -51,6 +53,24 @@ def render_visualizations():
 @app.route('/grammar.html')
 def render_grammar():
     return render_template('grammar.html')
+=======
+@app.route('/info/<fn>')
+def render_markdown_any(fn):
+    import markdown2
+    from gender_novels.common import BASE_PATH
+    try:
+        with open(BASE_PATH / 'deployment' / 'static' / 'markdowns' / (fn + '.md')) as fh:
+            md_in = fh.read()
+    except FileNotFoundError:
+        md_in = '**boo**'
+    md_in = md_in.replace('(images/', '(/static/markdowns/images/')
+    markdown_html = markdown2.markdown(md_in)
+    title_parts = fn.split('_')
+    title = ' '.join([title_word.capitalize() for title_word in title_parts])
+
+    return render_template('blank_markdown.html', title=title, markdown_html=markdown_html)
+
+>>>>>>> upstream/master
 
 
 if __name__ == '__main__':
