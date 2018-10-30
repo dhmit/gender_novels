@@ -132,12 +132,15 @@ def test_analysis():
     parser = get_parser("assets/stanford-parser.jar", "assets/stanford-parser-3.9.1-models.jar")
     novels = Corpus('sample_novels').novels
     for novel in novels:
-        row = parse_novel(novel, parser)
-        print(row)
-        with open('dependency_analysis_results.csv', mode='w') as results_file:
-            writer = csv.writer(results_file, delimiter=',', quotechar='"',
-                                         quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(row)
+        try:
+            row = parse_novel(novel, parser)
+            print(row)
+            with open('dependency_analysis_results.csv', mode='w') as results_file:
+                writer = csv.writer(results_file, delimiter=',', quotechar='"',
+                                             quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(row)
+        except OSError:
+            continue
 
 
 if __name__ == "__main__":
