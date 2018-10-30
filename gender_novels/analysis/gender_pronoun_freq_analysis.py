@@ -581,6 +581,28 @@ def overall_mean(d):
     mean = np.mean(l)
     return mean
 
+def stat_analysis(corpus_name='sample_novels'):
+    corpus = Corpus(corpus_name)
+    tot_female_dict = books_pronoun_freq(corpus)
+    author_to_freq_dict = freq_by_author_gender(tot_female_dict)
+
+
+    author_gender_pronoun_analysis = get_p_and_ttest_value(author_to_freq_dict['male_author'],author_to_freq_dict[
+        "female_author"])
+    print("values for gender pronoun stats: ", author_gender_pronoun_analysis)
+
+    sub_v_ob_tuple = subject_vs_object_pronoun_freqs(corpus)
+
+    sub_v_ob_male_dict = sub_v_ob_tuple[0]
+    sub_v_ob_male_list = dict_to_list(sub_v_ob_male_dict)
+
+    sub_v_ob_female_dict = sub_v_ob_tuple[1]
+    sub_v__ob_female_list = dict_to_list(sub_v_ob_female_dict)
+
+    author_gender_sub_v_ob_correlation = get_p_and_ttest_value(sub_v_ob_male_list, sub_v__ob_female_list)
+    print("values for subject vs object pronouns between male and female authors: ", author_gender_sub_v_ob_correlation)
+
+    #subject_pronouns_gender_comparison(Corpus('gutenberg'),'female')
 
 if __name__ == '__main__':
     # from dh_testers.testRunner import main_test
