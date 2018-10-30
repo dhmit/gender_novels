@@ -55,7 +55,6 @@ When we first used rsync, we predicted the file size to small. There where many 
 copies of the same book indifferent file formats, this is why the rsync code was modified to include the multitude of 'excludes.' Even if we got rid of all the wrong file formats we would still have to 
 deal with all the files that do not fulfill the projects requirements for processing. In the end we chose to filter out incorrect file types in our original rsync before then using Metadata to filter the files even further.
 
-=======
 ### References
 [https://softwareengineering.stackexchange.com/questions/180108/what-will-happen-if-i-dont-follow-robots-txt-while-crawling](https://softwareengineering.stackexchange.com/questions/180108/what-will-happen-if-i-dont-follow-robots-txt-while-crawling)
 [https://www.gutenberg.org/robots.txt](https://www.gutenberg.org/robots.txt)

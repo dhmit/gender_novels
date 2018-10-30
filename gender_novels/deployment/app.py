@@ -19,29 +19,9 @@ def render_overview():
     return render_template('home.html')
 
 
-@app.route('/copyright.html')
-def render_copyright():
-    return render_template('copyright.html')
-
-
-@app.route('/corpora.html')
-def render_corpora():
-    return render_template('corpora.html')
-
-
-@app.route('/team.html')
+@app.route('/info/team.html')
 def render_team():
     return render_template('team.html')
-
-
-@app.route('/web-scraping.html')
-def render_web_scraping():
-    return render_template('web-scraping.html')
-
-
-@app.route('/metadata.html')
-def render_metadata():
-    return render_template('metadata.html')
 
 
 @app.route('/info/<fn>')
@@ -59,7 +39,6 @@ def render_markdown_any(fn):
     title = ' '.join([title_word.capitalize() for title_word in title_parts])
 
     return render_template('blank_markdown.html', title=title, markdown_html=markdown_html)
-
 
 
 if __name__ == '__main__':
