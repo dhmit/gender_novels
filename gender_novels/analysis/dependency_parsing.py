@@ -76,7 +76,7 @@ def parse_novel(novel, parser):
     This function parses all sentences in the novel
     :param novel: Novel object we want to analyze
     :param parser: Stanford dependency parser
-    :return: list containing:
+    :return: list containing the following:
     - Title of novel
     - Count of male pronoun subject occurrences
     - Count of male pronoun object occurrences
@@ -94,7 +94,7 @@ def parse_novel(novel, parser):
     ...                   'filename': None, 'text': "He told her"}
     >>> toy_novel = Novel(novel_metadata)
     >>> parse_novel(toy_novel, parser)
-    ('Scarlet Letter', 1, 0, 0, 1, [], [], [], ['told'])
+    ('Scarlet Letter', 1, 0, 0, 1, [], ['told'], [], [])
 
     """
 
