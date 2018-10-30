@@ -1,10 +1,12 @@
 import csv
+import random
+import nltk
+from nltk.tokenize import word_tokenize
 from pathlib import Path
 from collections import Counter
 
 from gender_novels import common
 from gender_novels.novel import Novel
-
 
 
 class Corpus(common.FileLoaderMixin):
@@ -333,7 +335,7 @@ class Corpus(common.FileLoaderMixin):
         """
         metadata_fields = set()
         for novel in self.novels:
-            for field in getmembers(novel):
+            for field in novel.getmembers():
                 metadata_fields.add(field)
         return sorted(list(metadata_fields))
 
@@ -470,6 +472,43 @@ class Corpus(common.FileLoaderMixin):
         #TODO: add date range support
         #TODO: apply all filters at once instead of recursing Subcorpus method
 
+    def multi_filter_integrated(self,characteristic_dict):
+        """
+        This needs documentation and tests but it's 5:59! To be added after moratorium.
+        :param characteristic_dict:
+        :return:
+        """
+        supported_metadata_fields = ('author', 'author_gender', 'corpus_name',
+                                     'country_publication', 'date')
+
+        corpus_copy = self.clone()
+        corpus_copy.novels = []
+
+        for metadata_field in characteristic_dict:
+            if metadata_field not in supported_metadata_fields:
+                raise ValueError(
+                    f'Metadata field must be {", ".join(supported_metadata_fields)} '
+                    + f'but not {metadata_field}.')
+
+        for this_novel in self.novels:
+            add_novel = True
+            for metadata_field in characteristic_dict:
+                if metadata_field == 'date':
+                    if this_novel.date != int(characteristic_dict['date']):
+                        add_novel = False
+                else:
+                    if getattr(this_novel, metadata_field) != field_value:
+                        add_novel = False
+            if add_novel:
+                corpus_copy.novels.append(this_novel)
+
+        if not corpus_copy:
+            # displays for possible errors in field.value
+            err = f'This corpus is empty. You may have mistyped something.'
+            raise AttributeError(err)
+
+        return corpus_copy
+
 
     def get_novel(self, metadata_field, field_val):
         """
@@ -509,6 +548,44 @@ class Corpus(common.FileLoaderMixin):
                 return novel
 
         raise ValueError("Novel not found")
+
+    def get_sample_text_passages(self, expression, no_passages):
+        """
+        Returns a specified number of example passages that include a certain expression.
+
+        >>> corpus = Corpus('sample_novels')
+        >>> corpus.get_sample_text_passages('he cried', 2)
+        ('james_american.txt', 'flowing river” newman gave a great rap on the floor with his stick and a long grim laugh “good good” he cried “you go altogether too faryou overshoot the mark there isn’t a woman in the world as bad as you would')
+        ('james_american.txt', 'the old woman’s hand in both his own and pressed it vigorously “i thank you ever so much for that” he cried “i want to be the first i want it to be my property and no one else’s you’re the wisest')
+
+        """
+
+        count = 0
+        output = []
+        phrase = word_tokenize(expression)
+        random.seed(expression)
+        random_novels = self.novels.copy()
+        random.shuffle(random_novels)
+
+        for novel in random_novels:
+            if count >= no_passages:
+                break
+            current_novel = novel.get_tokenized_text()
+            for index in range(len(current_novel)):
+                if current_novel[index] == phrase[0]:
+                    if current_novel[index:index+len(phrase)] == phrase:
+                        passage = " ".join(current_novel[index-20:index+len(phrase)+20])
+                        output.append((novel.filename, passage))
+                        count += 1
+
+        random.shuffle(output)
+        print_count = 0
+        for entry in output:
+            if print_count == no_passages:
+                break
+            print_count += 1
+            print(entry)
+
 
     def get_novel_multiple_fields(self, metadata_dict):
         """
