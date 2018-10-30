@@ -44,6 +44,10 @@ These include:
 opacity = 0.4
 bar_width = 0.3
 ```
+Now, matplotlib is very generous with its whitespace. To fix that, try: 
+```angular2html  
+fig.tight_layout() 
+``` 
 If you're not making a bar graph, omit bar_width. Remember that you must then use opacity and 
 bar_width in your matplotlib method call. For example:
 ```angular2html
