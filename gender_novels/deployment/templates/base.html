@@ -38,19 +38,18 @@
         <nav class="navbar navbar-expand-lg">
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/info/gender_novels_overview">Home<span class="sr-only">(current)
-                        </span></a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/info/gender_novels_overview"><span>Home</span></a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Analyses
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="/info/visualizations.html"><span
-                                    class="dropdown-link">Visualizations</span></a>
                             <a class="dropdown-item" href="/info/grammar_writeup"><span
                                     class="dropdown-link">Grammar</span></a>
+                            <a class="dropdown-item" href="/info/statistical_analysis"><span
+                                    class="dropdown-link">Statistics</span></a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -58,14 +57,14 @@
                           Corpus
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="nav-link" href="books.html"><span
-                                    class="dropdown-link">Books</span></a>
+                            <a class="nav-link" href="/info/data_visualizations"><span
+                                    class="dropdown-link">Statistics</span></a>
                             <a class="dropdown-item" href="/info/metadata_acquisition"><span
                                     class="dropdown-link">Metadata</span></a>
                             <a class="nav-link" href="/info/copyright_info"><span
                                     class="dropdown-link">Copyright</span></a>
-                            <a class="nav-link" href="/info/hathitrust"><span
-                                    class="dropdown-link">Hathitrust</span></a>
+                            <a class="nav-link" href="/info/corpus-notes.html"><span
+                                    class="dropdown-link">Notes</span></a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -76,10 +75,12 @@
                             <a class="dropdown-item" href="/info/corpus_scraping"><span
                                     class="dropdown-link">Web
                                 Scraping</span></a>
+                            <a class="dropdown-item" href="/info/analysis_visualisation"><span
+                                    class="dropdown-link">Visualizations</span></a>
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/info/team.html">Our Team</a>
+                        <a class="nav-link" href="/info/team.html"><span>Our Team</span></a>
                     </li>
                 </ul>
             </div>
@@ -87,7 +88,7 @@
     </div>
 
     <!-- Unique page content -->
-{% block content %}{% endblock content %}
+    {% block content %}{% endblock content %}
 
     <!-- Footer -->
     <div class="container-fluid footer">
