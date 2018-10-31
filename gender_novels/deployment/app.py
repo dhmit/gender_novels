@@ -8,10 +8,8 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 print(app.config)
 
-"""
-These function calls render the individual pages of the overall website so that the
-landing page is able to link to them through the navbar
-"""
+# These function calls render the individual pages of the overall website so that the
+# landing page is able to link to them through the navbar
 
 
 @app.route('/')
@@ -19,9 +17,16 @@ def render_overview():
     return render_markdown_any('gender_novels_overview', title='Gender in Novels, 1770–1922')
 
 
+# Still necessary because team.html is partly static HTML and partly converted markdown HTML
 @app.route('/info/team.html')
 def render_team():
     return render_template('team.html')
+
+
+# Still necessary because corpus-notes.html is composed of 2 separate MD files
+@app.route('/info/corpus-notes.html')
+def render_corpus_notes():
+    return render_template('corpus-notes.html')
 
 
 @app.route('/info/<fn>')
@@ -39,6 +44,10 @@ def render_markdown_any(fn, title=None):
     if title is None:
         title_parts = fn.split('_')
         title = ' '.join([title_word.capitalize() for title_word in title_parts])
+        # Gender in Novels, 1770-1922 is the desired title and this automatic naming
+        # system would override that
+        if title == "Gender Novels Overview":
+            title = "Gender in Novels, 1770–1922"
 
     return render_template('blank_markdown.html', title=title, markdown_html=markdown_html)
 
