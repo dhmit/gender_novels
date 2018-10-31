@@ -8,6 +8,19 @@
 {% block content %}
     <!-- Page content -->
     <div class="container-fluid content">
+        <!-- Team description -->
+        <div class="container-fluid content">
+            <div class="row justify-content-start">
+                <div class="col-2">
+                </div>
+                <div class="col-8 justify-content-center" align="center">
+                    <div class="topic-content">
+                        <!-- Topic content assigned in convertMarkdown.js -->
+                    <div id="team-description"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <!-- Data -->
         <h1 class="display-6">Data</h1>
         <div class="row justify-content-center">
@@ -208,7 +221,7 @@
             <div class="row justify-content-center">
                 <div class="col-4">
                     <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
-                    filename='graphics/portraits/')}}" />
+                    filename='graphics/portraits/Cuthbert_Michael_Square.jpg')}}" />
                 </div>
                 <div class="col-4">
                     <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
@@ -237,7 +250,7 @@
                 </div>
                 <div class="col-6">
                     <img class="portrait rounded mx-auto d-block" src="{{url_for('static',
-                    filename='graphics/portraits/')}}" />
+                    filename='graphics/portraits/Tagliaferri_Lisa_Square.jpg')}}" />
                 </div>
             </div>
             <div class="row justify-content-center">

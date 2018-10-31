@@ -14,12 +14,9 @@ function loadPageContent() {
 
     let content_dict = {};
 
-    content_dict["overview"] = "gender_novels_overview";
-    content_dict["copyright"] = "copyright_info";
-    content_dict["metadata"] = "metadata_acquisition";
-    content_dict["web-scraping"] = "web_scraping";
-    content_dict["team-roles"] = "team_roles";
-    content_dict["test-page"] = "";
+    content_dict["data-sanitation"] = "data_sanitation";
+    content_dict["hathitrust"] = "hathitrust";
+    content_dict["team-description"] = "";
 
     for (let id in content_dict) {
         try {
