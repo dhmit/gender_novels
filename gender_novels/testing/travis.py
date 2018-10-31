@@ -27,6 +27,20 @@ def file_passes(filename):
         return False
 
 
+def get_list_of_files(file_list):
+    """
+    Makes a list of files from a list of files and/or directories with files
+    in it
+    :param file_list: a list of files and/or directories
+    :return: a list of all the files in those directories
+    """
+    for item in file_list:
+        if os.path.isdir(item):
+            file_list.remove(item)
+            file_list += get_list_of_files(item)
+    return file_list
+
+
 def passes_tests():
     """
     Goes through each file in the gender_novels directory and tests the doctests.
@@ -35,6 +49,7 @@ def passes_tests():
     """
     passes = True
     list_of_files = os.listdir(BASE_PATH)
+    list_of_files = get_list_of_files(list_of_files)
     for file in list_of_files:
         if not file_passes(file):
             passes = False
