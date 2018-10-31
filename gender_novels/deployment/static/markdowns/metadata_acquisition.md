@@ -33,7 +33,7 @@ There's also some metadata that we associate with the books to make them easy to
 
 The Gutenberg ID of a novel is useful as a specific and unambiguous identifier for naming files 
 and also looking up specific novels.  The corpus name allows us to distinguish books in our final
- corpus from the [initial 100 sample novels that we gathered](/web-scraping.html).  Notes are for 
+ corpus from the [initial 100 sample novels that we gathered](/info/corpus_scraping).  Notes are for 
  anything unusual about a novel, and are usually left empty.  
 
 ## Metadata Sources
@@ -80,7 +80,7 @@ One can also usually be fairly sure that an author named "Mary Istabal" is proba
 
 Because some metadata is needed to filter out the books, we decided to generate the corpus and 
 metadata at the same time.  
-[(Read more about generating the corpus here.)](/web-scraping.html)  
+[(Read more about generating the corpus here.)](/info/corpus_scraping)  
 
 To generate the corpus, we loop through every single Gutenberg ID number from zero to 70,000.  With each ID number, the book is first tested to see if it meets our [requirements](link to our definition of novel).  Then the metadata is acquired and written to a CSV file.  
 
