@@ -8,9 +8,6 @@ primarily from the nineteenth century and early twentieth century.
 Our goal was to build computational tools that helped us understand 
 how conceptions of gender were expressed and changed through 
 distant reading of thousands of books.
-
-## Over 4200 Books
-
 Our database involves over 4200 novels sourced from the Gutenberg project and gives us a 
 comprehensive look at the views of authors of the time period.
 
