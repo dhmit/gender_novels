@@ -3,6 +3,7 @@ from flask import Flask, render_template
 app = Flask(__name__)
 app.config['ENV'] = 'development'
 app.config['DEBUG'] = True
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 
 print(app.config)
@@ -18,32 +19,12 @@ def render_overview():
     return render_markdown_any('gender_novels_overview', title='Gender in Novels, 1770–1922')
 
 
-@app.route('/copyright.html')
-def render_copyright():
-    return render_markdown_any('copyright_info')
-
-
-@app.route('/corpora.html')
-def render_corpora():
-    return render_template('corpora.html')
-
-
-@app.route('/team.html')
+@app.route('/info/team.html')
 def render_team():
     return render_template('team.html')
 
 
-@app.route('/web-scraping.html')
-def render_web_scraping():
-    return render_markdown_any('corpus_scraping')
-
-
-@app.route('/metadata.html')
-def render_metadata():
-    return render_markdown_any('metadata_acquisition')
-
-
-@app.route('/markdowns/<fn>')
+@app.route('/info/<fn>')
 def render_markdown_any(fn, title=None):
     import markdown2
     from gender_novels.common import BASE_PATH
@@ -72,4 +53,3 @@ if __name__ == '__main__':
     import webbrowser
     webbrowser.open('http://127.0.0.1:8021/', new=1)
     app.run(host='127.0.0.1', port='8021')
-
