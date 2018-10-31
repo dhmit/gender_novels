@@ -43,15 +43,18 @@ def plt_pubcountries(pub_country,corpus_name):
     for country in pub_country:
         country_counter[country]=country_counter.setdefault(country,0)+1
         totalbooks+=1
-    country_counter2={}
+    country_counter2={'Other':0}
     for country in country_counter:
         if country=='':
             pass
         elif country_counter[country]>(.001*totalbooks): #must be higher than .1% of the total books
             #  to have its own country name otherwise it is classified under others
             country_counter2[country]=country_counter[country]
-    x=[country for country in country_counter2]
-    y=[country_counter2[country] for country in country_counter2]
+        else:
+            country_counter2['Other'] += country_counter[country]
+    country_counter2 = sorted(country_counter2.items(), key=lambda kv: -kv[1])
+    x=[country[0] for country in country_counter2]
+    y=[country[1] for country in country_counter2]
     for label in ax1.xaxis.get_ticklabels():
         label.set_rotation(15)
     plt.bar(x,y,color='c')
@@ -101,12 +104,12 @@ def plt_metadata_pie(corpus, corpus_name):
     :param corpus: Corpus
     :param corpus_name: str
     """
-    counter = Counter({'Both Country and Author Gender': 0, 'Author Gender Only': 0,
+    counter = Counter({'Both Country and Gender': 0, 'Author Gender Only': 0,
                        'Country Only': 0, 'Neither': 0})
     num_novels = len(corpus)
     for novel in corpus.novels:
         if novel.author_gender != 'unknown' and novel.country_publication:
-            counter['Both Country and Author Gender'] += 1
+            counter['Both Country and Gender'] += 1
         elif novel.author_gender != 'unknown':
             counter['Author Gender Only'] += 1
         elif novel.country_publication:
@@ -115,11 +118,11 @@ def plt_metadata_pie(corpus, corpus_name):
             counter['Neither'] += 1
     labels = []
     for label, number in counter.items():
-        labels.append(label + " " + str(round(number/num_novels,2)*100) + r"%")
+        labels.append(label + " " + str(int(round(number/num_novels,2)*100)) + r"%")
     sns.set_color_codes('colorblind')
     colors = ['c', 'b', 'g', 'w']
     plt.figure(figsize=(10, 6))
-    plt.pie(counter.values(), colors=colors, labels=labels, textprops={'fontsize': 15})
+    plt.pie(counter.values(), colors=colors, labels=labels, textprops={'fontsize': 13})
     plt.title('Percentage Acquired Metadata for ' + corpus_name.title(), size=18, color='k',
               weight='bold')
     plt.legend()
