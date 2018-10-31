@@ -34,6 +34,7 @@ def pickle(novel, parser):
     :param novel: Novel we are interested in
     :param parser: Stanford parser object
     :return: tree in pickle format
+
     >>> tree = load_pickle(f'dep_tree_aanrud_longfrock')
     >>> tree == None
     False
@@ -75,8 +76,17 @@ def parse_novel(novel, parser):
     This function parses all sentences in the novel
     :param novel: Novel object we want to analyze
     :param parser: Stanford dependency parser
-    :return: the counts of male and female subject and object occurrences + list of male/female
-    adjectives and verbs as a string
+    :return: list containing the following:
+    - Title of novel
+    - Count of male pronoun subject occurrences
+    - Count of male pronoun object occurrences
+    - Count of female pronoun subject occurrences
+    - Count of female pronoun object occurrences
+    - List of adjectives describing male pronouns as one space-separated string
+    - List of verbs associated with male pronouns as one space-separated string
+    - List of adjectives describing female pronouns as one space-separated string
+    - List of verbs associated with female pronouns as one space-separated string
+
     >>> parser = get_parser("assets/stanford-parser.jar","assets/stanford-parser-3.9.1-models.jar")
     >>> novels = Corpus('sample_novels').novels
     >>> novel_metadata = {'author': 'Hawthorne, Nathaniel', 'title': 'Scarlet Letter',
@@ -84,7 +94,8 @@ def parse_novel(novel, parser):
     ...                   'filename': None, 'text': "He told her"}
     >>> toy_novel = Novel(novel_metadata)
     >>> parse_novel(toy_novel, parser)
-    (1, 0, 0, 1, [], [], [], ['told'])
+    ('Scarlet Letter', 1, 0, 0, 1, [], ['told'], [], [])
+
     """
 
     tree = pickle(novel, parser)
@@ -116,7 +127,7 @@ def parse_novel(novel, parser):
                 elif triple[2][0] == "he":
                     male_verbs.append(triple[0][0])
 
-    return [male_subj_count, male_obj_count, female_subj_count, female_obj_count,
+    return [novel.title, male_subj_count, male_obj_count, female_subj_count, female_obj_count,
             " ".join(male_adjectives), " ".join(male_verbs), " ".join(female_adjectives),
             " ".join(female_verbs)]
 
@@ -124,18 +135,24 @@ def parse_novel(novel, parser):
 def test_analysis():
     """
     This function contains all analysis code to be run (previously in main function)
+    - First generates a Stanford NLP parser
+    - Iterates over sample novels corpus and parses each novel (performs analysis: gender pronoun
+    count, list of adjectives, list of verbs)
+    - Writes output to dependency_analysis_results.csv
     """
 
     parser = get_parser("assets/stanford-parser.jar", "assets/stanford-parser-3.9.1-models.jar")
     novels = Corpus('sample_novels').novels
     for novel in novels:
-        row = parse_novel(novel, parser)
-        print(row)
-        with open('dependency_analysis_results.csv', mode='w') as results_file:
-            writer = csv.writer(results_file, delimiter=',', quotechar='"',
-                                         quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(row)
-
+        try:
+            row = parse_novel(novel, parser)
+            print(row)
+            with open('dependency_analysis_results.csv', mode='w') as results_file:
+                writer = csv.writer(results_file, delimiter=',', quotechar='"',
+                                             quoting=csv.QUOTE_MINIMAL)
+                writer.writerow(row)
+        except OSError:
+            continue
 
 if __name__ == "__main__":
 
