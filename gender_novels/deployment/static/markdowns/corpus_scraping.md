@@ -33,8 +33,12 @@ Scraping against the terms of a website can have negative repercussions. This co
 One way to over come this issue is to use mirrors. Mirrors are static copies of the website 
 stored elsewhere. Websites provide these to allow scraping without draining the main websites 
 resources. Project Gutenberg has a number of mirrors which can be found at [https://www.gutenberg.org/MIRRORS.ALL](https://www.gutenberg.org/MIRRORS.ALL). 
-Gutenberg also [provides a how-to on mirroring](https://www.gutenberg
-.org/wiki/Gutenberg:Mirroring_How-To) from their website. This includes a recommendation to use 
+Gutenberg also provides a 
+[how-to on mirroring](https://www.gutenberg.org/wiki/Gutenberg:Mirroring_How-To) 
+from their 
+website. 
+This includes a recommendation to 
+use 
 rsync so this is what we have chosen to use.
 We used the mirror [aleph.gutenberg.org](aleph.gutenberg.org).
 
@@ -42,7 +46,6 @@ We used the mirror [aleph.gutenberg.org](aleph.gutenberg.org).
 rsync -av --exclude '*iso' --exclude '*ISO' --exclude '*png' --exclude '*PNG' --exclude '*jpg' --exclude '*JPG' --exclude '*xml' --exclude '*htm' --exclude '*html' --exclude '*mp3' --exclude '*mp4' --exclude '*m4b' --exclude '*ogg' --exclude '*spx' --exclude '*m4a' --exclude '*pdf' --exclude '*ly' --exclude '*midi' --exclude '*css' --exclude '*mid' --exclude '*sfv' --exclude '*doc' --exclude '*GIF' --exclude '*gif' --exclude '10802' --exclude '11220' --exclude '19159' aleph.gutenberg.org::gutenberg .
 ```
 
-<<<<<<< HEAD:gender_novels/deployment/static/markdowns/corpus_scraping.md
 The code above was used in downloading the Gutenberg Corpus using rsync and the aleph.gutenberg
 .org mirror. It was typed into a cygwin command prompt that had rsync installed. It would also work 
 on a Linux terminal with rsync installed. The “-av” section references the function to copy and paste all of the material in the mirror. The multiple 'excludes' exclude file types that are not necessary. The only necessary files types are .txt and folders. The “--exclude '10802' --exclude '11220' --exclude '19159'” section references folders in the mirror that have too many file types to filter and definitively have no useful text files. While an include statement would have been easier, there was a problem where some folders were excluded. In order to include all folders and text documents, the multitude of exclude statements are used.
@@ -52,7 +55,6 @@ When we first used rsync, we predicted the file size to small. There where many 
 copies of the same book indifferent file formats, this is why the rsync code was modified to include the multitude of 'excludes.' Even if we got rid of all the wrong file formats we would still have to 
 deal with all the files that do not fulfill the projects requirements for processing. In the end we chose to filter out incorrect file types in our original rsync before then using Metadata to filter the files even further.
 
-=======
 ### References
 [https://softwareengineering.stackexchange.com/questions/180108/what-will-happen-if-i-dont-follow-robots-txt-while-crawling](https://softwareengineering.stackexchange.com/questions/180108/what-will-happen-if-i-dont-follow-robots-txt-while-crawling)
 [https://www.gutenberg.org/robots.txt](https://www.gutenberg.org/robots.txt)
