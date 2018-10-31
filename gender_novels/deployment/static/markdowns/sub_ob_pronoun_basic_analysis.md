@@ -1,4 +1,4 @@
-#Basic Subject vs Object Pronoun Frequency Analysis
+# Basic Subject vs Object Pronoun Frequency Analysis
 
 **This markdown file contains data from an analysis of feminine
 and masculine subject pronouns vs object pronouns.**
@@ -14,12 +14,12 @@ second analysis compares the frequency of masculine and
 feminine pronouns in subject pronouns, ie, what portion of 
 subject pronouns are masculine vs feminine.
 
-##First Analysis
+## First Analysis
 This analysis first separated the pronouns into masculine 
 and feminine pronouns and compared frequencies within these
 categories.
 
-###Overall
+### Overall
 These frequencies are the portion of pronouns of a certain
 gender that are subject pronouns. Thus, on average, approximately 72% of 
 masculine pronouns in a given novel are subject pronouns while approximately 
@@ -31,11 +31,11 @@ Male:
 Female: 
 0.44787289273153363
 
-###Binned
+### Binned
 The following are averages of the same frequency but binned 
 over author gender, date published, and location.
 
-####Female pronouns: 
+#### Female pronouns:
 The following are frequencies of female pronouns that are
  subject pronouns.
 
@@ -117,33 +117,33 @@ US: 0.7300165752376145
 
 Other: 0.7156454243312463
  
-###Thoughts
+### Thoughts
 We noticed no trends in the binning for this analysis. 
 It did seem notable that about 72% of all male pronouns were
 subject pronouns while only about 45% of female pronouns
 were subject pronouns.
 
-##Analysis 2
+## Analysis 2
 
 This analysis looked at the percentage of subject pronouns
 that were male verses female. The following frequencies are
 the portion of subject pronouns that are female.
 
-###Overall
+### Overall
 Overall: 0.31606923574399076
 
 Thus, on average, about 32% of the subject pronouns in a given 
 novel were feminine.
 
-###Binned
+### Binned
 
-####By author gender:
+#### By author gender:
 
 Male author: 0.23516100081271119
 
 Female author: 0.4333655569112226
 
-####By date:
+#### By date:
 
 To 1810: 0.44504635214783195
 
@@ -167,7 +167,7 @@ To 1810: 0.44504635214783195
 
 1900 on: 0.31340014426057095
 
-####By location:
+#### By location:
 
 England: 0.3009783595291811
 
@@ -175,13 +175,13 @@ US: 0.3373807026583039
 
 Other: 0.2969183860145596
 
-###Thoughts
+### Thoughts
 For this analysis, we found the overall comparison and the
 comparison by author gender most noteworthy. We noticed no
 trends in the date binning, though there is a strange deviancy
 from the norm in the 1830's. We noticed no trend based on location.
 
-##Overall Thoughts
+## Overall Thoughts
 Analysis #1 is probably the most useful of the two. The results
 observed in analysis #2 are likely due to just the frequency of
 male vs female pronoun use in general as observed in an earlier
