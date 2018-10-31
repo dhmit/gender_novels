@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from gender_novels.corpus import Corpus
+from collections import Counter
 
 
 def plt_pubyears(pub_years,corpus_name):
@@ -93,20 +94,54 @@ def plt_gender_breakdown(pub_gender,corpus_name):
     plt.subplots_adjust(left=.1,bottom=.1,right=.9,top=.9)
     plt.savefig('gender_breakdown_for_'+corpus_name+'.png')
 
+
+def plt_metadata_pie(corpus, corpus_name):
+    """
+    Creates pie chart indicating fraction of metadata that is filled in corpus
+    :param corpus: Corpus
+    :param corpus_name: str
+    """
+    counter = Counter({'Both Country and Author Gender': 0, 'Author Gender Only': 0,
+                       'Country Only': 0, 'Neither': 0})
+    num_novels = len(corpus)
+    for novel in corpus.novels:
+        if novel.author_gender != 'unknown' and novel.country_publication:
+            counter['Both Country and Author Gender'] += 1
+        elif novel.author_gender != 'unknown':
+            counter['Author Gender Only'] += 1
+        elif novel.country_publication:
+            counter['Country Only'] += 1
+        else:
+            counter['Neither'] += 1
+    labels = []
+    for label, number in counter.items():
+        labels.append(label + " " + str(round(number/num_novels,2)*100) + r"%")
+    sns.set_color_codes('colorblind')
+    colors = ['c', 'b', 'g', 'w']
+    plt.figure(figsize=(10, 6))
+    plt.pie(counter.values(), colors=colors, labels=labels, textprops={'fontsize': 15})
+    plt.title('Percentage Acquired Metadata for ' + corpus_name.title(), size=18, color='k',
+              weight='bold')
+    plt.legend()
+    plt.subplots_adjust(left=.1, bottom=.1, right=.9, top=.9)
+    plt.savefig('percentage_acquired_metadata_for_' + corpus_name + '.png')
+
+
 def create_corpus_summary_visualizations(corpus_name):
     '''
     Runs through all plt functions given a corpus name
     :param corpus_name: str
     '''
     c = Corpus(corpus_name)
-    pubyears=[novel.date for novel in c.novels]
-    pubgender=[novel.author_gender for novel in c.novels]
-    pubcountry=[novel.country_publication for novel in c.novels]
-    corpus_name=corpus_name.replace('_',' ')
-    plt_gender_breakdown(pubgender, corpus_name)
-    plt_pubyears(pubyears,corpus_name)
-    plt_pubcountries(pubcountry,corpus_name)
+    # pubyears=[novel.date for novel in c.novels]
+    # pubgender=[novel.author_gender for novel in c.novels]
+    # pubcountry=[novel.country_publication for novel in c.novels]
+    corpus_name = corpus_name.replace('_',' ')
+    # plt_gender_breakdown(pubgender, corpus_name)
+    # plt_pubyears(pubyears,corpus_name)
+    # plt_pubcountries(pubcountry,corpus_name)
+    plt_metadata_pie(c, corpus_name)
 
 if __name__=='__main__':
-    create_corpus_summary_visualizations('gutenberg')
+    # create_corpus_summary_visualizations('gutenberg')
     create_corpus_summary_visualizations('sample_novels')
