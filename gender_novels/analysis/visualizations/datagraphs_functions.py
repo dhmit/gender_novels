@@ -133,15 +133,15 @@ def create_corpus_summary_visualizations(corpus_name):
     :param corpus_name: str
     '''
     c = Corpus(corpus_name)
-    # pubyears=[novel.date for novel in c.novels]
-    # pubgender=[novel.author_gender for novel in c.novels]
-    # pubcountry=[novel.country_publication for novel in c.novels]
+    pubyears=[novel.date for novel in c.novels]
+    pubgender=[novel.author_gender for novel in c.novels]
+    pubcountry=[novel.country_publication for novel in c.novels]
     corpus_name = corpus_name.replace('_',' ')
-    # plt_gender_breakdown(pubgender, corpus_name)
-    # plt_pubyears(pubyears,corpus_name)
-    # plt_pubcountries(pubcountry,corpus_name)
+    plt_gender_breakdown(pubgender, corpus_name)
+    plt_pubyears(pubyears,corpus_name)
+    plt_pubcountries(pubcountry,corpus_name)
     plt_metadata_pie(c, corpus_name)
 
 if __name__=='__main__':
-    # create_corpus_summary_visualizations('gutenberg')
+    create_corpus_summary_visualizations('gutenberg')
     create_corpus_summary_visualizations('sample_novels')
