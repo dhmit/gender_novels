@@ -16,7 +16,7 @@ function loadPageContent() {
 
     content_dict["data-sanitation"] = "data_sanitation";
     content_dict["hathitrust"] = "hathitrust";
-    content_dict["team-description"] = "";
+    content_dict["team-description"] = "about_team";
 
     for (let id in content_dict) {
         try {
