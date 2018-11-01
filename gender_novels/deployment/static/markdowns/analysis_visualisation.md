@@ -3,9 +3,14 @@
 All visualization specialists are tasked with finding a way to graph our data in a manner that is
 aesthetically pleasing.
 
-For the visualizations, it is important take massive amounts of data and distill it into a comparison of more specific values. From here, interesting trends pop up that can lend itself into more ground-breaking discoveries.
+For the visualizations, it is important take massive amounts of data and distill it into a 
+comparison of more specific values. From here, interesting trends pop up that can lend themselves 
+to more ground-breaking discoveries.
 
-From here, we have turned the data into human readable and aesthetically pleasing graphs. Depending on the dataset, we had to make a decision on what graph would best represent the given data, and even more importantly what graph will emphasize the trend that the Analysis members have noted.
+From here, we have turned the data into human readable and aesthetically pleasing graphs. 
+Depending on the dataset, we had to make a decision on what graph would best represent the given 
+data, and even more importantly what graph would emphasize the trend that the Analysis team members 
+have noted.
 
 ### Foundation
 
