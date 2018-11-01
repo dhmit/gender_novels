@@ -30,3 +30,17 @@ decreased, allowing for a wider range of books to be put into publication.
 
 The gender breakdown is about two-thirds male which should be considered when looking at the 
 analysis of the Gutenberg corpus.
+
+## Success In Acquiring Metadata
+
+![](images/acquired_metadata_pie.png "Percentage Acquired Metadata")
+
+It may have become apparent from looking at the previous charts that not all the books were 
+necessarily included.  Any books for which a publication date could not be found were rejected 
+from the corpus, so all the novels have associated publication dates.  However, this requirement 
+was not imposed for author gender or country of publication.  Acquiring author gender was 
+typically easier because it could be inferred from the names of the authors; but getting the 
+country of publication required searching Wikidata, which means that many more obscure books have
+ no countries of publication.  One should be aware that analyses based on country of publication 
+ will only involve 22% of the corpus, or roughly 900 books.  [Read more about the metadata 
+ acquisition here.](/info/metadata)
