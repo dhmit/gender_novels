@@ -1,5 +1,3 @@
-# Visualizations
-
 ## Countries of Publication
 
 ![](images/country_of_publication.png "Countries of Publication")
@@ -43,4 +41,4 @@ typically easier because it could be inferred from the names of the authors; but
 country of publication required searching Wikidata, which means that many more obscure books have
  no countries of publication.  One should be aware that analyses based on country of publication 
  will only involve 22% of the corpus, or roughly 900 books.  [Read more about the metadata 
- acquisition here.](/info/metadata)
+ acquisition here.](/info/corpus_metadata)

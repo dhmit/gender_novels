@@ -1,9 +1,6 @@
 # Male/Female Instance Distance Analysis
 
-**The following Markdown file contains results from an analysis of distances between instances of gendered pronouns. 
-The results are additionally categorized based on characteristics of the novels such as author gender, date published, and location.**
-
-The code used for this analysis can be found in [`instance_distance_analysis.py`](https://github.com/dhmit/gender_novels/blob/master/gender_novels/analysis/instance_distance_analysis.py).
+The code used for this analysis can be found in [instance\_distance\_analysis.py](https://github\.com/dhmit/gender_novels/blob/master/gender_novels/analysis/instance_distance_analysis.py).
 
 The raw analysis returns a dictionary with each novel mapped to an array of 3 lists:
 * Median, mean, minimum, and maximum distances between male pronoun instances.
@@ -32,7 +29,7 @@ Female Authors: 30.17
 
 p-value = 0.0184
 
-![](visualizations/Median Female Instance Distance by Author Gender.png)
+![](/static/markdowns/images/median_female_instance_distance_by_author_gender.png)
 
 ## By Decade:
 
@@ -62,7 +59,7 @@ Dates 1900 on : 67.34
 
 p-value = 0.942
 
-![](visualizations/Median Female Instance Distance by Date.png)
+![](/static/markdowns/images/median_female_instance_distance_by_date.png)
 
 ## By Location:
 **Average median female instance distance in each location**
@@ -75,7 +72,7 @@ Published in other country : 62.02
 
 p-value = 0.317
 
-![](visualizations/Median Female Instance Distance by Location.png)
+![](/static/markdowns/images/median_female_instance_distance_by_location.png)
 
 
 ##Novels With Greatest Instance Distances
