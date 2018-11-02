@@ -13,7 +13,7 @@ analyse the novels on a deeper level by utilizing information not just from
 the individual words but also from the ways they are employed in the sentences. Here is an 
 example of a dependency tree for the sentence _"Bills on ports and immigration were submitted by Senator Brownback, Republican of Kansas"_:
 
-![Sentence Diagram](/static/markdowns/images/sentence_diagram.png "Sentence Diagram")
+![Sentence Diagram](images/sentence_diagram.png "Sentence Diagram")
 
 The information from the dependency tree was used to identify how many times male and female 
 pronouns act as an agent (the "subject," or active noun in a sentence that does an action) in the 
