@@ -1,6 +1,15 @@
 # How to Install the Gutenberg Module
 
-The Gutenberg module requires installation of BSD-DB in addition to the package. Here are the instructions for that, copy-pasted from their readme: 
+## Do I need to Install the Gutenberg Module?
+
+If you're only interested in using the already compiled books and metadata, and not 
+`corpus_gen.py`, installing gutenberg or bsddb isn't necessary.  You'll just see a message 
+`Cannot import gutenberg`.  
+
+## Installation Instructions
+
+The Gutenberg module requires installation of BSD-DB in addition to the package. Here are the 
+instructions for that, copy-pasted from [their readme](https://github.com/c-w/gutenberg/blob/master/README.rst): 
 
 Linux
 *****
@@ -33,11 +42,10 @@ After you download the wheel, install it and you're good to go:
 ```
     pip install bsddb3‑6.2.1‑cp35‑cp35m‑win_amd64.whl
 ```
-Remember to install this in your virtual environment, otherwise the thing won't work.  Just 
-activate your virtual environment in Powershell, cd to the directory where you saved the thing, 
-and then run the command.  Then you can install gutenberg normally.  
+If you're using a virtual environment, be sure to activate your environment first.
 
-Alright, back to me: 
+
+After installing BSD-DB, gutenberg can be installed normally.  
 
 None of the metadata functions will work until you do this: 
 ```
@@ -46,6 +54,11 @@ None of the metadata functions will work until you do this:
     cache.populate()
 ```
     
-Sadly, depending on the speed of your machine, this could take several hours.  The file isn't that large, it just takes a long time to process.  
-Fortunately, you only need to do this once.  If you aren't using any metadata functions, 
-you don't need to populate right now and can probably put it off.  (In theory, only the computer generating the metadata csv should need this).
+Depending on the speed of your machine, this could take several hours.  Fortunately, the file isn't 
+that large, it just takes a long time to process.  
+
+## IOError
+
+If after interrupting the corpus generation and trying to run it again you encounter `IOError: 
+[Errno 9] Bad file descriptor`, try running the 
+[db_recover](http://pybsddb.sourceforge.net/ref/transapp/recovery.html) utility.  

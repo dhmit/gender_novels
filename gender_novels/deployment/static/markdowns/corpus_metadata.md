@@ -22,7 +22,8 @@ You can see that having the publication date would be useful for doing analysis 
  - Translation status
  - Project Gutenberg-defined subjects
 
-These metadata are important for keeping the corpus clean and making sure only desired novels are included.  For example, we don't want any novels in Chinese.  However, not all of this metadata is actually saved by us--there's no reason to keep track of novel languages if we expect to only keep those that are in English.  
+These metadata are important for keeping the corpus clean and making sure only desired novels are
+ included.  For example, we don't want any novels in Chinese.  However, not all of this metadata is actually saved by us— there's no reason to keep track of novel languages if we expect to only keep those that are in English.  
 
 There's also some metadata that we associate with the books to make them easy to access and process but which aren't directly connected with analysis or filtering.  
 
@@ -68,7 +69,7 @@ year = clm_trgt.year
 ```
 The only catch is that if the value of a claim is another thing on Wikidata, you get the page ID back, not the name.  This means you have to either match the ID to the page title or go look up the name from Wikidata.  
 
-The main issue with Wikidata is that although it contains [many](https://www.wikidata.org/wiki/Q18614236) [random](https://www.wikidata.org/wiki/Q15613810) [things](https://www.wikidata.org/wiki/Q970550), it doesn't contain many of the more obscure books.  Unfortunately, working with the Library of Congress and WorldCat API's was difficult, so we were unable to incorporate them into our metadata acquisition before the deadline.  [(Read more about that here).](url to Susanna's write-up)  However, there are some tricks to patch up those holes: 
+The main issue with Wikidata is that although it contains [many](https://www.wikidata.org/wiki/Q18614236) [random](https://www.wikidata.org/wiki/Q15613810) [things](https://www.wikidata.org/wiki/Q970550), it doesn't contain many of the more obscure books.  Unfortunately, working with the Library of Congress and WorldCat API's was difficult, so we were unable to incorporate them into our metadata acquisition before the deadline.  However, there are some tricks to patch up those holes: 
 
 ### From the Text
 
@@ -103,7 +104,8 @@ In the process of generating the corpus, we found that we had more than enough n
  - Publication dates between 1770 and 1922
  - Certain phrases in the titles like `Index of the Project Gutenberg Works of`...
  - Indications that the text was a translation, like the presence of the string `Translator: ` in the text
- - The length of the text: all novels had to be between 140000 and [9609000](http://www.guinnessworldrecords.com/world-records/longest-novel) characters.  
+ - The length of the text: all novels had to be between 140,000 and 
+ [9,609,000](http://www.guinnessworldrecords.com/world-records/longest-novel) characters.  
 
 For the methods that actually acquired the metadata, we used a process like this:
 
@@ -137,4 +139,7 @@ It was discovered at the last minute that occasionally, commas in novel titles w
 In addition to fixing bugs, future contributors may look into restructuring the code in the manner described above in order to improve its efficiency.  Integrating the WorldCat and Library of Congress API's would also give a greater breadth of reliable information, allowing for an increase in the size of the corpus without compromising quality.  Other ventures could include looking to include more types of metadata: the author's country of origin, or the age of the author when the novel was written, for more diverse analyses.  
 
 We hope that our first effort may provide a valuable starting point for others to build off of.  
+
 [Check out the code on GitHub](https://github.com/dhmit/gender_novels/blob/master/gender_novels/corpus_gen.py).
+
+Note that the code will not work unless you [install the gutenberg module properly](/info/install_gutenberg).
