@@ -54,7 +54,7 @@ class Novel(common.FileLoaderMixin):
 
         # check that the author starts with a capital letter
         # TODO: Currently deactivated because gutenberg authors are lists
-        # TODO: reimplement with lists in mind.
+        # TODO: reimplement with lists in mind.  Note: there are a few novels with no author
         # if not novel_metadata_dict['author'][0].isupper():
         #    raise ValueError('The last name of the author should be upper case.',
         #                     f'{novel_metadata_dict["author"]} is likely incorrect in',
