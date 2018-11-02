@@ -29,6 +29,11 @@ def render_corpus_notes():
     return render_template('corpus-notes.html')
 
 
+@app.route('/info/statistics.html')
+def render_statistics():
+    return render_template('statistics.html')
+
+
 @app.route('/info/<fn>')
 def render_markdown_any(fn, title=None):
     import markdown2
