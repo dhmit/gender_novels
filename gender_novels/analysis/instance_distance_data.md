@@ -16,6 +16,7 @@ For example:
 >A median female instance value of 14.0 vs a median male instance distance value of 10.0 means that female instances tend 
 tend to occur every 14 words in the novels versus male instances occurring every 9 words in the novel. This would indicate 
 a greater male presence in the novel.
+
 > A mean difference value of 4.0 means that on average, the distance between male instances is 4 words longer than female 
 instances.
  
