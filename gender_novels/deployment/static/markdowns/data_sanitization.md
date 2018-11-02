@@ -1,4 +1,4 @@
-# Data Sanitation
+# Data Sanitization
 
 To make sure the data is as accurate as possible, it is necessary to decide how books 
 should be added and refined for analysis.
