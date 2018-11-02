@@ -13,6 +13,7 @@ For example:
 >A median female instance value of 14.0 vs a median male instance distance value of 10.0 means that female instances tend 
 tend to occur every 14 words in the novels versus male instances occurring every 9 words in the novel. This would indicate 
 a greater male presence in the novel.
+
 > A mean difference value of 4.0 means that on average, the distance between male instances is 4 words longer than female 
 instances.
  
@@ -142,7 +143,7 @@ p-value = 0.317
 ## Thoughts:
 Overall, both male and female authors have greater median female instance distances than male instance distances. 
 However, there is a significant difference between median female instance distance in novels written by female authors,
-and those written by male authors. Tthere is evidently no significant trend with relation to date or location of
+and those written by male authors. There is evidently no significant trend with relation to date or location of
 publication. 
 
 Looking at the list of top-10 novels in each measured category, it is important to note that the highest male instance distances
