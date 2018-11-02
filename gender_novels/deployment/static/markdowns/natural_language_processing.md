@@ -1,4 +1,4 @@
-# Analysis Methods
+# Natural Language Processing
 
 The lab used the Natural Language Toolkit (NLTK) in order to generate dependency parses of the 
 novels. We wrote code to tokenize each novel into sentences which would then be fed into the 

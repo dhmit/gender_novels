@@ -1,4 +1,4 @@
-# Statistics Specialist
+# Note on Statistics
 
 Due to the imbalanced process of collecting novels at the start of the project - in which each 
 member of the data group found nine novels whose authors’ last initials were one of three certain
