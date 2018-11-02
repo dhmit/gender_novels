@@ -14,6 +14,9 @@ function loadPageContent() {
 
     let content_dict = {};
 
+    content_dict["statistical-analysis"] = "statistical_analysis";
+    content_dict["statistics-specialist"] = "statistics_specialist";
+    content_dict["web-acquisition"] = "web_acquisition";
     content_dict["data-sanitation"] = "data_sanitation";
     content_dict["hathitrust"] = "hathitrust";
     content_dict["team-description"] = "about_team";
