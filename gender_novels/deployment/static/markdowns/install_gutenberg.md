@@ -15,7 +15,7 @@ manager. For example, on Ubuntu, you can use apt-get:
 MacOS
 *****
 
-On Mac, you can install BSD-DB using [homebrew](<https://homebrew.sh/>):
+On Mac, you can install BSD-DB using [homebrew](<https://brew.sh/>):
 ```
     brew install berkeley-db4
     pip install -r requirements-py3.pip

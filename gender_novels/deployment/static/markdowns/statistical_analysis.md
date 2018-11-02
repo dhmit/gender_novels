@@ -1,4 +1,4 @@
-# Statistics Analysis
+# Statistical Analysis
 
 ## Method
 

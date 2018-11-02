@@ -1,9 +1,7 @@
 # Dunning Analysis
 
- **This markdown contains a write up of 
- the dunn_individual_word and dunning_total functions in dunning.py**
-
- The code used for this analysis can be found in dunning.py under the 
+ The code used for this analysis can be found in [dunning.py](https://github
+.com/dhmit/gender_novels/blob/master/gender_novels/analysis/dunning.py) under the 
  analysis folder.
 
  The statistical model used to analyze the distinctiveness of words
@@ -22,9 +20,9 @@
 
  **How to Use dunning_total**
   
-  All that is needed to run dunning_total is two counter or dict objects (counter1
+  All that is needed to run dunning\_total is two counter or dict objects (counter1
   and counter2), mapping words to the number of times they appear. 
-  When the function is run, it will execute dunn_individual_word on all of the common words 
+  When the function is run, it will execute dunn\_individual_word on all of the common words 
   in both counters. It will then return a dictionary that maps each word to 
   a dict containing its dunning score as well as the counts and frequencies with which
   it appears in both corpora. The negative end of the spectrum denotes the distinctiveness
