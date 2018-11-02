@@ -83,7 +83,7 @@ Because some metadata is needed to filter out the books, we decided to generate 
 metadata at the same time.  
 [(Read more about generating the corpus here.)](/info/web_scraping)  
 
-To generate the corpus, we loop through every single Gutenberg ID number from zero to 70,000.  With each ID number, the book is first tested to see if it meets our [requirements](link to our definition of novel).  Then the metadata is acquired and written to a CSV file.  
+To generate the corpus, we loop through every single Gutenberg ID number from zero to 70,000.  With each ID number, the book is first tested to see if it meets our requirements.  Then the metadata is acquired and written to a CSV file.  
 
 ```python
 if (not is_valid_novel_gutenberg(gutenberg_id)):
