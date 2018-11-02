@@ -1,10 +1,10 @@
-# How to Use our Corpus API [title in progress]
+# How to Use our Corpus API
 
 We created two classes — Novel and Corpus — which are necessary for running many of the analysis 
 functions we created. They would also be useful for running additional new analyses. A basic 
 overview and some important methods for each class are provided here, but more complete 
-documentation can be found 
-in [this is where we describe where to find documentation/just link to the github file?]
+documentation can be found in the novel.py and corpus.py files [here](https://github
+.com/dhmit/gender_novels/tree/master/gender_novels).
 
 Novel
 *****
