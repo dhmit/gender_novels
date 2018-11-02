@@ -1,7 +1,4 @@
-#Pronoun Adjective Usage
-
-**The following Markdown file contains results from an analysis of adjectives associated with gendered pronouns. 
-The results are additionally categorized based on characteristics of the novels such as author gender, date published, and location.**
+# Pronoun Adjective Usage
 
 The code used for this analysis can be found in [pronoun\_adjective\_analysis.py](https://github.com/dhmit/gender_novels/blob/master/gender_novels/analysis/pronoun_adjective_analysis.py).
 
@@ -15,7 +12,7 @@ If there are additionally any opposite-gendered pronouns also in the window then
 technically associated with both gender pronouns in that case).
 
 
-##Top 20 Adjectives Associated with Each Gender
+## Top 20 Adjectives Associated with Each Gender
 **These were obtained by calculating the difference between adjective associations with male pronouns, and with female 
 pronouns:** 
 > number of male pronoun associations - number of female pronoun associations = difference value
@@ -26,7 +23,7 @@ with the highest negative difference values demonstrate the strongest female pro
 
 ![](images/female_adjectives.png "Female Adjectives")
 
-####Top 20 Adjectives Associated with Male Pronouns
+#### Top 20 Adjectives Associated with Male Pronouns
 
 
 ![](images/male_adjectives.png "Male Adjectives")
