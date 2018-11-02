@@ -24,49 +24,9 @@ Adjectives with the highest positive difference values demonstrate the strongest
 with the highest negative difference values demonstrate the strongest female pronoun association.
 ####Top 20 Adjectives Associated with Female Pronouns
 
-| Adjective  | Difference |
-| ---------  | ------|
-|Beautiful|-6606|
-|Pretty| -4348|
-|Sweet|-4119|
-|Lady|-3058|
-|Lovely|-2205|
-|Dear|-1926|
-|Soft|-1922|
-|Happy|-1527|
-|Queen|-1198|
-|Girlish|-1027|
-|Delicate|-987|
-|Graceful|-945|
-|Bright|-932|
-|Rosy|-771|
-|Alone|-755|
-|Pale|-697|
-|Down|-665|
-|Childish|-657|
-|Slim|-645|
+![](images/female_adjectives.png "Female Adjectives")
 
 ####Top 20 Adjectives Associated with Male Pronouns
-| Adjective  | Difference |
-| ---------  | ------|
-| Old        |53565  |
-| Good  | 48647|
-|   Last         |   48647    |
-|  Great          |  40234     |
-|  First          |  28948     |
-|  Young          |  26771     |
-|  Little          |  25935     |
-|  More          |  25071     |
-|   Few         |   20510    |
-|   Much         | 19362      |
-|   Many         |  19283     |
-|   New         |   18025    |
-|  Long          |   17929    |
-|   Big         |  17520     |
-|   Right         |   15763    |
-|    Best        |   14032    |
-|   Dead         |   12470    |
-|   Certain         |   11966    |
-|   Better         |   11782    |
-|   Sure         |   11643    |
-|Able| 10700|
+
+
+![](images/male_adjectives.png "Male Adjectives")
