@@ -22,14 +22,15 @@ and [pandas](https://pandas.pydata.org/)
 
 #### Figure A: *She/He Relative Frequencies by Author*
 
-![bar graph of she/he relative frequencies](images/he_she_freq0.png “bar graph of she/he relative frequencies”)
+![bar graph of she/he relative frequencies](images/he_she_freq0.png "bar graph of she/he relative
+ frequencies")
 
 
 Figure A is a double bar graph, and displays the relative frequencies of ‘he’ and ‘she’ pronouns by book and author. This graph is but one of a series of graphs, all of which display the statistics for only one author and one book at a time. In this graph, outliers can be quickly spotted; names often lend a hint as to the gender of the author, thus allowing the viewer to take even more information from this visualization.
 
 #### Figure B: *Relative Frequency of Female Pronouns to Total Pronouns*
 
-![box and whisker plot of female pronoun frequency by author gender](images/she_freq_by_author_gender_sample.png “box and whisker plot of female pronoun frequency by author gender”)
+![box and whisker plot of female pronoun frequency by author gender](images/she_freq_by_author_gender_sample.png "box and whisker plot of female pronoun frequency by author gender")
 
 Figure B, unlike Figure A, does not work with individual author and instances. Rather, Figure B provides a neat and tidy summarization of all the books in the tested corpus. To lend equal weight to every frequency from every book, Carol uses a series of boxplots. Boxplots not only show the three medians of a set, they also demonstrate where an outlier exists in the set, and thus are the best possible choice for this sort of investigation.
 
