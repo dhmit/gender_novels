@@ -1,7 +1,5 @@
 # Basic Pronoun Frequency Analysis
 
-**The following Markdown file contains results from a basic pronoun frequency analysis. The results are binned based on characteristics of the novels such as author gender, date published, and location.**
-
 The code used for this analysis can be found in [gender\_pronoun\_freq_analysis.py](https://github
 .com/dhmit/gender_novels/blob/master/gender_novels/analysis/gender_pronoun_freq_analysis.py).
 
