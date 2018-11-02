@@ -1,7 +1,6 @@
 # Dunning Analysis
 
- The code used for this analysis can be found in [dunning.py](https://github
-.com/dhmit/gender_novels/blob/master/gender_novels/analysis/dunning.py) under the 
+ The code used for this analysis can be found in [dunning.py](https://github.com/dhmit/gender_novels/blob/master/gender_novels/analysis/dunning.py) under the 
  analysis folder.
 
  The statistical model used to analyze the distinctiveness of words
