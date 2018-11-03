@@ -9,8 +9,8 @@ import pandas as pnds
 from scipy import stats
 from pprint import pprint
 
-#import seaborn as sns
-#sns.set()
+import seaborn as sns
+sns.set()
 
 #def process_medians(lst1 ,lst2):
  #   return
@@ -282,13 +282,45 @@ def get_p_vals(corpus_name):
             for el in list(res[r][key]):
                 medians.append(el[1])
             med[r].append(medians)
-
-    _, location_pval = stats.f_oneway(*location_medians)
-    _, author_gender_pval = stats.f_oneway(*author_gender_medians)
+    _, location_pval = stats.f_oneway(location_medians[0], location_medians[1])
+    _, author_gender_pval = stats.f_oneway(author_gender_medians[0], author_gender_medians[1])
     _, date_pval = stats.f_oneway(*date_medians)
     median_distance_between_female_pronouns_pvals = [location_pval, author_gender_pval, date_pval]
 
-    return pnds.DataFrame({ "names": names, "pvals": median_distance_between_female_pronouns_pvals,})
+    return pnds.DataFrame({ "names": names, "pvals": median_distance_between_female_pronouns_pvals})
+
+def box_plots(inst_data, my_pal, title, x="N/A"):
+    """
+    Takes in a frequency dictionaries and exports its values as a bar-and-whisker graph
+    :param freq_dict: dictionary of frequencies grouped up
+    :param my_pal: palette to be used
+    :param title: title of exported graph
+    :param x: name of x-vars
+    :return:
+    """
+    plt.clf()
+    groups = []
+    val = []
+    for k, v in inst_data.items():
+        temp1 = []
+        for el in v:
+            if el[1] <= 60:
+                temp1.append(el[1])
+        temp2 = [k.replace("_", " ").capitalize()]*len(temp1)
+        val.extend(temp1)
+        groups.extend(temp2)
+    df = pnds.DataFrame({x: groups, 'Median Female Instance Distance': val})
+    df = df[[x, 'Median Female Instance Distance']]
+    sns.boxplot(x=df[x], y=df['Median Female Instance Distance'],
+                palette=my_pal).set_title(title)
+    plt.xticks(rotation=90)
+    # plt.show()
+
+    filepng = "visualizations/" + title + ".png"
+    filepdf = "visualizations/" + title + ".pdf"
+    plt.savefig(filepng, bbox_inches='tight')
+    plt.savefig(filepdf, bbox_inches='tight')
+
 
 
 def run_analysis(corpus_name):
@@ -297,6 +329,7 @@ def run_analysis(corpus_name):
     Comment out sections of code or analyses that have already been run or are unnecessary.
     :param corpus_name:
     :return:
+    """
     """
     print('loading corpus')
     corpus = Corpus(corpus_name)
@@ -331,8 +364,19 @@ def run_analysis(corpus_name):
     top_twenties = {'male_pronoun_top_twenty': male_top_twenty, 'female_pronoun_top_twenty': female_top_twenty,
                     "difference_top_twenty": diff_top_twenty}
     common.store_pickle(top_twenties, "instance_distance_top_twenties")
+    """
+    inst_data = common.load_pickle("median_instance_distances_by_author_gender_gutenberg")
+    box_plots(inst_data, "Blues", "Median Female Instance Distance by Author Gender", x="Author Gender")
+
+    inst_data = common.load_pickle("median_instance_distances_by_location_gutenberg")
+    box_plots(inst_data, "Blues", "Median Female Instance Distance by Location", x="Location")
+
+    inst_data = common.load_pickle("median_instance_distances_by_date_gutenberg")
+    box_plots(inst_data, "Blues", "Median Female Instance Distance by Date", x="Date")
+
 
 if __name__ == '__main__':
+    print("running")
     run_analysis("gutenberg")
 
 

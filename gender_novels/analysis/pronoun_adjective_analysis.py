@@ -82,6 +82,7 @@ def merge_raw_results(full_results):
     """
     merged_results = {'male': {}, 'female': {}}
     for novel in list(full_results.keys()):
+        print(novel.title, novel.author)
         for gender in list(full_results[novel].keys()):
             merged_results[gender] = merge(full_results[novel][gender], merged_results[gender])
 
@@ -116,6 +117,7 @@ def results_by_author_gender(full_results):
     data = {'male_author': {'male': {}, 'female': {}}, "female_author": {'male': {}, 'female': {}}}
 
     for novel in list(full_results.keys()):
+        print("author gender analysis:", novel.title, novel.author)
         if novel.author_gender == "male":
             data['male_author']['male'] = merge(full_results[novel]['male'], data['male_author']['male'])
             data['male_author']['female'] = merge(full_results[novel]['female'], data['male_author']['female'])
@@ -148,6 +150,7 @@ def results_by_date(full_results):
     date_1900_on = {'male': {}, 'female': {}}
 
     for k in list(full_results.keys()):
+        print("date analysis:", k.title, k.author)
         if k.date < 1810:
             date_to_1810['male'] = merge(full_results[k]['male'], date_to_1810['male'])
             date_to_1810['female'] = merge(full_results[k]['female'], date_to_1810['female'])
@@ -209,6 +212,7 @@ def results_by_location(full_results):
     location_other = {'male': {}, 'female': {}}
 
     for k in list(full_results.keys()):
+        print("location analysis:", k.title, k.author)
         if k.country_publication == 'United Kingdom' or k.country_publication == "England":
             location_UK['male'] = merge(full_results[k]['male'], location_UK['male'])
             location_UK['female'] = merge(full_results[k]['female'], location_UK['female'])
@@ -225,8 +229,23 @@ def results_by_location(full_results):
 
     return data
 
+def get_top_adj(corpus_name, num):
+    male_adj = []
+    female_adj = []
+
+    data = common.load_pickle("pronoun_adj_final_results_"+corpus_name)
+
+    for adj, val in data.items():
+        male_adj.append((val[0]-val[1], adj))
+        female_adj.append((val[1]-val[0], adj))
+
+    male_top = sorted(male_adj, reverse=True)[0:num]
+    female_top = sorted(female_adj, reverse=True)[0:num]
+
+    return male_top, female_top
 
 def run_analysis(corpus_name):
+    """
     print("loading corpus", corpus_name)
     corpus = Corpus(corpus_name)
     novels = corpus.novels
@@ -237,22 +256,45 @@ def run_analysis(corpus_name):
     print("storing results")
     store_raw_results(results, corpus_name)
 
-    r = common.load_pickle("pronoun_adj_raw_analysis"+corpus_name)
+    print("loading results")
+    r = common.load_pickle("pronoun_adj_raw_analysis_"+corpus_name)
+    print("merging and getting final results")
     m = merge_raw_results(r)
+    print("getting final results")
     final = get_overlapping_adjectives_raw_results(m)
-    common.store_pickle(final, "pronoun_adj_final_results"+corpus_name)
+    print("storing final results")
+    common.store_pickle(final, "pronoun_adj_final_results_"+corpus_name)
 
     #Comment out pprint for large databases where it's not practical to print out results
-    pprint(final)
-
-    # r2 = results_by_location(r)
-    # r3 = results_by_author_gender(r, "mean")
-    # r4 = results_by_date(r, "mean")
-    # common.store_pickle(r2, "pronoun_adj_by_location")
-    # common.store_pickle(r3, "pronoun_adj_by_author_gender")
-    # common.store_pickle(r4, "pronoun_adj_by_date")
-
-
+    #pprint(final)
+    """
+    """"
+    r = common.load_pickle("pronoun_adj_raw_analysis_" + corpus_name)
+    print("getting results by location")
+    r2 = results_by_location(r)
+    print("storing 1")
+    common.store_pickle(r2, "pronoun_adj_by_location")
+    print("getting results by author gender")
+    r3 = results_by_author_gender(r)
+    print("storing 2")
+    common.store_pickle(r3, "pronoun_adj_by_author_gender")
+    print("getting results by date")
+    r4 = results_by_date(r)
+    print("storing 3")
+    common.store_pickle(r4, "pronoun_adj_by_date")
+    print("DONE")
+    """
+    """"
+    r = common.load_pickle("pronoun_adj_raw_analysis_" + corpus_name)
+    print("merging and getting final results")
+    m = merge_raw_results(r)
+    common.store_pickle(m, "pronoun_adj_merged_results_" + corpus_name)
+    """
+    male_top, female_top = get_top_adj("gutenberg", 30)
+    pprint("MALE TOP")
+    pprint(male_top)
+    pprint("FEMALE TOP")
+    pprint(female_top)
 if __name__ == '__main__':
-    run_analysis("sample_novels")
+    run_analysis("gutenberg")
 

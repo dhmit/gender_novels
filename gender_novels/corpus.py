@@ -7,6 +7,7 @@ from collections import Counter
 
 from gender_novels import common
 from gender_novels.novel import Novel
+import requests
 
 
 class Corpus(common.FileLoaderMixin):
@@ -88,6 +89,11 @@ class Corpus(common.FileLoaderMixin):
                 os.mkdir(gutenberg_path)
             zipf.extractall(gutenberg_path)
             os.remove('gutenberg_corpus.zip')
+            metadata_url = r'https://raw.githubusercontent.com/dhmit/gender_novels/master' \
+                        r'/gender_novels/corpora/gutenberg/gutenberg.csv'
+            r = requests.get(metadata_url, allow_redirects=True)
+            with open(gutenberg_path/Path('gutenberg.csv'), 'wb') as metadata_file:
+                metadata_file.write(r.content)
 
             # check that we now have 4000 novels available
             try:
