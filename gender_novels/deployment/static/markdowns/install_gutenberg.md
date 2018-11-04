@@ -54,9 +54,13 @@ If you're using a virtual environment, be sure to activate your environment firs
 After installing BSD-DB, gutenberg can be installed normally.  
 
 None of the metadata functions will work until you do this: 
-```
+
+```python
+
     from gutenberg.acquire import get_metadata_cache
+    
     cache = get_metadata_cache()
+    
     cache.populate()
 ```
     
