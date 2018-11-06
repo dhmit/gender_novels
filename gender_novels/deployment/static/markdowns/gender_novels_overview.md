@@ -18,3 +18,10 @@ As the first project of the lab, we are very excited to begin our research in th
 It is the hope of the lab that by embarking on this mission, we are able to draw on the views and opinions of the past to diagnose potential causes, solutions, and sources of gender-based discrimination and stereotyping. We have asked questions and performed comparisons such as examining passive and active voice, pronoun frequencies, and much more.
 
 Use the links above to explore what we’ve been doing!
+
+<br>
+<div>
+<CENTER>
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+</CENTER>
+</div>
