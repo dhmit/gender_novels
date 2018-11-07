@@ -16,6 +16,7 @@ Linux
 
 On Linux, you can usually install BSD-DB using your distribution's package
 manager. For example, on Ubuntu, you can use apt-get:
+
 ```
     sudo apt-get install libdb++-dev
     export BERKELEYDB_DIR=/usr
@@ -26,6 +27,7 @@ MacOS
 *****
 
 On Mac, you can install BSD-DB using [homebrew](<https://brew.sh/>):
+
 ```
     brew install berkeley-db4
     pip install -r requirements-py3.pip
@@ -41,18 +43,24 @@ For example, if you have Python 3.5 on a 64-bit version of Windows, you
 should download `bsddb3‑6.2.1‑cp35‑cp35m‑win_amd64.whl`.
 
 After you download the wheel, install it and you're good to go:
+
 ```
     pip install bsddb3‑6.2.1‑cp35‑cp35m‑win_amd64.whl
 ```
+
 If you're using a virtual environment, be sure to activate your environment first.
 
 
 After installing BSD-DB, gutenberg can be installed normally.  
 
 None of the metadata functions will work until you do this: 
-```
+
+```python
+
     from gutenberg.acquire import get_metadata_cache
+    
     cache = get_metadata_cache()
+    
     cache.populate()
 ```
     
