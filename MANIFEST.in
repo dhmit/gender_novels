@@ -1,0 +1,2 @@
+global-include *.p.gz *.py *.txt *.xml *.krn *.mxl *.musicxml *.pdf *.html *.ipynb *.css *.js *.png *.tiff *.jpg *.xls *.mid *.json *.md *.rst *.zip *.command *nwc  *.wav LICENSE
+global-exclude *ipynb_checkpoints* *-checkpoint.ipynb
