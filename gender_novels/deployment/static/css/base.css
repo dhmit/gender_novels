@@ -59,7 +59,7 @@ span {
 }
 
 .nav-link {
-    color: black;
+    color: black !important;
 }
 
 a:hover {
@@ -100,3 +100,4 @@ a:hover {
     max-height: 60px;
     max-width: 60px;
 }
+
