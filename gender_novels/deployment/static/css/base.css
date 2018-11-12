@@ -11,8 +11,13 @@ div {
     font-family: "Sorts Mill Goudy";
 }
 
-div.main{
+div.main {
     padding: 10px, 0px, 0px, 0px;
+    background-color: #FCF5E9;
+}
+
+body {
+    background-color: #FCF5E9;
 
 }
 
