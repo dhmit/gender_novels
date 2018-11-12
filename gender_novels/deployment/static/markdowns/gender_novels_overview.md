@@ -1,5 +1,5 @@
-# Computational Reading of Gender in Novels, 
-# 1770–1922
+# Computational Reading of Gender in Novels 
+## 1770–1922
 
 The first project of the MIT Digital Humanities Lab 
 analyzed the description of gender and gender roles across 
@@ -10,6 +10,8 @@ how conceptions of gender were expressed and changed through
 distant reading of thousands of books.
 Our database involves over 4200 novels sourced from the Gutenberg project and gives us a 
 comprehensive look at the views of authors of the time period.
+
+![Library in Paris](images/john-towner-126924-unsplash.jpg "Library in Paris")
 
 ## Our Goals
 
