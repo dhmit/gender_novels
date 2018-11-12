@@ -9,8 +9,6 @@ h1, h2, h3 {
 
 div {
     font-family: "Sorts Mill Goudy";
-    background-color: #FCF5E9;
-
 }
 
 div.main {
@@ -50,7 +48,6 @@ span {
 }
 
 .content {
-    background-color: #FCF5E9;
     text-align: left;
 }
 
