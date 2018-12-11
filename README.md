@@ -8,10 +8,10 @@ Currently, we have analyzed a corpus of over 4,200 books from [Project Gutenberg
 
 *This MIT Digital Humanities Lab project is part of the [MIT/SHASS Programs in Digital Humanities](https://digitalhumanities.mit.edu/) funded by the [Mellon Foundation](https://www.mellon.org/).*
 
-# Usage
+## Usage
 To use our tools or contribute to the project, please view our guide to contributing, `CONTRIBUTING.md`. It includes information on how to install the tools we used as well as style guidelines for adding code. We are open to contributions and would love to see other people’s ideas, thoughts, and additions to this project, so feel free to leave comments or make a pull request!
 
-# Navigating Gender / Novels
+## Navigating Gender / Novels
 
 For anybody who wants to use our code, here’s a little outline of where everything is.
 In the [`gender_novels/gender_novels`](https://github.com/dhmit/gender_novels/tree/master/gender_novels) folder, there are six folders: 
