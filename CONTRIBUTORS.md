@@ -1,8 +1,8 @@
-# About
+# Gender / Novels Contributors
 
 The Gender / Novels project began in Fall 2018 with an undergraduate cohort of students working with a faculty director and two postdocs as part of the [MIT/SHASS Programs in Digital Humanities](https://digitalhumanities.mit.edu/). This program is funded by the [Mellon Foundation](https://www.mellon.org/)
 
-Everyone involved listed below have contributed to the project’s design, development, implementation, contextualization, and maintenance.
+Everyone involved listed below have contributed to the project’s design, development, implementation, contextualization, and maintenance. Read more about their contributions on the [team roles page](http://gendernovels.digitalhumanitiesmit.org/info/team_roles).
 
 Students participated as part of one of three groups: Data, Analysis, and Deployment. Each contributor had an individual role as part of this work, and they collaborated across teams to develop this project. 
 
@@ -52,3 +52,4 @@ The Deployment team worked to make this project public-facing through ensuring t
 * Stephan Risi, Postdoctoral Associate
 * Lisa Tagliaferri, Postdoctoral Associate
 
+*See also our [Team page](http://gendernovels.digitalhumanitiesmit.org/info/team.html) on the [Gender / Novels website](http://gendernovels.digitalhumanitiesmit.org/info/gender_novels_overview).*
