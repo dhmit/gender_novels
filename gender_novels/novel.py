@@ -8,13 +8,13 @@ from more_itertools import windowed
 import nltk
 
 # nltk as part of speech tagger, requires these two packages
-# TODO: Figure out how to put these nltk packages in setup.py, not here
 nltk.download('punkt', quiet=True)
 nltk.download('averaged_perceptron_tagger', quiet=True)
 gutenberg_imported = True
 
 from gender_novels import common
 from ast import literal_eval
+
 
 try:
     from gutenberg.cleanup import strip_headers
@@ -53,8 +53,8 @@ class Novel(common.FileLoaderMixin):
                                  f'metadata: {novel_metadata_dict}')
 
         # check that the author starts with a capital letter
-        # TODO: Currently deactivated because gutenberg authors are lists
-        # TODO: reimplement with lists in mind.  Note: there are a few novels with no author
+        # TODO: Currently deactivated because Gutenberg authors are lists
+        # TODO: re-implement with lists in mind.  Note: there are a few novels with no author
         # if not novel_metadata_dict['author'][0].isupper():
         #    raise ValueError('The last name of the author should be upper case.',
         #                     f'{novel_metadata_dict["author"]} is likely incorrect in',
@@ -292,8 +292,8 @@ class Novel(common.FileLoaderMixin):
         >>> title_line
         "THE KING'S HIGHWAY"
 
-        TODO: so apparently neither version of remove_boilerplate_text works on Persuasion, and it doesn't look like it's
-        easily fixable/worth fixing
+        TODO: neither version of remove_boilerplate_text works on Persuasion, and it doesn't look like it's
+        easily fixable
         """
 
         # the gutenberg books are stored locally with the boilerplate already removed

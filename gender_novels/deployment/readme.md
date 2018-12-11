@@ -1,7 +1,3 @@
-Here's a link to the [Google Doc](https://docs.google.com/document/d/1aBT-xyHfblx84KoEr5uN-Zjjh6kWV_xIh03MBofTHzE/edit?usp=sharing) so people can give me some
-input (what needs to be added, fixed, etc.)
-
-Type over the things you want to change - you don't have to comment (unless you'd rather do that)!
 # About Us
 The Digital Humanities Lab (DHL) is one of the newest on campus, and it indicates the Institute’s constant commitment to using modern technologies and techniques to expand the field of Humanities research. Its founding represents the Institute’s dedication to improving all fields of research and inquiry - along with the intersection of new and old techniques.
 
