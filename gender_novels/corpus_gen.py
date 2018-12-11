@@ -14,7 +14,6 @@ from gutenberg.query import get_metadata
 from gender_novels import common
 from gender_novels.common import AUTHOR_NAME_REGEX, BASE_PATH, METADATA_LIST
 
-# TODO: A lot of things
 
 SUBJECTS_TO_IGNORE = ["nonfiction", "dictionaries", "bibliography", "poetry", "short stories", "biography", "encyclopedias",
              "atlases", "maps", "words and phrase lists", "almanacs", "handbooks, manuals, etc.", "periodicals",
