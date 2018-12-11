@@ -1,6 +1,6 @@
 # Gender / Novels Contributors
 
-The Gender / Novels project began in Fall 2018 with an undergraduate cohort of students working with a faculty director and two postdocs as part of the [MIT/SHASS Programs in Digital Humanities](https://digitalhumanities.mit.edu/). This program is funded by the [Mellon Foundation](https://www.mellon.org/)
+The Gender / Novels project began in Fall 2018 with an undergraduate cohort of students working with a faculty director and two postdocs as part of the [MIT/SHASS Programs in Digital Humanities](https://digitalhumanities.mit.edu/). This program is funded by the [Mellon Foundation](https://www.mellon.org/).
 
 Everyone involved listed below have contributed to the project’s design, development, implementation, contextualization, and maintenance. Read more about their contributions on the [team roles page](http://gendernovels.digitalhumanitiesmit.org/info/team_roles).
 
