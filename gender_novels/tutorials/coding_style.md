@@ -1,8 +1,10 @@
-# DH Lab Python Style Guide
+# Digital Humanities Lab Python Style Guide
 
 ## General Coding Guidelines
 
-//say something about pylint, pep8
+Generally, the Digital Humanities Lab will follow Python's PEP 8 style conventions, which you can learn about in the [Style Guide for Python Code](https://www.python.org/dev/peps/pep-0008/).
+
+Use a linter such as [Pylint](https://www.pylint.org/) to check that your code is PEP 8 compliant and bug free.
 
 ### Naming Conventions
 
@@ -32,8 +34,8 @@ Use named return values not anonymous lists.  So don’t get in the habit of ret
 Instead use dicts and named values: `returnedDict['parseFailuresList'][0]['path']`.  Or better, return an Object of a new (but documented) class you’ve made for passing a lot of data.  collections.namedtuple can be a great ally.
 
 ### Formatting Conventions
-// do we have a preference for ' vs " ?
-// use '
+
+The lab prefers single quotes `'` versus double quotes to enclose strings. 
 
 Code alignment is acceptable when it benefits readability. You can ignore pylint warnings for statements like this:
 ```python 
@@ -86,10 +88,10 @@ if DEBUG:
 
 
 
-
 ## New Modules
-//how do we make this generic?
+
 Start each module with
+
 ```python
 # -*- coding: utf-8 -*-
 #---------------------------------------------------------------------
