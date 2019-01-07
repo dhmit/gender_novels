@@ -6,12 +6,12 @@ As contributors and maintainers of the projects of the Lab of the MIT/SHASS Prog
 
 In order to foster an inclusive and positive space, behavior and language among contributors, users, and maintainers should be respectful and friendly in nature. Some guidelines:
 
-*   Use inclusive language
-  * Refrain from generalizing or stereotyping
-  * Opt for gender-neutral language in documentation and conversation (e.g. avoid “guys” and other gendered words)
-*   Be respectful of differing viewpoints and acknowledge that we all have diverse experiences
-*   Accept and give feedback gracefully
-*   Show empathy towards others
+* Use inclusive language
+              * Refrain from generalizing or stereotyping
+              * Opt for gender-neutral language in documentation and conversation (e.g. avoid “guys” and other gendered words)
+* Be respectful of differing viewpoints and acknowledge that we all have diverse experiences
+* Accept and give feedback gracefully
+* Show empathy towards others
 
 All Digital Humanities Lab spaces are meant for professional interactions, and any behavior which could reasonably be considered inappropriate in a professional setting is unacceptable.
 
