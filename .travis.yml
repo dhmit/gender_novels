@@ -3,5 +3,4 @@ python:
  - "3.6"
 
 script:
-  #- python testing/travis.py
-  - python -c 'from gender_novels.testing.travis import test as test; test()'
+  - python -c 'from gender_novels.testing.travis import passes_tests; passes_tests()'
