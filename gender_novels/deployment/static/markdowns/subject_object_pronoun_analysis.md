@@ -26,10 +26,10 @@ masculine pronouns in a given novel are subject pronouns while approximately
 45% of feminine pronouns are subject pronouns.
 
 Male: 
-0.7245328833821589
+0.7245
 
 Female: 
-0.44787289273153363
+0.4479
 
 ### Binned
 The following are averages of the same frequency but binned 
@@ -41,81 +41,81 @@ The following are frequencies of female pronouns that are
 
 By author gender: 
 
-Male author: 0.441991212798621
+Male author: 0.4420
 
-Female author: 0.45798459814830395
+Female author: 0.4580
 
 By date: (`NaN` means no novels from this range available)
 
-To 1810 : 0.41417750044585927 
+To 1810 : 0.4142
 
-1810 to 1819 : 0.4463033852965594 
+1810 to 1819 : 0.4463
 
 1820 to 1829 : `NaN`
 
-1830 to 1839 : 0.35106382978723405 
+1830 to 1839 : 0.3511
 
-1840 to 1849 : 0.4184030235018519 
+1840 to 1849 : 0.4184
 
-1850 to 1859 : 0.3905045204232324 
+1850 to 1859 : 0.3905 
 
-1860 to 1869 : 0.4768948491730092 
+1860 to 1869 : 0.4769 
 
-1870 to 1879 : 0.47558451497862986 
+1870 to 1879 : 0.4756 
 
-1880 to 1889 : 0.42070917410798475 
+1880 to 1889 : 0.4207 
 
 1890 to 1899 : `NaN`
 
-1900 on : 0.47236646351007894
+1900 on : 0.4724
 
 By location:
 
-England: 0.44347747403902865 
+England: 0.4435 
 
-United States: 0.4549392445507864 
+United States: 0.4549 
 
-Other: 0.43391869615013184
+Other: 0.4339
 
 ####Male Pronouns
 
 By author gender:
 
-Male author: 0.7287418763201214
+Male author: 0.7287
  
-Female author: 0.7194162706961524
+Female author: 0.7194
  
 By date:
 
-To 1810: 0.708219281182348
+To 1810: 0.7082
 
-1810 to 1819: 0.7041715628672149 
+1810 to 1819: 0.7042 
 
 1820 to 1829: `NaN`
 
-1830 to 1839: 0.7046263345195729 
+1830 to 1839: 0.7046 
 
-1840 to 1849: 0.6922031669905926 
+1840 to 1849: 0.6922 
 
-1850 to 1859: 0.6990460760450546 
+1850 to 1859: 0.699 
 
-1860 to 1869: 0.7267589702159075 
+1860 to 1869: 0.7268 
 
-1870 to 1879: 0.7317825828658459 
+1870 to 1879: 0.7318 
 
-1880 to 1889: 0.7296998576365381 
+1880 to 1889: 0.7297 
 
 1890 to 1899: `NaN`
 
-1900 on: 0.7312530130825822
+1900 on: 0.7313
 
 By location:
 
-England: 0.7209666004589768
+England: 0.721
 
-US: 0.7300165752376145
+US: 0.73
 
-Other: 0.7156454243312463
+Other: 0.7156
  
 ### Thoughts
 We noticed no trends in the binning for this analysis. 
@@ -130,7 +130,7 @@ that were male verses female. The following frequencies are
 the portion of subject pronouns that are female.
 
 ### Overall
-Overall: 0.31606923574399076
+Overall: 0.3161
 
 Thus, on average, about 32% of the subject pronouns in a given 
 novel were feminine.
@@ -139,41 +139,41 @@ novel were feminine.
 
 #### By author gender:
 
-Male author: 0.23516100081271119
+Male author: 0.2352
 
-Female author: 0.4333655569112226
+Female author: 0.4334
 
 #### By date:
 
-To 1810: 0.44504635214783195
+To 1810: 0.445
 
-1810 to 1819: 0.41640324428305886
+1810 to 1819: 0.4164
 
 1820 to 1829: `NaN`
 
-1830 to 1839: 0.09999999999999999
+1830 to 1839: 0.1
 
-1840 to 1849: 0.31599450339367746
+1840 to 1849: 0.316
 
-1850 to 1859: 0.3854980861034278
+1850 to 1859: 0.3855
 
-1860 to 1869: 0.42842988831401607
+1860 to 1869: 0.4284
 
-1870 to 1879: 0.3847251297708155
+1870 to 1879: 0.3847
 
-1880 to 1889: 0.2192833286434825
+1880 to 1889: 0.2193
 
 1890 to 1899: `NaN` 
 
-1900 on: 0.31340014426057095
+1900 on: 0.3134
 
 #### By location:
 
-England: 0.3009783595291811
+England: 0.301
 
-US: 0.3373807026583039
+US: 0.3374
 
-Other: 0.2969183860145596
+Other: 0.2969
 
 ### Thoughts
 For this analysis, we found the overall comparison and the
@@ -186,7 +186,3 @@ Analysis #1 is probably the most useful of the two. The results
 observed in analysis #2 are likely due to just the frequency of
 male vs female pronoun use in general as observed in an earlier
 analysis (see he\_she\_freq\_data.md).
-
-
-
-
