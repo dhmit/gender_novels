@@ -3,7 +3,8 @@ Several analyses of gendered pronouns in 19th century novels were conducted. Fir
 
 ## Analysis #1 - Frequency of Gendered Pronouns
 
-Code from gender_pronoun_freq_analysis.py was used to determine the average proportion of the total number of pronouns in a given novel are female for each novel in the Gutenberg corpus. Then, results were binned by author gender, date published, and location of publication.
+Code from gender\_pronoun\_freq\_analysis.py was used to determine the average proportion of the total number of 
+pronouns in a given novel are female for each novel in the Gutenberg corpus. Then, results were binned by author gender, date published, and location of publication.
 
 #### Overall
 Below shows the average portion of the total number of pronouns in a given novel that are of each type 
@@ -89,7 +90,8 @@ As in Analysis #1, no patterns or significant differences were found for date of
 
 ## Analysis #3 - Frequency of Each Type of Gendered Pronoun that are Subject Pronouns
 
-Code from gender_pronoun_freq_analysis.py was used to determine the average proportion of the total number of pronouns of a given gender that are subject pronouns for each novel in the Gutenberg corpus. Then, results were binned by author gender, date published, and location of publication.
+Code from gender\_pronoun\_freq\_analysis.py was used to determine the average proportion of the total number of 
+pronouns of a given gender that are subject pronouns for each novel in the Gutenberg corpus. Then, results were binned by author gender, date published, and location of publication.
 
 This analysis is separated into two parts, 3a and 3b. 3a is the analysis of female pronouns and 3b is the analysis of male pronouns.
 

@@ -57,5 +57,7 @@ deal with all the files that do not fulfill the projects requirements for proces
 
 ### References
 [https://softwareengineering.stackexchange.com/questions/180108/what-will-happen-if-i-dont-follow-robots-txt-while-crawling](https://softwareengineering.stackexchange.com/questions/180108/what-will-happen-if-i-dont-follow-robots-txt-while-crawling)
+
 [https://www.gutenberg.org/robots.txt](https://www.gutenberg.org/robots.txt)
-[https://en.wikipedia.org/wiki/Robots_exclusion_standard](https://en.wikipedia.org/wiki/Robots_exclusion_standard)
+
+[https://en.wikipedia.org/wiki/Robots\_exclusion\_standard](https://en.wikipedia.org/wiki/Robots_exclusion_standard)

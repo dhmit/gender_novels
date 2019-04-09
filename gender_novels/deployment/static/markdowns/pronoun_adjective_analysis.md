@@ -3,8 +3,9 @@
 The code used for this analysis can be found in [pronoun\_adjective\_analysis.py](https://github.com/dhmit/gender_novels/blob/master/gender_novels/analysis/pronoun_adjective_analysis.py).
 
 The raw analysis returns a dictionary with each novel mapped to an array of 2 dictionaries:
-* Each adjective and its number of occurrences associated with male pronouns
-* Each adjective and its number of occurrences associated with female pronouns
+
+  * Each adjective and its number of occurrences associated with male pronouns
+  * Each adjective and its number of occurrences associated with female pronouns
  
 For each novel, this analysis is conducted by iterating through the novel's tokenized text and considering windows of 10 
 words. When the central word of a window is a gendered pronoun, any adjectives also in the window are added to a dictionary.

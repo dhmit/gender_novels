@@ -11,7 +11,8 @@ each of these sentences using the Natural Language Toolkit (NLTK). The dependenc
 information about the relationships between pairs of words in the sentence, allowing us to 
 analyse the novels on a deeper level by utilizing information not just from 
 the individual words but also from the ways they are employed in the sentences. Here is an 
-example of a dependency tree for the sentence _"Bills on ports and immigration were submitted by Senator Brownback, Republican of Kansas"_:
+example of a dependency tree for the sentence _“Bills on ports and immigration were submitted by Senator Brownback, 
+Republican of Kansas”_:
 
 ![Sentence Diagram](images/sentence_diagram.png "Sentence Diagram")
 
