@@ -45,28 +45,25 @@ The source for our novels has some important metadata already.  This includes th
 
 The metadata on Project Gutenberg is stored in a single giant RDF file.  To handle this rather difficult file type, we used the [gutenberg](https://github.com/c-w/gutenberg)  module.  Processing can take several hours, but it only needs to be done once on the machine that acquires the metadata.  Then to get, say, the title of Gutenberg novel 2701, you can run
 
-```python
-get_metadata('title', 2701) # returns "Moby Dick"
-```
+    get_metadata('title', 2701) # returns "Moby Dick"
 
 Unfortunately, Project Gutenberg doesn't provide important metadata like the publication date, so we need to look elsewhere.  But the author and title are important for looking up books in other databases.  
 
 ### Wikidata
 
 Each page on Wikidata has a unique ID, and each "claim" on that page--- a property of the object that the ID refers too--- has an ID as well.  For example, `P2067` is the claim ID for mass.  `P2067` for page `Q402` is `125,260,000,000±210,000,000 electronvolt`, and `P2067` for page `Q22686` is `120 kilogram`.  (The former is the [Higgs boson](https://www.wikidata.org/wiki/Q402), the latter is [the US president](https://www.wikidata.org/wiki/Q22686)).  Using the [pywikibot](https://github.com/wikimedia/pywikibot) module, and a known claim ID, one can fairly simply access the information for a page.  
+     
+    site = pywikibot.Site("en", "wikipedia")
+    page = pywikibot.Page(site, title)
+    item = pywikibot.ItemPage.fromPage(page)
+    dictionary = item.get()
+    clm_dict = dictionary["claims"]
+    clm_list = clm_dict["P577"] # publication date
+    year = None
+    for clm in clm_list:
+        clm_trgt = clm.getTarget()
+    year = clm_trgt.year
 
-```python
-site = pywikibot.Site("en", "wikipedia")
-page = pywikibot.Page(site, title)
-item = pywikibot.ItemPage.fromPage(page)
-dictionary = item.get()
-clm_dict = dictionary["claims"]
-clm_list = clm_dict["P577"] # publication date
-year = None
-for clm in clm_list:
- clm_trgt = clm.getTarget()
-year = clm_trgt.year
-```
 The only catch is that if the value of a claim is another thing on Wikidata, you get the page ID back, not the name.  This means you have to either match the ID to the page title or go look up the name from Wikidata.  
 
 The main issue with Wikidata is that although it contains [many](https://www.wikidata.org/wiki/Q18614236) [random](https://www.wikidata.org/wiki/Q15613810) [things](https://www.wikidata.org/wiki/Q970550), it doesn't contain many of the more obscure books.  Unfortunately, working with the Library of Congress and WorldCat API's was difficult, so we were unable to incorporate them into our metadata acquisition before the deadline.  However, there are some tricks to patch up those holes: 
@@ -85,17 +82,15 @@ metadata at the same time.
 
 To generate the corpus, we loop through every single Gutenberg ID number from zero to 70,000.  With each ID number, the book is first tested to see if it meets our requirements.  Then the metadata is acquired and written to a CSV file.  
 
-```python
-if (not is_valid_novel_gutenberg(gutenberg_id)):
-	print("Not a novel")
-	continue
-novel_metadata = get_gutenberg_metadata_for_single_novel(gutenberg_id)
-write_metadata(novel_metadata)
-...
-with open(Path(BASE_PATH, 'corpora', 'gutenberg', 'texts', f'{gutenberg_id}.txt'),
-	mode='w', encoding='utf-8') as outfile:
-	outfile.write(text_clean)
-```
+    if (not is_valid_novel_gutenberg(gutenberg_id)):
+        print("Not a novel")
+        continue
+    novel_metadata = get_gutenberg_metadata_for_single_novel(gutenberg_id)
+    write_metadata(novel_metadata)
+    ...
+    with open(Path(BASE_PATH, 'corpora', 'gutenberg', 'texts', f'{gutenberg_id}.txt'),
+        mode='w', encoding='utf-8') as outfile:
+        outfile.write(text_clean)
 
 In the process of generating the corpus, we found that we had more than enough novels.  So greater emphasis was put on ensuring that included books were valid novels, even if it led to the exclusion of some legitimate novels.  We checked novels for 
 
@@ -109,16 +104,14 @@ In the process of generating the corpus, we found that we had more than enough n
 
 For the methods that actually acquired the metadata, we used a process like this:
 
-```python
-date = get_publication_date_from_copyright_certain(novel_text)
-if date:
-	return date
-else:
-	date = get_publication_date_wikidata(author, title)
-if not date:
-	date = get_publication_date_from_copyright_uncertain(novel_text)
-return date
-```
+    date = get_publication_date_from_copyright_certain(novel_text)
+    if date:
+        return date
+    else:
+        date = get_publication_date_wikidata(author, title)
+    if not date:
+        date = get_publication_date_from_copyright_uncertain(novel_text)
+    return date
 
 Essentially, we would first try to get metadata from the most reliable source (in this case, the book itself), and if that failed we would try every method from most reliable to least reliable in turn, before giving up.  (For example, if the Library of Congress metadata acquisition was implemented, it would take first precedence).  
 

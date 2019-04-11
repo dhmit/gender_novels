@@ -12,7 +12,7 @@
  by sheer amount but show a clear significantly distinctive.
  This means that words with relatively low frequencies can still receive high 
  dunning scores when compared to the rest of the words in their respective
- corpus. The function dunn_individual_word applies the mathematical formula
+ corpus. The function dunn\_individual\_word applies the mathematical formula
  used in Dunning Log-Likelihood and returns a dunning value for that specific word.
  As inputs, it takes in the total amount of words in both counter objects,
  and it also takes in the total counts of the desired word in their respective counters.
@@ -21,7 +21,7 @@
   
   All that is needed to run dunning\_total is two counter or dict objects (counter1
   and counter2), mapping words to the number of times they appear. 
-  When the function is run, it will execute dunn\_individual_word on all of the common words 
+  When the function is run, it will execute dunn\_individual\_word on all of the common words 
   in both counters. It will then return a dictionary that maps each word to 
   a dict containing its dunning score as well as the counts and frequencies with which
   it appears in both corpora. The negative end of the spectrum denotes the distinctiveness
