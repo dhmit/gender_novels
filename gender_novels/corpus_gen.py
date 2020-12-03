@@ -24,7 +24,10 @@ COUNTRY_ID_TO_NAME = {"Q30":  "United States", "Q145": "United Kingdom", "Q21": 
                       "Q408": "Australia", "Q2886622": "Narnia"}
 
 # This directory contains 11 sample books.
-GUTENBERG_RSYNC_PATH = Path(BASE_PATH, 'corpora', 'gutenberg_mirror_sample')
+if 'GUTENBERG_RSYNC_PATH' in os.environ:
+    GUTENBERG_RSYNC_PATH = Path(os.environ['GUTENBERG_RSYNC_PATH'])
+else:
+    GUTENBERG_RSYNC_PATH = Path(BASE_PATH, 'corpora', 'gutenberg_mirror_sample')
 
 
 def generate_corpus_gutenberg():
@@ -56,16 +59,7 @@ def generate_corpus_gutenberg():
     # Generate filepaths
     # gutenberg_id.txt means ascii file (which works fine for our purposes)
     # gutenberg_id-0.txt means utf8 file (preferred)
-    filepaths = []
-    for gutenberg_id in range(70000):
-        novel_directory = generate_gutenberg_rsync_path(gutenberg_id)
-        utf8_path = novel_directory.joinpath(f'{gutenberg_id}-0.txt')
-        if os.path.isfile(utf8_path):
-            filepaths.append(utf8_path)
-            continue
-        ascii_path = novel_directory.joinpath(f'{gutenberg_id}.txt')
-        if os.path.isfile(ascii_path):
-            filepaths.append(ascii_path)
+    filepaths = get_gutenberg_filepaths()
 
     print(f"Total number of files to process: {len(filepaths)}")
     corpus_gen_start_time = time.time()
@@ -102,13 +96,59 @@ def generate_corpus_gutenberg():
             print("")
             continue
 
-
-
     end_time = time.time()
     print("Done!")
     print("No. Books:", number_books)
     print("Total Time:", end_time-corpus_gen_start_time, "seconds")
     print("Average Time per Book", (end_time-corpus_gen_start_time) / number_books)
+
+
+def get_gutenberg_filepaths():
+    """
+    Generate filepaths
+    gutenberg_id.txt means ascii file (which works fine for our purposes)
+    gutenberg_id-0.txt means utf8 file (preferred)
+    """
+    filepaths = []
+    for gutenberg_id in range(70000):
+        novel_directory = generate_gutenberg_rsync_path(gutenberg_id)
+        utf8_path = novel_directory.joinpath(f'{gutenberg_id}-0.txt')
+        if os.path.isfile(utf8_path):
+            filepaths.append(utf8_path)
+            continue
+        ascii_path = novel_directory.joinpath(f'{gutenberg_id}.txt')
+        if os.path.isfile(ascii_path):
+            filepaths.append(ascii_path)
+    return filepaths
+
+
+def create_text_files_from_gutenberg_mirror_and_existing_metadata():
+    """
+    If we have an existing correct metadata .csv file, but only a
+    mirror of the whole Gutenberg corpus, extract just the proper files that the CSV
+    metadata file supports
+    """
+    with open(Path(BASE_PATH, 'corpora', 'gutenberg', 'gutenberg.csv'), 'r', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        all_ids = [row['gutenberg_id'] for row in reader]
+
+    filepaths = get_gutenberg_filepaths()
+
+    # output filename
+    num_generated = 0
+
+    output_path = Path(BASE_PATH, 'corpora', 'gutenberg', 'texts')
+    fp: Path
+    for fp in filepaths:
+        first_sub_dir = fp.parts[-2]
+        if first_sub_dir in all_ids:
+            new_path = output_path / (first_sub_dir + '.txt')
+            copyfile(fp, new_path)
+            num_generated += 1
+
+    print(f'Generated {num_generated} files')
+    return num_generated
+
 
 
 def get_gutenberg_metadata_for_single_novel(gutenberg_id):
@@ -343,7 +383,7 @@ def text_invalidates_entry(text):
     text = strip_headers(text)
     text_length = len(text)
     # Animal Farm is roughly 166700 characters including boilerplate
-    # Guiness World Records states that the longest novel is 9,609,000 characters long
+    # Guinness World Records states that the longest novel is 9,609,000 characters long
     if text_length < 140000 or text_length > 9609000:
         return True
     return False
@@ -448,7 +488,7 @@ def get_publication_date(author, title, gutenberg_id):
     :param gutenberg_id: int
     :return: int
     """
-    #TODO: remember to uncomment worldcat function when it is done
+    # TODO: remember to uncomment worldcat function when it is done
 
     novel_text = get_novel_text_gutenberg(gutenberg_id)
     date = get_publication_date_from_copyright_certain(novel_text)
@@ -456,8 +496,8 @@ def get_publication_date(author, title, gutenberg_id):
         return date
     else:
         date = get_publication_date_wikidata(author, title)
-#    if (date == None):
-#        date = get_publication_date_from_copyright_uncertain(novel_text)
+    # if (date == None):
+    #     date = get_publication_date_from_copyright_uncertain(novel_text)
     return date
 
 
@@ -553,7 +593,7 @@ def get_publication_date_from_copyright_uncertain(novel_text):
     match = re.search(r"\d{4}", novel_text[:3000])
     if match:
         year = int(match.group(0))
-        if (year < 2038 and year > 1492):
+        if (2038 > year > 1492):
             return year
         else:
             return None
@@ -580,9 +620,10 @@ def get_country_publication(author, title):
     # TODO: uncomment worldcat function once it is added
     country = None
     # country = get_country_publication_worldcat(author, title)
-    if (country == None):
+    if country is None:
         country = get_country_publication_wikidata(author, title)
     return country
+
 
 def get_country_publication_wikidata(author, title):
     """
@@ -619,7 +660,8 @@ def get_country_publication_wikidata(author, title):
             if (title == title.split(":", 1)[0].split(";,1")[0]):
                 return None
             else:
-                return get_country_publication_wikidata(author, title.split(":", 1)[0].split(";,1")[0])
+                return get_country_publication_wikidata(author,
+                                                        title.split(":", 1)[0].split(";,1")[0])
         except (pywikibot.exceptions.NoPage):
             return None
     except(pywikibot.exceptions.InvalidTitle):
@@ -642,7 +684,8 @@ def get_country_publication_wikidata(author, title):
             if (clm_trgt.language == 'en'):
                 return clm_trgt.text
     except (KeyError, pywikibot.exceptions.NoPage, pywikibot.exceptions.InvalidTitle):
-        #if that doesn't work just get one of the aliases. Name may be awkwardly long but should be consistent
+        # if that doesn't work just get one of the aliases.
+        # Name may be awkwardly long but should be consistent
         country = dictionary['aliases']['en'][-1]
         return country
 
@@ -670,15 +713,13 @@ def format_author(author):
     :param author: str
     :return: str
     """
-
-    author_formatted = ''
     try:
         match = re.match(AUTHOR_NAME_REGEX, author)
         first_name = match.groupdict()['first_name']
-        if (match.groupdict()['real_name'] != None):
+        if (match.groupdict()['real_name'] is not None):
             first_name = match.groupdict()['real_name']
         author_formatted = first_name + " " + match.groupdict()['last_name']
-        if (match.groupdict()['suffix'] != None):
+        if (match.groupdict()['suffix'] is not None):
             author_formatted += match.groupdict()['suffix']
     except (TypeError, AttributeError):
         author_formatted = author
@@ -725,11 +766,11 @@ def get_author_gender(authors):
     if len(authors) == 1:
         author = authors[0]
         # author_gender = get_author_gender_worldcat(author)
-        if author_gender == None:
+        if author_gender is None:
             author_gender = get_author_gender_wikidata(author)
-        if author_gender == None:
+        if author_gender is None:
             author_gender = get_author_gender_guesser(author)
-        if author_gender == None:
+        if author_gender is None:
             return 'unknown'
     elif len(authors) > 1:
         author_gender = get_author_gender([authors[0]])
@@ -849,6 +890,7 @@ def get_subject_gutenberg(gutenberg_id):
 
     return sorted(list(get_metadata('subject', gutenberg_id)))
 
+
 def write_metadata(novel_metadata):
     """
     Writes a row of metadata for a novel into the csv at path
@@ -911,4 +953,5 @@ def generate_gutenberg_rsync_path(gutenberg_id):
 if __name__ == '__main__':
     # from dh_testers.testRunner import main_test
     # main_test()
-    generate_corpus_gutenberg()
+    # generate_corpus_gutenberg()
+    create_text_files_from_gutenberg_mirror_and_existing_metadata()
