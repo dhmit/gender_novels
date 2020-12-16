@@ -1,7 +1,8 @@
 dh_testers
 flask
-gender-guesser==0.4.0
-ipython==6.5
+gender-guesser>=0.4.0
+gutenberg
+ipython>=6.5
 jupyter
 matplotlib
 numpy
