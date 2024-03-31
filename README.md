@@ -31,6 +31,14 @@ In the [`gender_novels/gender_novels`](https://github.com/dhmit/gender_novels/tr
 
 For a user who’ll need some readily available methods for analyzing documents, the files you’ll most likely want are [`corpus.py`](https://github.com/dhmit/gender_novels/blob/master/gender_novels/corpus.py) and [`novel.py`](https://github.com/dhmit/gender_novels/blob/master/gender_novels/novel.py). These include methods used for loading and analyzing texts from the corpora. If you’d like to generate your own corpus rather than use the one provided in the repo, you’ll want to use [`corpus_gen.py`](https://github.com/dhmit/gender_novels/blob/master/gender_novels/corpus_gen.py). If you’d only like a specific part of our corpus, the method `get_subcorpus()` may be useful.  
 
+## Citation
+
+Cite the project using either the short or long form:
+
+* Michael Scott Asato Cuthbert, et al., *Computational Reading of Gender in Novels, 1770–1922* (2019) <http://gendernovels.digitalhumanitiesmit.org>.
+
+* Michael Scott Asato Cuthbert, Lisa Tagliaferri, Stephan Risi, Ife Ademolu-Odeneye, Dina Atia, Elena Boal, Emily Caragay, Susannah Chen, Alena Culbertson, Howard DaCosta, Mingfei Duan, Maritza Gallegos, Assel Ismoldayeva, Elsa Itambo, Michelle Li, Kelsey Merrill, Charlotte Minsky, Keith Murray, Carol Pan, Isaac Redlon, Shobita Sundaram, Felix Tran, Kate Xu, Derek Yen, Samantha York, Sophia Zhi, *Computational Reading of Gender in Novels, 1770–1922: The Gender/Novels Project* (2019) <http://gendernovels.digitalhumanitiesmit.org> and <https://github.com/dhmit/gender_novels>
+
 *This document was prepared by the MIT Digital Humanities Lab.*
 
 Copyright © 2018, [MIT Programs in Digital Humanities](https://digitalhumanities.mit.edu/). Released under the [BSD license](https://github.com/dhmit/gender_novels/blob/master/LICENSE).
